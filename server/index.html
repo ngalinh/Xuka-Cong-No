@@ -158,14 +158,6 @@ tr:hover td{background:var(--bg2)}
 .kh-add{display:flex;align-items:center;gap:8px;padding:8px 0}
 
 /* LOGIN SCREEN */
-.login-screen{position:fixed;inset:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;z-index:1000}
-.login-box{background:var(--bg);border:1px solid var(--brd2);border-radius:var(--rl);padding:32px 36px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,.1)}
-.login-logo{width:40px;height:40px;background:var(--grn);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;margin:0 auto 16px}
-.login-title{font-size:18px;font-weight:700;color:var(--txt);text-align:center;margin-bottom:4px}
-.login-sub{font-size:13px;color:var(--txt2);text-align:center;margin-bottom:24px}
-.login-error{font-size:13px;color:var(--red3);background:var(--red2);padding:8px 12px;border-radius:var(--r);margin-bottom:14px;display:none}
-.login-user-badge{display:flex;align-items:center;gap:8px;background:var(--bg2);border-radius:20px;padding:5px 12px;font-size:13px;font-weight:600}
-.login-user-badge .role-tag{font-size:11px;color:var(--txt2);font-weight:400}
 .lock-overlay{position:absolute;inset:0;background:rgba(248,247,245,.85);border-radius:var(--rl);display:flex;align-items:center;justify-content:center;z-index:10;flex-direction:column;gap:8px}
 .lock-overlay p{font-size:13px;color:var(--txt2);font-weight:500}
 .sec-wrap{position:relative}
@@ -198,13 +190,17 @@ tr:hover td{background:var(--bg2)}
     </div>
   </div>
   <div class="hdr-r">
-    <div class="login-user-badge" id="user-badge">
-      <span id="user-name-disp">—</span>
-      <span class="role-tag" id="user-role-disp"></span>
+    <div class="role-pill">
+      <label>Vai trò:</label>
+      <select id="role-sel" onchange="applyRole()">
+        <option value="admin">Admin</option>
+        <option value="mh">Mua hàng</option>
+        <option value="sale">Sale/CSKH</option>
+        <option value="kt">Kế toán</option>
+      </select>
     </div>
     <div id="locked-ind" class="locked-badge" style="display:none">🔒 Một số tab bị khóa</div>
     <button class="btn" onclick="if(confirm('Xoá toàn bộ công nợ đã nhập?\n(Danh sách đối tác sẽ được giữ lại)')){localStorage.removeItem(LS_KEY);D.sup=[];D.kh=[];D.ck=[];D.ctr=1;rd0();rt1();rt2();rt4();toast('Đã xoá toàn bộ data giao dịch')}" style="font-size:12px;color:var(--txt3);border-color:var(--brd)">🗑 Reset data</button>
-    <button class="btn" onclick="doLogout()" style="font-size:12px">Đăng xuất</button>
     <button class="btn" id="btn-chot" onclick="if(confirm('Chốt phiên? Tất cả khoản chưa Done sẽ bị Cancelled.'))runChotPhien(false)" style="font-size:12px;display:none;background:var(--amb2);border-color:var(--amb);color:var(--amb3);font-weight:600">⏰ Chốt phiên</button>
   </div>
 </div>
@@ -293,7 +289,7 @@ tr:hover td{background:var(--bg2)}
 <!-- ===== TAB 3: TRACKING CK (was t4) ===== -->
 <div id="t3" class="sec">
   <div class="toolbar">
-    <select id="f4s" onchange="rt4()"><option value="">Tất cả tình trạng</option><option>Chờ XN & Đã tham chiếu HT</option><option>Đã XN & Nhập file Sup/MH</option><option>Done</option></select>
+    <select id="f4s" onchange="rt4()"><option value="">Tất cả tình trạng</option><option>Chờ XN & Đã tham chiếu HT</option><option>Đã XN & Nhập file Sup/MH</option><option>Done & Nhập Thu Chi</option></select>
     <select id="f4nv" onchange="rt4()"><option value="">Tất cả NV</option></select>
     <input id="f4q" placeholder="🔍 Tìm tên KH..." oninput="rt4()">
     <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')">+ Nhập bill CK</button>
@@ -340,19 +336,6 @@ tr:hover td{background:var(--bg2)}
 </div><!-- /body -->
 </div><!-- /layout -->
 </div><!-- /app -->
-
-<!-- ===== LOGIN SCREEN ===== -->
-<div class="login-screen" id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">⇄</div>
-    <div class="login-title">Quản lý dòng tiền CK</div>
-    <div class="login-sub">Đăng nhập để tiếp tục</div>
-    <div class="login-error" id="login-error">Sai tên đăng nhập hoặc mật khẩu</div>
-    <div class="fr"><label>Tên đăng nhập</label><input id="login-user" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <div class="fr"><label>Mật khẩu</label><input id="login-pass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <button class="btn btn-p" onclick="doLogin()" style="width:100%;margin-top:8px;justify-content:center">Đăng nhập</button>
-  </div>
-</div>
 
 <!-- ===== MODAL: NHẬP SUP/MH ===== -->
 <div class="modbg" id="msup">
@@ -714,15 +697,12 @@ tr:hover td{background:var(--bg2)}
 </div>
 </div>
 
-<div id="noti-popup" style="display:none;position:fixed;bottom:24px;left:220px;z-index:300;width:280px;background:var(--bg);border:1.5px solid #E24B4A;border-radius:var(--rl);box-shadow:0 4px 20px rgba(0,0,0,.12);overflow:hidden">
-  <div style="background:#E24B4A;padding:10px 14px;display:flex;align-items:center;gap:8px">
-    <span style="font-size:16px">🔔</span>
-    <span style="font-size:13px;font-weight:700;color:#fff">Cần xác nhận</span>
-    <button onclick="closeNotiPopup()" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#fff;font-size:18px;line-height:1;padding:0">×</button>
-  </div>
-  <div style="padding:14px 16px">
-    <div id="noti-msg" style="font-size:13px;color:var(--txt);line-height:1.6;margin-bottom:12px"></div>
-    <button onclick="goToTracking()" style="width:100%;background:var(--grn);border:none;border-radius:var(--r);color:#fff;padding:8px;font-size:13px;font-weight:600;cursor:pointer">Đến Tracking CK →</button>
+<div id="noti-popup" style="display:none;position:fixed;bottom:20px;left:210px;z-index:300">
+  <div style="display:flex;align-items:center;gap:10px;background:#1a1a1a;color:#fff;padding:10px 16px;border-radius:20px;font-size:13px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);white-space:nowrap">
+    <span style="background:#E24B4A;border-radius:50%;width:8px;height:8px;flex-shrink:0;display:inline-block"></span>
+    <span id="noti-msg"></span>
+    <button onclick="goToTracking()" style="background:#fff;color:#1a1a1a;border:none;border-radius:12px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;margin-left:4px">Xem →</button>
+    <button onclick="closeNotiPopup()" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.6);font-size:16px;line-height:1;padding:0;margin-left:2px">×</button>
   </div>
 </div>
 
@@ -749,56 +729,30 @@ let dpKhItems = []; // [{name, amount}]
 /* ================================================
    USER ACCOUNTS & LOGIN
    ================================================ */
-const USERS = [
-  {user:'duong',  pass:'duong123',  name:'Dzuong', role:'admin'},
-  {user:'trang',  pass:'trang123',  name:'Trang',  role:'mh'},
-  {user:'hue',    pass:'hue123',    name:'Huệ',    role:'mh'},
-  {user:'binh',   pass:'binh123',   name:'Bình',   role:'sale'},
-  {user:'thao',   pass:'thao123',   name:'Thảo',   role:'sale'},
-  {user:'thuy',   pass:'thuy123',   name:'Thuỷ',   role:'sale'},
-  {user:'tam',    pass:'tam123',    name:'Tâm',    role:'sale'},
-  {user:'ketoan', pass:'ketoan123', name:'Tuyền',  role:'kt'},
-];
+// User accounts — injected by ai.basso platform
+const USERS = [];
 const ROLE_LABELS = {admin:'Admin',mh:'Mua hàng',sale:'Sale/CSKH',kt:'Kế toán'};
 
 let currentUser = null;
 let currentRole = 'admin';
 
-function doLogin(){
-  const u = (el('login-user').value||'').trim().toLowerCase();
-  const p = (el('login-pass').value||'').trim();
-  const found = USERS.find(x=>x.user===u && x.pass===p);
-  if(!found){
-    el('login-error').style.display='block';
-    el('login-pass').value='';
-    return;
-  }
-  el('login-error').style.display='none';
-  currentUser = found;
-  currentRole = found.role;
-  el('user-name-disp').textContent = found.name;
-  el('user-role-disp').textContent = ROLE_LABELS[found.role]||found.role;
-  el('login-screen').style.display='none';
-  el('login-user').value='';
-  el('login-pass').value='';
-  applyRole();
-  loadSample();
-  const btnChot = el('btn-chot');
-  if(btnChot) btnChot.style.display = found.role === 'admin' ? '' : 'none';
-  updateNoti();
-  showNotiPopup();
-}
+function doLogin(){ /* handled by platform */ }
+function doLogout(){ /* handled by platform */ }
+
 
 /* ================================================
    NOTIFICATION SYSTEM
    ================================================ */
 function countPendingActions(){
   const actions = ROLE_TRACK_ACTIONS[currentRole] || [];
-  return D.ck.filter(c=>{
+
+  const count = D.ck.filter(c=>{
     if(actions.includes('supxn')    && c.status==='Chờ XN & Đã tham chiếu HT') return true;
     if(actions.includes('duyet')    && c.status==='Đã XN & Nhập file Sup/MH')  return true;
+    if(actions.includes('duyet')    && c.status==='Done & Nhập Thu Chi')          return false;
     return false;
   }).length;
+  return count;
 }
 
 function updateNoti(){
@@ -832,16 +786,7 @@ function goToTracking(){
   go('t3');
 }
 
-function doLogout(){
-  currentUser = null;
-  currentRole = 'admin';
-  closeNotiPopup();
-  const badge = el('noti-badge');
-  if(badge) badge.style.display = 'none';
-  el('login-screen').style.display='flex';
-  el('login-user').value='';
-  el('login-pass').value='';
-}
+function doLogout(){ /* handled by platform */ }
 
 /* ================================================
    ROLE PERMISSIONS
@@ -864,6 +809,8 @@ const ROLE_TRACK_ACTIONS = {
 };
 
 function applyRole() {
+  currentRole = document.getElementById('role-sel').value;
+  currentUser = {name: document.getElementById('role-sel').options[document.getElementById('role-sel').selectedIndex].text, role: currentRole};
   const allowed = ROLE_TABS[currentRole];
   const allTabs = document.querySelectorAll('.tab[data-tab]');
   let anyLocked = false;
@@ -880,14 +827,15 @@ function applyRole() {
     }
   });
   document.getElementById('locked-ind').style.display = anyLocked ? '' : 'none';
-
   const canAddSup = ['admin','mh'].includes(currentRole);
   const canAddKh  = ['admin','sale'].includes(currentRole);
   const canAddCk  = ['admin','sale'].includes(currentRole);
   el('btn-add-sup') && (el('btn-add-sup').disabled = !canAddSup);
   el('btn-add-kh')  && (el('btn-add-kh').disabled  = !canAddKh);
   el('btn-add-ck')  && (el('btn-add-ck').disabled  = !canAddCk);
-
+  const btnChot = el('btn-chot');
+  if(btnChot) btnChot.style.display = currentRole === 'admin' ? '' : 'none';
+  updateNoti(); showNotiPopup();
   rt1(); rt2(); rt4();
 }
 
@@ -927,7 +875,7 @@ function closeM(id){
 
 function sb(s){
   const m = {
-    'Chờ điều phối':'b-wait','Đã điều phối':'b-assigned','Done':'b-done',
+    'Chờ điều phối':'b-wait','Đã điều phối':'b-assigned','Done':'b-done','Done & Nhập Thu Chi':'b-done',
     'CK 1 phần':'b-part','CK dư':'b-over','Cancelled':'b-cancel',
     'Chờ khách CK':'b-wait','Khách đã CK':'b-ckd','Mới nhập':'b-new',
     'Chờ XN & Đã tham chiếu HT':'b-wait',
@@ -1080,7 +1028,7 @@ function rd0(){
     if(!c.date) return false;
     const d = new Date(c.date);
     return d.getMonth()===m && d.getFullYear()===y &&
-      (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done');
+      (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi');
   });
 
   // Determine type via linked sup
@@ -1092,10 +1040,6 @@ function rd0(){
     else { mhTotal+=c.amount; mhCount++; }
   });
 
-  el('d-sup-total').textContent = fmt(supTotal);
-  el('d-sup-count').textContent = supCount + ' giao dịch đã xác nhận';
-  el('d-mh-total').textContent  = fmt(mhTotal);
-  el('d-mh-count').textContent  = mhCount  + ' giao dịch đã xác nhận';
   el('d-all-total').textContent = fmt(supTotal + mhTotal);
   el('d-all-count').textContent = (supCount + mhCount) + ' giao dịch (Sup + MH)';
 
@@ -1157,7 +1101,7 @@ function rd0(){
    ================================================ */
 function calcSupStatus(sup){
   const confirmed = D.ck.filter(c=>c.idCK===sup.idCK && sup.idCK &&
-    (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done'));
+    (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi'));
   const total = confirmed.reduce((a,c)=>a+c.amount,0);
   if(!sup.idCK || total===0) return {total:0, status: sup.status||'Chờ điều phối'};
   if(total < sup.amount) return {total, status:'CK 1 phần'};
@@ -1596,8 +1540,14 @@ function rt4(){
       <td>${sb(c.status)}</td>
       <td style="white-space:nowrap">${acts}</td>
       <td style="white-space:nowrap;display:flex;gap:4px">
-        <button class="pill pill-edit" title="Sửa" onclick="openEditCK(${ckIdx})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-        <button class="pill pill-del" title="Xoá" onclick="delCK(${ckIdx})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+        ${(()=>{
+          const locked = !['Chờ XN & Đã tham chiếu HT'].includes(c.status);
+          const style = locked ? 'opacity:.3;pointer-events:none;cursor:not-allowed' : '';
+          return `
+            <button class="pill pill-edit" title="${locked?'Đã khoá':'Sửa'}" style="${style}" onclick="openEditCK(${ckIdx})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+            <button class="pill pill-del" title="${locked?'Đã khoá':'Xoá'}" style="${style}" onclick="delCK(${ckIdx})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+          `;
+        })()}
       </td>
     </tr>`;
   }).join('') : '<tr><td colspan="10" class="empty">Chưa có bill CK nào</td></tr>';
@@ -1634,11 +1584,11 @@ function thamch(i){
   rt4(); autosave(); toast('✅ Đã XN & Nhập file Sup/MH lên hệ thống');
 }
 function duyet(i){
-  D.ck[i].status = 'Done';
+  D.ck[i].status = 'Done & Nhập Thu Chi';
   const khEntry = D.kh.find(k=>k.name===D.ck[i].kh && k.idCK===D.ck[i].idCK);
   if(khEntry) khEntry.status = 'Done';
   rt4(); rd0(); rt1(); autosave(); updateNoti();
-  toast('✅ Done và nhập Thu Chi');
+  toast('✅ Done & Nhập Thu Chi');
 }
 
 function openEditCK(i){
@@ -2554,9 +2504,9 @@ function loadFromStorage(){
 // Patch all data-mutating functions to auto-save
 function autosave(){ saveToStorage(); }
 
-// Show login screen on startup
-el('login-screen').style.display = 'flex';
-// loadSample() will be called after login
+// Initialize app directly — auth handled by platform
+loadSample();
+applyRole();
 </script>
 </body>
 </html>
