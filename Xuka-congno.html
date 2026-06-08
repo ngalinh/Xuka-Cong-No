@@ -198,13 +198,17 @@ tr:hover td{background:var(--bg2)}
     </div>
   </div>
   <div class="hdr-r">
-    <div class="login-user-badge" id="user-badge">
-      <span id="user-name-disp">—</span>
-      <span class="role-tag" id="user-role-disp"></span>
+    <div class="role-pill">
+      <label>Vai trò:</label>
+      <select id="role-sel" onchange="applyRole()">
+        <option value="admin">Admin</option>
+        <option value="mh">Mua hàng</option>
+        <option value="sale">Sale/CSKH</option>
+        <option value="kt">Kế toán</option>
+      </select>
     </div>
     <div id="locked-ind" class="locked-badge" style="display:none">🔒 Một số tab bị khóa</div>
     <button class="btn" onclick="if(confirm('Xoá toàn bộ công nợ đã nhập?\n(Danh sách đối tác sẽ được giữ lại)')){localStorage.removeItem(LS_KEY);D.sup=[];D.kh=[];D.ck=[];D.ctr=1;rd0();rt1();rt2();rt4();toast('Đã xoá toàn bộ data giao dịch')}" style="font-size:12px;color:var(--txt3);border-color:var(--brd)">🗑 Reset data</button>
-    <button class="btn" onclick="doLogout()" style="font-size:12px">Đăng xuất</button>
     <button class="btn" id="btn-chot" onclick="if(confirm('Chốt phiên? Tất cả khoản chưa Done sẽ bị Cancelled.'))runChotPhien(false)" style="font-size:12px;display:none;background:var(--amb2);border-color:var(--amb);color:var(--amb3);font-weight:600">⏰ Chốt phiên</button>
   </div>
 </div>
@@ -340,19 +344,6 @@ tr:hover td{background:var(--bg2)}
 </div><!-- /body -->
 </div><!-- /layout -->
 </div><!-- /app -->
-
-<!-- ===== LOGIN SCREEN ===== -->
-<div class="login-screen" id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">⇄</div>
-    <div class="login-title">Quản lý dòng tiền CK</div>
-    <div class="login-sub">Đăng nhập để tiếp tục</div>
-    <div class="login-error" id="login-error">Sai tên đăng nhập hoặc mật khẩu</div>
-    <div class="fr"><label>Tên đăng nhập</label><input id="login-user" placeholder="username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <div class="fr"><label>Mật khẩu</label><input id="login-pass" type="password" placeholder="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <button class="btn btn-p" onclick="doLogin()" style="width:100%;margin-top:8px;justify-content:center">Đăng nhập</button>
-  </div>
-</div>
 
 <!-- ===== MODAL: NHẬP SUP/MH ===== -->
 <div class="modbg" id="msup">
@@ -753,51 +744,22 @@ const ROLE_LABELS = {admin:'Admin',mh:'Mua hàng',sale:'Sale/CSKH',kt:'Kế toá
 let currentUser = null;
 let currentRole = 'admin';
 
-function doLogin(){
-  const u = (el('login-user').value||'').trim().toLowerCase();
-  const p = (el('login-pass').value||'').trim();
-  const found = USERS.find(x=>x.user===u && x.pass===p);
-  if(!found){
-    el('login-error').style.display='block';
-    el('login-pass').value='';
-    return;
-  }
-  el('login-error').style.display='none';
-  currentUser = found;
-  currentRole = found.role;
-  el('user-name-disp').textContent = found.name;
-  el('user-role-disp').textContent = ROLE_LABELS[found.role]||found.role;
-  el('login-screen').style.display='none';
-  el('login-user').value='';
-  el('login-pass').value='';
-  applyRole();
-  // Only load data on first login — subsequent logins reuse existing D state
-  if(!D._loaded){
-    loadSample();
-    D._loaded = true;
-  } else {
-    refreshDataLists(); ensureKhIds(); recalcAllSupStatuses(); rd0();
-  }
-  const btnChot = el('btn-chot');
-  if(btnChot) btnChot.style.display = found.role === 'admin' ? '' : 'none';
-  // Always recalc noti after login — data is ready at this point
-  setTimeout(()=>{ updateNoti(); showNotiPopup(); }, 100);
-}
+function doLogin(){ /* handled by platform */ }
+function doLogout(){ /* handled by platform */ }
+
 
 /* ================================================
    NOTIFICATION SYSTEM
    ================================================ */
 function countPendingActions(){
   const actions = ROLE_TRACK_ACTIONS[currentRole] || [];
-  console.log('[NOTI] role:', currentRole, 'actions:', actions, 'D.ck length:', D.ck.length);
-  console.log('[NOTI] ck statuses:', D.ck.map(c=>c.status));
+
   const count = D.ck.filter(c=>{
     if(actions.includes('supxn')    && c.status==='Chờ XN & Đã tham chiếu HT') return true;
     if(actions.includes('duyet')    && c.status==='Đã XN & Nhập file Sup/MH')  return true;
     if(actions.includes('duyet')    && c.status==='Done & Nhập Thu Chi')          return false;
     return false;
   }).length;
-  console.log('[NOTI] pending count:', count);
   return count;
 }
 
@@ -864,6 +826,8 @@ const ROLE_TRACK_ACTIONS = {
 };
 
 function applyRole() {
+  currentRole = document.getElementById('role-sel').value;
+  currentUser = {name: document.getElementById('role-sel').options[document.getElementById('role-sel').selectedIndex].text, role: currentRole};
   const allowed = ROLE_TABS[currentRole];
   const allTabs = document.querySelectorAll('.tab[data-tab]');
   let anyLocked = false;
@@ -880,14 +844,15 @@ function applyRole() {
     }
   });
   document.getElementById('locked-ind').style.display = anyLocked ? '' : 'none';
-
   const canAddSup = ['admin','mh'].includes(currentRole);
   const canAddKh  = ['admin','sale'].includes(currentRole);
   const canAddCk  = ['admin','sale'].includes(currentRole);
   el('btn-add-sup') && (el('btn-add-sup').disabled = !canAddSup);
   el('btn-add-kh')  && (el('btn-add-kh').disabled  = !canAddKh);
   el('btn-add-ck')  && (el('btn-add-ck').disabled  = !canAddCk);
-
+  const btnChot = el('btn-chot');
+  if(btnChot) btnChot.style.display = currentRole === 'admin' ? '' : 'none';
+  updateNoti(); showNotiPopup();
   rt1(); rt2(); rt4();
 }
 
@@ -2556,9 +2521,9 @@ function loadFromStorage(){
 // Patch all data-mutating functions to auto-save
 function autosave(){ saveToStorage(); }
 
-// Show login screen on startup
-el('login-screen').style.display = 'flex';
-// loadSample() will be called after login
+// Initialize app directly — auth handled by platform
+loadSample();
+applyRole();
 </script>
 </body>
 </html>
