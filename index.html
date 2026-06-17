@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quản lý dòng tiền CK 3 bên</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --bg:#fff;--bg2:#f8f7f5;--bg3:#f1f0ec;--bg4:#eeecea;
@@ -96,6 +97,15 @@ tr:hover td{background:var(--bg2)}
 .b-ckd{background:#eaf3de;color:#27500a}
 .b-assigned{background:var(--grn2);color:var(--grn3)}
 
+/* SETTINGS */
+.cfg-section{margin-bottom:32px;padding-bottom:28px;border-bottom:1px solid var(--brd)}
+.cfg-section:last-child{border-bottom:none}
+.cfg-title{font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.cfg-desc{font-size:13px;color:var(--txt2);margin-bottom:14px;line-height:1.6}
+.upload-card{background:var(--bg2);border:1px solid var(--brd2);border-radius:var(--rl);padding:20px 24px;display:flex;flex-direction:column;align-items:flex-start;min-width:280px}
+.upload-icon{font-size:28px;margin-bottom:8px}
+.upload-label{font-size:14px;font-weight:600;color:var(--txt)}
+.upload-sub{font-size:12px;color:var(--txt2);margin-top:3px}
 /* ACTION PILL BUTTONS */
 .pill{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;padding:0;width:30px;height:30px;transition:opacity .15s}
 .pill:hover{opacity:.75}
@@ -219,6 +229,11 @@ tr:hover td{background:var(--bg2)}
     <div class="tab" data-tab="t3" onclick="go('t3')"><span class="tab-icon">📗</span><span class="tab-lbl">Tracking CK</span><span class="tab-lock"></span><span id="noti-badge" style="display:none;background:#E24B4A;color:#fff;border-radius:20px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:auto"></span></div>
     <div class="sidebar-divider"></div>
     <div class="tab" data-tab="t4" onclick="go('t4')"><span class="tab-icon">📌</span><span class="tab-lbl">Danh sách đối tác</span><span class="tab-lock"></span></div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">⚙️ Cài đặt</div>
+    <div class="tab" data-tab="cfg1" onclick="go('cfg1')"><span class="tab-icon" style="font-size:13px">👤</span><span class="tab-lbl">Tài khoản</span><span class="tab-lock"></span></div>
+    <div class="tab" data-tab="cfg2" onclick="go('cfg2')"><span class="tab-icon" style="font-size:13px">🔗</span><span class="tab-lbl">Mapping KH↔Sup</span><span class="tab-lock"></span></div>
+    <div class="tab" data-tab="cfg3" onclick="go('cfg3')"><span class="tab-icon" style="font-size:13px">📂</span><span class="tab-lbl">Upload dữ liệu</span><span class="tab-lock"></span></div>
   </div>
   <div style="padding:12px 10px;border-top:1px solid var(--brd);margin-top:auto">
     <button onclick="resetData()" style="width:100%;background:none;border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt3);cursor:pointer;text-align:left">🗑 Reset data</button>
@@ -335,6 +350,72 @@ tr:hover td{background:var(--bg2)}
   </tr></thead><tbody id="tb5b"></tbody></table></div>
 </div>
 
+
+<!-- ===== CÀI ĐẶT: TÀI KHOẢN ===== -->
+<div id="cfg1" class="sec">
+  <div class="cfg-section">
+    <div class="cfg-title">👤 Tài khoản đăng nhập</div>
+    <div class="cfg-desc">Quản lý tài khoản nhân viên. Tài khoản được tự động điền bởi platform ai.basso.</div>
+    <div class="toolbar" style="margin-bottom:10px">
+      <button class="btn btn-p" onclick="openAddUser()">+ Thêm tài khoản</button>
+    </div>
+    <div class="tw"><table><thead><tr>
+      <th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th>
+    </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ===== CÀI ĐẶT: MAPPING ===== -->
+<div id="cfg2" class="sec">
+  <div class="cfg-section">
+    <div class="cfg-title">🔗 Mapping KH ↔ Sup/MH mặc định</div>
+    <div class="cfg-desc">Các cặp KH—Sup/MH cố định. Khi nhập công nợ KH có trong danh sách này sẽ tự động điều phối.</div>
+    <div class="toolbar" style="margin-bottom:10px">
+      <button class="btn btn-p" onclick="toggleAddMappingForm()">+ Thêm cặp</button>
+    </div>
+    <div id="add-mapping-form" style="display:none;background:var(--bg2);border:1px solid var(--brd2);border-radius:var(--rl);padding:16px;margin-bottom:14px">
+      <div class="fg">
+        <div class="fr"><label>Tên KH</label>
+          <select id="map-kh-sel" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            <option value="">-- Chọn KH --</option>
+          </select>
+        </div>
+        <div class="fr"><label>Sup/MH mặc định</label>
+          <select id="map-sup-sel" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            <option value="">-- Chọn Sup/MH --</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-p" onclick="saveAddMapping()">💾 Lưu</button>
+        <button class="btn" onclick="toggleAddMappingForm()">Huỷ</button>
+      </div>
+    </div>
+    <div class="tw"><table><thead><tr>
+      <th>Tên KH</th><th>Sup/MH mặc định</th>
+    </tr></thead><tbody id="tb-cfg-mapping"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ===== CÀI ĐẶT: UPLOAD ===== -->
+<div id="cfg3" class="sec">
+  <div class="cfg-section">
+    <div class="cfg-title">📂 Upload dữ liệu ban đầu</div>
+    <div class="cfg-desc">Upload file Excel Danh sách đối tác để cập nhật toàn bộ danh sách Sup/MH và KH.</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
+      <div class="upload-card">
+        <div class="upload-icon">🏢</div>
+        <div class="upload-label">Danh sách Sup/MH + KH</div>
+        <div class="upload-sub">File Excel có sheet "Đặc điểm SupKhách"</div>
+        <label class="btn btn-p" style="cursor:pointer;margin-top:10px">
+          Chọn file
+          <input type="file" accept=".xlsx,.xls" style="display:none" onchange="uploadPartnerFile(this)">
+        </label>
+        <div id="upload-partner-status" style="font-size:12px;color:var(--grn);margin-top:6px"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 </div><!-- /body -->
 </div><!-- /layout -->
@@ -762,6 +843,7 @@ const KH_SUP_MAP = {
   "Thuỳ Đặng - 0975684877":          "Phạm Nam",
   "Vivian Nguyen - 0909057476":       "Hieu Le",
   "La My - 0766565899":               "Nguyễn Công Phước MH",
+  "La My – 0766565899":               "Nguyễn Công Phước MH",
   "Dâu Tây Nhỏ - 0943465688":        "Hoàng Lâm",
   "HAHS Nguyen Chi - 0932602185":     "Phạm Nam",
   "HAKH Chi Đỗ - 0972512043":        "Phạm Nam",
@@ -837,11 +919,16 @@ function goToTracking(){
 
 function doLogout(){ /* handled by platform */ }
 
+/* SVG Icons */
+const SVG_PENCIL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+const SVG_TRASH  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+const SVG_PIN    = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>';
+
 /* ================================================
    ROLE PERMISSIONS
    ================================================ */
 const ROLE_TABS = {
-  admin: ['t0','t1','t2','t3','t4'],
+  admin: ['t0','t1','t2','t3','t4','cfg1','cfg2','cfg3'],
   mh:   ['t0','t1','t3','t4'],
   sale: ['t0','t2','t3','t4'],
   kt:   ['t0','t3','t4']
@@ -954,7 +1041,10 @@ function go(id){
   const idx = tabs.indexOf(id);
   const allTabs = document.querySelectorAll('.tab[data-tab]');
   if(allTabs[idx]) allTabs[idx].classList.add('on');
-  const rend = {t0:rd0, t1:rt1, t2:rt2, t3:rt4, t4:rt5};
+  const rend = {t0:rd0, t1:rt1, t2:rt2, t3:rt4, t4:rt5,
+    cfg1:()=>{CFG_USERS=[...USERS];renderCfgUsers();},
+    cfg2:()=>{CFG_MAPPING=null;renderCfgMapping();},
+    cfg3:()=>{}};
   if(rend[id]) rend[id]();
 }
 
@@ -1036,6 +1126,25 @@ function onKhNameInput(){
     info.style.display = 'none';
     newFields.style.display = 'block';
   }
+}
+
+function getFixedSup(name){
+  if(!name) return null;
+  const norm = s => s.replace(/[–—]/g,'-').replace(/\s+/g,' ').trim().toLowerCase();
+  const n = norm(name);
+  // Try exact match first
+  for(const [k,v] of Object.entries(KH_SUP_MAP)){
+    if(norm(k)===n) return v;
+  }
+  // Try matching by name part only (before the dash+phone)
+  const namePart = n => n.split(/\s*[-–—]\s*\d/).shift().trim();
+  const nPart = namePart(n);
+  if(nPart){
+    for(const [k,v] of Object.entries(KH_SUP_MAP)){
+      if(namePart(norm(k))===nPart) return v;
+    }
+  }
+  return null;
 }
 
 function getKhChar(name){
@@ -1218,18 +1327,20 @@ function rt2(){
 
   el('tb2').innerHTML = items.length ? items.map(k=>{
     const sup = k.idCK ? D.sup.find(s=>s.idCK===k.idCK) : null;
-    const supName = sup ? stkCell(sup.stk) : '—';
+    const supName = sup ? stkCell(sup.stk) : (k.stk ? stkCell(k.stk) : '—');
 
     let dpBtn = '';
-    if(canDp){
+    const khLocked = ['Done','Cancelled'].includes(k.status);
+    if(canDp && !khLocked){
       if(k.status === 'Mới nhập'){
-        const fixedSupName = KH_SUP_MAP[k.name];
+        const fixedSupName = getFixedSup(k.name);
         if(fixedSupName){
-          dpBtn = `<span style="font-size:11px;background:#E1F5EE;color:#04342C;padding:3px 9px;border-radius:10px;font-weight:600;white-space:nowrap">🔒 Auto → ${fixedSupName}</span>`;
+          dpBtn = `<button class="pill pill-edit" onclick="showDpFromKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
         } else {
           dpBtn = `<button class="pill pill-attach" onclick="showDpFromKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg></button>`;
         }
       } else if(k.idCK) {
+        const fixedSupName = getFixedSup(k.name);
         dpBtn = `<button class="pill pill-edit" onclick="showDpFromKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
       }
     } else if(k.status === 'Mới nhập') {
@@ -1275,7 +1386,10 @@ function rt2(){
       <td class="num" style="color:var(--grn);font-weight:500">${k.cdAm?fmt(k.cdAm):'—'}</td>
       <td>${sb(k.status)}</td>
       ${billCell}
-      <td style="white-space:nowrap">${dpBtn}</td>
+      <td style="white-space:nowrap;display:flex;gap:4px;align-items:center">
+        ${dpBtn}
+        ${canDp && !['Done','Cancelled'].includes(k.status) ? `<button class="pill pill-del" title="Xoá" onclick="delKH('${k._id}')">${SVG_TRASH}</button>` : ''}
+      </td>
     </tr>
     <tr id="bill-row-${k._id}" style="display:none;background:var(--grn2)">
       <td colspan="11" style="padding:10px 14px">
@@ -1831,7 +1945,7 @@ function rt5(){
     el('tb5b').innerHTML = filteredKH.length
       ? filteredKH.map((k)=>{
           const i = D.khChars.indexOf(k);
-          const fixedSup = KH_SUP_MAP[k.name];
+          const fixedSup = getFixedSup(k.name);
           return `<tr>
             <td><span class="badge b-new">${k.ch||'—'}</span></td>
             <td>${k.name}</td>
@@ -1848,17 +1962,217 @@ function rt5(){
 
   refreshDataLists();
 }
+/* ================================================
+   CÀI ĐẶT — Settings functions
+   ================================================ */
+// In-memory user list (seeded from USERS const, editable)
+let CFG_USERS = [...USERS];
+
+// ── Tài khoản ─────────────────────────────────
+function renderCfgUsers(){
+  const tb = el('tb-cfg-users'); if(!tb) return;
+  tb.innerHTML = CFG_USERS.length
+    ? CFG_USERS.map((u,i)=>`<tr>
+        <td style="font-weight:600">${u.name}</td>
+        <td style="color:var(--txt2);font-size:13px">${u.user}${u.email?` / ${u.email}`:''}</td>
+        <td><span class="badge ${u.role==='admin'?'b-sup':u.role==='mh'?'b-mh':u.role==='kt'?'b-ckd':'b-new'}">${ROLE_LABELS[u.role]||u.role}</span></td>
+        <td><span class="badge ${u.active===false?'b-cancel':'b-done'}">${u.active===false?'Inactive':'Active'}</span></td>
+        <td style="white-space:nowrap">
+          <button class="pill pill-edit" onclick="editUser(${i})">${SVG_PENCIL}</button>
+          <button class="pill pill-del" onclick="delUser(${i})">${SVG_TRASH}</button>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="5" class="empty">Chưa có tài khoản nào</td></tr>';
+}
+
+function openAddUser(){
+  const name  = prompt('Tên hiển thị:'); if(!name) return;
+  const user  = prompt('Username / Email:'); if(!user) return;
+  const pass  = prompt('Mật khẩu:') || '';
+  const role  = prompt('Vai trò (admin/mh/sale/kt):') || 'sale';
+  CFG_USERS.push({name, user, pass, role, active:true});
+  USERS.length = 0; CFG_USERS.forEach(u=>USERS.push(u));
+  renderCfgUsers(); toast('✅ Đã thêm tài khoản');
+}
+
+function editUser(i){
+  const u = CFG_USERS[i]; if(!u) return;
+  const name = prompt('Tên hiển thị:', u.name); if(name===null) return;
+  const role = prompt('Vai trò (admin/mh/sale/kt):', u.role); if(role===null) return;
+  const active = prompt('Trạng thái (active/inactive):', u.active===false?'inactive':'active');
+  CFG_USERS[i] = {...u, name: name||u.name, role: role||u.role, active: active!=='inactive'};
+  USERS.length = 0; CFG_USERS.forEach(u=>USERS.push(u));
+  renderCfgUsers(); toast('✅ Đã cập nhật tài khoản');
+}
+
+function delUser(i){
+  if(!confirm(`Xoá tài khoản "${CFG_USERS[i].name}"?`)) return;
+  CFG_USERS.splice(i,1);
+  USERS.length = 0; CFG_USERS.forEach(u=>USERS.push(u));
+  renderCfgUsers(); toast('Đã xoá tài khoản');
+}
+
+// ── Mapping KH↔Sup ─────────────────────────────
+// Use a mutable copy stored in localStorage
+let CFG_MAPPING = null;
+
+function getMapping(){
+  if(!CFG_MAPPING){
+    try {
+      const raw = localStorage.getItem('xuka_mapping');
+      CFG_MAPPING = raw ? JSON.parse(raw) : {...KH_SUP_MAP};
+    } catch(e){ CFG_MAPPING = {...KH_SUP_MAP}; }
+  }
+  return CFG_MAPPING;
+}
+
+function saveMapping(){
+  try { localStorage.setItem('xuka_mapping', JSON.stringify(CFG_MAPPING)); } catch(e){}
+}
+
+function renderCfgMapping(){
+  const tb = el('tb-cfg-mapping'); if(!tb) return;
+  const m = getMapping();
+  const entries = Object.entries(m);
+  tb.innerHTML = entries.length
+    ? entries.map(([kh,sup])=>`<tr>
+        <td style="font-size:13px">${kh}</td>
+        <td style="text-align:center">
+          <select onchange="updateMapping('${kh.replace(/'/g,"\\'")}', this.value)" style="font-size:13px;padding:4px 8px;border-radius:6px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            ${D.partners.map(p=>`<option value="${p.name}" ${p.name===sup?'selected':''}>${p.name}</option>`).join('')}
+          </select>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="2" class="empty">Chưa có mapping nào</td></tr>';
+}
+
+function updateMapping(kh, newSup){
+  const m = getMapping();
+  m[kh] = newSup;
+  KH_SUP_MAP[kh] = newSup;
+  saveMapping();
+  toast(`✅ Đã cập nhật: ${kh} → ${newSup}`);
+}
+
+function toggleAddMappingForm(){
+  const form = el('add-mapping-form');
+  if(!form) return;
+  const visible = form.style.display !== 'none';
+  if(!visible){
+    // Populate KH dropdown from D.khChars
+    const khSel = el('map-kh-sel');
+    khSel.innerHTML = '<option value="">-- Chọn KH --</option>'
+      + D.khChars.map(k=>`<option value="${k.name}">${k.name}</option>`).join('');
+    // Populate Sup dropdown from D.partners
+    const supSel = el('map-sup-sel');
+    supSel.innerHTML = '<option value="">-- Chọn Sup/MH --</option>'
+      + D.partners.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+  }
+  form.style.display = visible ? 'none' : '';
+}
+
+function saveAddMapping(){
+  const kh  = el('map-kh-sel').value;
+  const sup = el('map-sup-sel').value;
+  if(!kh || !sup){ toast('Chọn đủ KH và Sup/MH', true); return; }
+  const m = getMapping();
+  m[kh] = sup;
+  KH_SUP_MAP[kh] = sup;
+  saveMapping();
+  el('add-mapping-form').style.display = 'none';
+  renderCfgMapping();
+  toast(`✅ Đã thêm: ${kh} → ${sup}`);
+}
+
+function openAddMapping(){ toggleAddMappingForm(); }
+
+function delMapping(kh){
+  const m = getMapping();
+  delete m[kh];
+  delete KH_SUP_MAP[kh];
+  saveMapping();
+  renderCfgMapping(); toast('Đã xoá mapping');
+}
+
+function uploadMappingFile(input){
+  toast('⚠ Upload mapping từ Excel chưa được hỗ trợ trực tiếp trong trình duyệt. Hãy thêm thủ công hoặc liên hệ admin.', true);
+  input.value = '';
+}
+
+// ── Upload file đối tác ─────────────────────────
+function uploadPartnerFile(input){
+  const file = input.files[0]; if(!file) return;
+  const status = el('upload-partner-status');
+  status.textContent = '⏳ Đang đọc file...';
+  status.style.color = 'var(--txt2)';
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      // Use SheetJS if available
+      if(typeof XLSX === 'undefined'){
+        status.textContent = '❌ Chưa hỗ trợ đọc Excel trong trình duyệt. Vui lòng nhờ dev import.';
+        status.style.color = 'var(--red3)';
+        return;
+      }
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets['Đặc điểm SupKhách'];
+      if(!ws){ status.textContent = '❌ Không tìm thấy sheet "Đặc điểm SupKhách"'; status.style.color='var(--red3)'; return; }
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+      const partners=[], khChars=[];
+      rows.slice(1).forEach(row=>{
+        const [t,name,tm,am,stk,,,,kc,kn,kt,ka] = row;
+        if(name) partners.push({type:String(t||'').includes('Mua')?'Mua hộ':'Sup', name:String(name).trim(), tm:String(tm||'').trim(), am:String(am||'').trim(), stk:String(stk||'').trim()});
+        if(kn)   khChars.push({ch:String(kc||'').trim(), name:String(kn).trim(), tm:String(kt||'').trim(), am:String(ka||'').trim()});
+      });
+      D.partners = partners;
+      D.khChars  = khChars;
+      autosave(); refreshDataLists(); rt5();
+      status.textContent = `✅ Đã import ${partners.length} Sup/MH và ${khChars.length} KH`;
+      status.style.color = 'var(--grn)';
+      toast(`✅ Upload thành công: ${partners.length} Sup/MH, ${khChars.length} KH`);
+    } catch(err){
+      status.textContent = '❌ Lỗi đọc file: ' + err.message;
+      status.style.color = 'var(--red3)';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+  input.value = '';
+}
+
+function rcfg(){
+  CFG_USERS = [...USERS];
+  // Load mapping from localStorage if available
+  try {
+    const raw = localStorage.getItem('xuka_mapping');
+    if(raw){ CFG_MAPPING = JSON.parse(raw); Object.assign(KH_SUP_MAP, CFG_MAPPING); }
+  } catch(e){}
+  renderCfgUsers();
+  renderCfgMapping();
+}
+
 function openEditPartner(i){
-  const p = D.partners[i]; if(!p) return;
   el('ep_idx').value=i; el('ep_type').value=p.type; el('ep_name').value=p.name;
   el('ep_stk').value=p.stk||''; el('ep_tm').value=p.tm; el('ep_am').value=p.am;
   openM('m-edit-partner');
 }
 function saveEditPartner(){
   const i=parseInt(el('ep_idx').value);
+  const oldName = D.partners[i]?.name;
   D.partners[i]={type:el('ep_type').value, name:el('ep_name').value.trim(),
     stk:el('ep_stk').value.trim(), tm:el('ep_tm').value, am:el('ep_am').value};
-  closeM('m-edit-partner'); rt5(); autosave(); toast('✅ Đã cập nhật đặc điểm Sup/MH');
+  const newName = D.partners[i].name;
+  const newStk  = D.partners[i].stk;
+  // Sync name+STK to all matching D.sup entries
+  D.sup.forEach(s=>{
+    if(s.name===oldName || s.name===newName){
+      s.name = newName;
+      s.stk  = newStk;
+      // Also sync STK to D.kh entries linked via this sup's idCK
+      D.kh.forEach(k=>{ if(k.idCK===s.idCK) k.stk = newStk; });
+    }
+  });
+  closeM('m-edit-partner'); rt5(); rt1(); rt2(); autosave(); toast('✅ Đã cập nhật đặc điểm Sup/MH');
 }
 function openEditKhChar(i){
   const k = D.khChars[i]; if(!k) return;
@@ -1911,7 +2225,25 @@ function saveSup(){
     toast(`✅ Đã lưu! ID CK: ${newIdCK}`);
   }
   closeM('msup');
-  D.pg1=0; autosave(); rd0(); rt1(); rt3();
+
+  // Auto-dispatch: tất cả KH có mapping cố định với Sup vừa nhập
+  // Kể cả KH đã có idCK cũ — luôn cập nhật sang idCK mới nhất
+  const newSup = D.sup[0];
+  let autoCount = 0;
+  D.kh.forEach(k=>{
+    if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
+    if(getFixedSup(k.name) === newSup.name){
+      k.idCK   = newSup.idCK;
+      k.stk    = newSup.stk;
+      k.cdAm   = k.amount;
+      k.status = 'Chờ khách CK';
+      autoCount++;
+    }
+  });
+  if(autoCount > 0) newSup.status = 'Đã điều phối';
+
+  D.pg1=0; autosave(); rd0(); rt1(); rt2(); rt4();
+  if(autoCount > 0) toast(`✅ Đã lưu & tự điều phối ${autoCount} KH vào ${newSup.name}`);
 }
 
 function saveKH(){
@@ -1919,14 +2251,12 @@ function saveKH(){
   const a = parseInt((el('i_ka').value||'').replace(/\D/g,''))||0;
   if(!n||!a){ toast('Nhập đủ tên KH và số tiền', true); return; }
 
-  // Check fixed mapping
-  const fixedSupName = KH_SUP_MAP[n];
-  // Try to find existing Sup entry first, fall back to partner info
+  // Auto-dispatch: nếu KH có mapping cố định → lấy STK từ D.partners
+  const fixedSupName = getFixedSup(n);
+  const fixedPartner = fixedSupName ? D.partners.find(p=>p.name===fixedSupName) : null;
+  // Cũng tìm khoản Sup đang Chờ điều phối để link idCK nếu có
   const fixedSup = fixedSupName
     ? D.sup.find(s=>s.name===fixedSupName && s.status==='Chờ điều phối')
-    : null;
-  const fixedPartner = fixedSupName
-    ? D.partners.find(p=>p.name===fixedSupName)
     : null;
 
   const newKH = {
@@ -1936,16 +2266,30 @@ function saveKH(){
     idCK:'', stk:'', cdAm:0
   };
 
-  if(fixedSup){
-    // Has matching Sup entry — gán thẳng
-    newKH.idCK   = fixedSup.idCK;
-    newKH.stk    = fixedSup.stk;
-    newKH.cdAm   = a;
-    newKH.status = 'Chờ khách CK';
-    fixedSup.status = 'Đã điều phối';
-  } else if(fixedPartner){
-    // No Sup entry yet — dùng STK từ Danh sách đối tác, gán thẳng
-    newKH.stk    = fixedPartner.stk || '';
+  if(fixedSupName){
+    const stk = fixedPartner ? fixedPartner.stk : (fixedSup ? fixedSup.stk : '');
+    let idCK = '';
+    if(fixedSup){
+      // Có khoản Sup đang Chờ điều phối → dùng idCK của Sup
+      idCK = fixedSup.idCK;
+      fixedSup.status = 'Đã điều phối';
+    } else {
+      // Tìm idCK đã dùng cho Sup này hôm nay (từ KH khác cùng mapping)
+      const today_date = el('i_kd').value || today();
+      const existingKH = D.kh.find(k=>
+        k.idCK && getFixedSup(k.name)===fixedSupName && k.date===today_date
+      );
+      if(existingKH){
+        idCK = existingKH.idCK; // reuse same idCK
+      } else {
+        // Tạo idCK mới cho phiên này
+        const d = today_date.replace(/-/g,'').slice(2);
+        const prefix = fixedPartner?.type === 'Mua hộ' ? 'NL' : 'TD';
+        idCK = prefix + d + String(D.ctr++).padStart(2,'0');
+      }
+    }
+    newKH.idCK   = idCK;
+    newKH.stk    = stk;
     newKH.cdAm   = a;
     newKH.status = 'Chờ khách CK';
   }
@@ -1970,10 +2314,8 @@ function saveKH(){
   closeM('mkh');
   ensureKhIds();
   D.pg2=0; autosave(); rd0(); rt2();
-  toast(fixedSup
-    ? `✅ Tự điều phối → ${fixedSupName} (${fixedSup.idCK})`
-    : fixedPartner
-    ? `✅ Đã lưu & chờ KH CK vào TK ${fixedSupName}`
+  toast(fixedSupName
+    ? `✅ Đã lưu & tự điều phối → ${fixedSupName}`
     : '✅ Đã lưu công nợ KH!');
 }
 
@@ -2170,7 +2512,7 @@ function selectKHs(khPool, supAmount){
 }
 
 function buildSuggestions(){
-  const unassignedKH = D.kh.filter(k => !k.idCK && k.status === 'Mới nhập' && !KH_SUP_MAP[k.name]).map(k=>({...k}));
+  const unassignedKH = D.kh.filter(k => !k.idCK && k.status === 'Mới nhập' && !getFixedSup(k.name)).map(k=>({...k}));
   // Include both "Chờ điều phối" and "CK 1 phần" (still has unpaid balance)
   const pendingSup   = D.sup.filter(s => s.status === 'Chờ điều phối' || s.status === 'CK 1 phần');
   if(!pendingSup.length) return [];
@@ -2494,6 +2836,13 @@ function saveEditStk(supId){
   toast('✅ Đã cập nhật công nợ Sup/MH');
 }
 
+function delKH(id){
+  if(!confirm('Xoá khoản công nợ KH này?')) return;
+  D.kh = D.kh.filter(k=>k._id!==id);
+  D.pg2=0; autosave(); rt2(); rd0();
+  toast('Đã xoá khoản công nợ KH');
+}
+
 function delSup(id){
   if(!confirm('Xoá khoản công nợ này?')) return;
   D.sup = D.sup.filter(s=>s.id!==id);
@@ -2599,7 +2948,7 @@ const LS_VER = '4'; // bump to force-reset all clients
 
 function saveToStorage(){
   try {
-    const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr };
+    const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
   } catch(e){ /* quota exceeded or private mode */ }
 }
@@ -2609,11 +2958,13 @@ function loadFromStorage(){
     const raw = localStorage.getItem(LS_KEY);
     if(!raw) return false;
     const p = JSON.parse(raw);
-    D.sup = p.sup || [];
-    D.kh  = p.kh  || [];
-    D.ck  = p.ck  || [];
-    D.ctr = p.ctr || 1;
-    // Enrich STK from partners list (already loaded into D.partners before this call)
+    D.sup      = p.sup      || [];
+    D.kh       = p.kh       || [];
+    D.ck       = p.ck       || [];
+    D.ctr      = p.ctr      || 1;
+    if(p.partners && p.partners.length)  D.partners = p.partners;
+    if(p.khChars && p.khChars.length)    D.khChars  = p.khChars;
+    // Enrich STK from partners
     D.sup.forEach(s => {
       if(!s.stk){
         const partner = D.partners.find(pt => pt.name === s.name);
@@ -2627,7 +2978,14 @@ function loadFromStorage(){
 // Patch all data-mutating functions to auto-save
 function autosave(){ saveToStorage(); }
 
-// Initialize app directly — auth handled by platform
+// Initialize app — auth handled by platform
+// Load any custom mapping overrides from localStorage
+(function(){
+  try {
+    const raw = localStorage.getItem('xuka_mapping');
+    if(raw){ const m = JSON.parse(raw); Object.assign(KH_SUP_MAP, m); }
+  } catch(e){}
+})();
 loadSample();
 applyRole();
 </script>
