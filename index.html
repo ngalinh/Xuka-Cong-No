@@ -1921,8 +1921,12 @@ function saveKH(){
 
   // Check fixed mapping
   const fixedSupName = KH_SUP_MAP[n];
+  // Try to find existing Sup entry first, fall back to partner info
   const fixedSup = fixedSupName
     ? D.sup.find(s=>s.name===fixedSupName && s.status==='Chờ điều phối')
+    : null;
+  const fixedPartner = fixedSupName
+    ? D.partners.find(p=>p.name===fixedSupName)
     : null;
 
   const newKH = {
@@ -1933,11 +1937,17 @@ function saveKH(){
   };
 
   if(fixedSup){
+    // Has matching Sup entry — gán thẳng
     newKH.idCK   = fixedSup.idCK;
     newKH.stk    = fixedSup.stk;
     newKH.cdAm   = a;
     newKH.status = 'Chờ khách CK';
     fixedSup.status = 'Đã điều phối';
+  } else if(fixedPartner){
+    // No Sup entry yet — dùng STK từ Danh sách đối tác, gán thẳng
+    newKH.stk    = fixedPartner.stk || '';
+    newKH.cdAm   = a;
+    newKH.status = 'Chờ khách CK';
   }
 
   D.kh.unshift(newKH);
@@ -1961,7 +1971,9 @@ function saveKH(){
   ensureKhIds();
   D.pg2=0; autosave(); rd0(); rt2();
   toast(fixedSup
-    ? `✅ Đã lưu & tự điều phối → ${fixedSupName} (${fixedSup.idCK})`
+    ? `✅ Tự điều phối → ${fixedSupName} (${fixedSup.idCK})`
+    : fixedPartner
+    ? `✅ Đã lưu & chờ KH CK vào TK ${fixedSupName}`
     : '✅ Đã lưu công nợ KH!');
 }
 
