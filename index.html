@@ -97,6 +97,15 @@ tr:hover td{background:var(--bg2)}
 .b-ckd{background:#eaf3de;color:#27500a}
 .b-assigned{background:var(--grn2);color:var(--grn3)}
 
+/* COLLAPSIBLE SIDEBAR MENU */
+.menu-main{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:14px;font-weight:500;color:var(--txt);cursor:pointer;user-select:none}
+.menu-main:hover{background:var(--bg2)}
+.menu-main.on{color:var(--grn);background:var(--bg2)}
+.menu-arrow{margin-left:auto;font-size:11px;color:var(--txt2);transition:transform .2s;line-height:1}
+.menu-arrow.open{transform:rotate(180deg)}
+.menu-sub{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.menu-sub.open{max-height:200px}
+.menu-sub .tab{padding-left:32px;font-size:13px}
 /* SETTINGS */
 .cfg-section{margin-bottom:32px;padding-bottom:28px;border-bottom:1px solid var(--brd)}
 .cfg-section:last-child{border-bottom:none}
@@ -200,6 +209,7 @@ tr:hover td{background:var(--bg2)}
     </div>
   </div>
   <div class="hdr-r">
+    <span id="user-name-disp" style="font-size:13px;font-weight:600;color:var(--txt2);padding:4px 10px;background:var(--bg2);border-radius:20px;display:none"></span>
     <div class="role-pill">
       <label>Vai trò:</label>
       <select id="role-sel" onchange="applyRole()">
@@ -220,20 +230,24 @@ tr:hover td{background:var(--bg2)}
 <!-- SIDEBAR -->
 <nav class="sidebar" id="tabs-bar">
   <div class="sidebar-section">
-    <div class="sidebar-label">Menu</div>
-    <div class="tab on" data-tab="t0" onclick="go('t0')"><span class="tab-icon">📊</span><span class="tab-lbl">Tổng quan</span><span class="tab-lock"></span></div>
-    <div class="sidebar-divider"></div>
-    <div class="tab" data-tab="t1" data-roles="admin,mh" onclick="go('t1')"><span class="tab-icon">💸</span><span class="tab-lbl">Công nợ Sup/MH</span><span class="tab-lock"></span></div>
-    <div class="tab" data-tab="t2" data-roles="admin,sale" onclick="go('t2')"><span class="tab-icon">💰</span><span class="tab-lbl">Công nợ KH</span><span class="tab-lock"></span></div>
-    <div class="sidebar-divider"></div>
-    <div class="tab" data-tab="t3" onclick="go('t3')"><span class="tab-icon">📗</span><span class="tab-lbl">Tracking CK</span><span class="tab-lock"></span><span id="noti-badge" style="display:none;background:#E24B4A;color:#fff;border-radius:20px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:auto"></span></div>
-    <div class="sidebar-divider"></div>
-    <div class="tab" data-tab="t4" onclick="go('t4')"><span class="tab-icon">📌</span><span class="tab-lbl">Danh sách đối tác</span><span class="tab-lock"></span></div>
-    <div class="sidebar-divider"></div>
-    <div class="sidebar-label">⚙️ Cài đặt</div>
-    <div class="tab" data-tab="cfg1" onclick="go('cfg1')"><span class="tab-icon" style="font-size:13px">👤</span><span class="tab-lbl">Tài khoản</span><span class="tab-lock"></span></div>
-    <div class="tab" data-tab="cfg2" onclick="go('cfg2')"><span class="tab-icon" style="font-size:13px">🔗</span><span class="tab-lbl">Mapping KH↔Sup</span><span class="tab-lock"></span></div>
-    <div class="tab" data-tab="cfg3" onclick="go('cfg3')"><span class="tab-icon" style="font-size:13px">📂</span><span class="tab-lbl">Upload dữ liệu</span><span class="tab-lock"></span></div>
+    <div class="menu-main tab on" data-tab="t0" onclick="go('t0')"><span class="tab-icon">📊</span><span class="tab-lbl">Tổng quan</span><span class="tab-lock"></span></div>
+    <div class="menu-main" id="grp-sup" onclick="toggleMenu('m-sup')"><span class="tab-icon">🏢</span><span class="tab-lbl">Sup / MH</span></div>
+    <div class="menu-sub" id="m-sup">
+      <div class="tab" data-tab="t4a" onclick="go('t4a')"><span class="tab-icon" style="font-size:13px">📋</span><span class="tab-lbl">Danh sách Sup/MH</span><span class="tab-lock"></span></div>
+      <div class="tab" data-tab="t1" onclick="go('t1')"><span class="tab-icon" style="font-size:13px">💸</span><span class="tab-lbl">Công nợ Sup/MH</span><span class="tab-lock"></span></div>
+    </div>
+    <div class="menu-main" id="grp-kh" onclick="toggleMenu('m-kh')"><span class="tab-icon">🙋</span><span class="tab-lbl">Khách Hàng</span></div>
+    <div class="menu-sub" id="m-kh">
+      <div class="tab" data-tab="t4b" onclick="go('t4b')"><span class="tab-icon" style="font-size:13px">📋</span><span class="tab-lbl">Danh sách KH</span><span class="tab-lock"></span></div>
+      <div class="tab" data-tab="t2" onclick="go('t2')"><span class="tab-icon" style="font-size:13px">💰</span><span class="tab-lbl">Công nợ KH</span><span class="tab-lock"></span></div>
+    </div>
+    <div class="menu-main tab" data-tab="t3" onclick="go('t3')"><span class="tab-icon">📗</span><span class="tab-lbl">Tracking CK</span><span class="tab-lock"></span><span id="noti-badge" style="display:none;background:#E24B4A;color:#fff;border-radius:20px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:auto"></span></div>
+    <div class="menu-main" id="grp-cfg" onclick="toggleMenu('m-cfg')"><span class="tab-icon">⚙️</span><span class="tab-lbl">Cài đặt</span></div>
+    <div class="menu-sub" id="m-cfg">
+      <div class="tab" data-tab="cfg1" onclick="go('cfg1')"><span class="tab-icon" style="font-size:13px">👤</span><span class="tab-lbl">Tài khoản</span><span class="tab-lock"></span></div>
+      <div class="tab" data-tab="cfg2" onclick="go('cfg2')"><span class="tab-icon" style="font-size:13px">🔗</span><span class="tab-lbl">Mapping KH - Sup</span><span class="tab-lock"></span></div>
+      <div class="tab" data-tab="cfg3" onclick="go('cfg3')"><span class="tab-icon" style="font-size:13px">📂</span><span class="tab-lbl">Data Upload</span><span class="tab-lock"></span></div>
+    </div>
   </div>
   <div style="padding:12px 10px;border-top:1px solid var(--brd);margin-top:auto">
     <button onclick="resetData()" style="width:100%;background:none;border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt3);cursor:pointer;text-align:left">🗑 Reset data</button>
@@ -318,18 +332,30 @@ tr:hover td{background:var(--bg2)}
   <div id="pg4" class="pgbar"></div>
 </div>
 
-<!-- ===== TAB 4: DANH SÁCH ĐỐI TÁC (was t5) ===== -->
-<div id="t4" class="sec">
+<!-- ===== TAB 4a: DANH SÁCH SUP/MH ===== -->
+<div id="t4a" class="sec">
   <div class="toolbar">
-    <button class="btn btn-p" onclick="openM('m-add-partner')">+ Thêm Sup/MH</button>
-    <button class="btn" onclick="openM('m-add-kh-char')">+ Thêm KH</button>
-    <select id="f5type" onchange="rt5()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-      <option value="">Tất cả đối tác</option>
+    <button class="btn btn-p" id="btn-add-partner" onclick="openM('m-add-partner')">+ Thêm Sup/MH</button>
+    <select id="f5type" onchange="rt5a()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+      <option value="">Tất cả loại</option>
       <option value="Sup">Sup</option>
       <option value="Mua hộ">Mua hộ</option>
-      <option value="KH">Khách Hàng</option>
     </select>
-    <select id="f5ch" onchange="rt5()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+      <span style="font-size:15px;color:var(--txt2)">🔎</span>
+      <input id="f5qa" placeholder="Tìm tên..." oninput="rt5a()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
+    </div>
+  </div>
+  <div class="tw"><table><thead><tr>
+    <th>Loại</th><th>Tên đối tác</th><th>Thời gian y/c bank</th><th>Số tiền y/c</th><th>STK mặc định</th><th></th>
+  </tr></thead><tbody id="tb5a"></tbody></table></div>
+</div>
+
+<!-- ===== TAB 4b: DANH SÁCH KH ===== -->
+<div id="t4b" class="sec">
+  <div class="toolbar">
+    <button class="btn btn-p" id="btn-add-kh-char" onclick="openM('m-add-kh-char')">+ Thêm KH</button>
+    <select id="f5ch" onchange="rt5b()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
       <option value="">Tất cả kênh</option>
       <option value="Linh Duong">Linh Duong</option>
       <option value="Linh Thảo">Linh Thảo</option>
@@ -337,14 +363,9 @@ tr:hover td{background:var(--bg2)}
     </select>
     <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
       <span style="font-size:15px;color:var(--txt2)">🔎</span>
-      <input id="f5q" placeholder="Tìm tên..." oninput="rt5()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
+      <input id="f5qb" placeholder="Tìm tên KH..." oninput="rt5b()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
     </div>
   </div>
-  <div id="t4-sup-title" style="font-size:13px;font-weight:700;margin-bottom:10px">Đặc điểm đối tác Sup/MH</div>
-  <div class="tw" style="margin-bottom:24px"><table><thead><tr>
-    <th>Loại</th><th>Tên đối tác</th><th>Thời gian y/c bank</th><th>Số tiền y/c</th><th>STK mặc định</th><th></th>
-  </tr></thead><tbody id="tb5a"></tbody></table></div>
-  <div id="t4-kh-title" style="font-size:13px;font-weight:700;margin-bottom:10px">Đặc điểm khách hàng</div>
   <div class="tw"><table><thead><tr>
     <th>Kênh</th><th>Tên KH + SĐT</th><th>Thời gian bank</th><th>Số tiền bank</th><th>Sup/MH mặc định</th><th></th>
   </tr></thead><tbody id="tb5b"></tbody></table></div>
@@ -357,9 +378,34 @@ tr:hover td{background:var(--bg2)}
     <div class="cfg-title">👤 Tài khoản đăng nhập</div>
     <div class="cfg-desc">Quản lý tài khoản nhân viên. Tài khoản được tự động điền bởi platform ai.basso.</div>
     <div class="toolbar" style="margin-bottom:10px">
-      <button class="btn btn-p" onclick="openAddUser()">+ Thêm tài khoản</button>
+      <button class="btn btn-p" onclick="toggleAddUserForm()">+ Thêm tài khoản</button>
     </div>
-    <div class="tw"><table><thead><tr>
+    <div id="add-user-form" style="display:none;background:var(--bg2);border:1px solid var(--brd2);border-radius:var(--rl);padding:16px;margin-bottom:14px">
+      <div class="fg">
+        <div class="fr"><label>Tên hiển thị</label><input id="nu-name" placeholder="VD: Nguyễn Văn A"/></div>
+        <div class="fr"><label>Username / Email</label><input id="nu-user" placeholder="VD: nguyenvana@gmail.com"/></div>
+        <div class="fr"><label>Mật khẩu</label><input id="nu-pass" type="password" placeholder="Mật khẩu"/></div>
+        <div class="fr"><label>Vai trò</label>
+          <select id="nu-role" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            <option value="sale">Sale/CSKH</option>
+            <option value="mh">Mua hàng</option>
+            <option value="kt">Kế toán</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="fr"><label>Trạng thái</label>
+          <select id="nu-active" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            <option value="1">Active</option>
+            <option value="0">Inactive</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-p" onclick="saveAddUser()">💾 Lưu</button>
+        <button class="btn" onclick="toggleAddUserForm()">Huỷ</button>
+      </div>
+    </div>
+    <div class="tw"><table style="text-align:center"><thead><tr>
       <th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th>
     </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
   </div>
@@ -391,9 +437,17 @@ tr:hover td{background:var(--bg2)}
         <button class="btn" onclick="toggleAddMappingForm()">Huỷ</button>
       </div>
     </div>
-    <div class="tw"><table><thead><tr>
-      <th>Tên KH</th><th>Sup/MH mặc định</th>
-    </tr></thead><tbody id="tb-cfg-mapping"></tbody></table></div>
+    <div class="tw">
+      <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="map-filter-sup" onchange="renderCfgMapping()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+          <option value="">Tất cả Sup/MH</option>
+        </select>
+        <input id="map-filter-q" placeholder="🔍 Tìm tên KH..." oninput="renderCfgMapping()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:200px">
+      </div>
+      <table><thead><tr>
+        <th>Tên KH</th><th>Đặc điểm</th><th>Sup/MH mặc định</th><th style="width:40px"></th>
+      </tr></thead><tbody id="tb-cfg-mapping"></tbody></table>
+    </div>
   </div>
 </div>
 
@@ -811,8 +865,82 @@ let D = {
 let dpSupId = null;
 let dpKhItems = []; // [{name, amount}]
 /* ================================================
-   USER ACCOUNTS & LOGIN
+   PHÂN QUYỀN THEO EMAIL
    ================================================ */
+const EMAIL_ROLE_MAP = {
+  'dzuong.bol@gmail.com':       {name:'Dzuong',     role:'admin'},
+  'thuylinhbui0209@gmail.com':  {name:'Thùy Linh',  role:'admin'},
+  'ngalinh@gmail.com':          {name:'Nga Linh',   role:'admin'},
+  'basso.sale@gmail.com':       {name:'Vinh',       role:'admin'},
+  't.thuytrang164@gmail.com':   {name:'Trang',      role:'admin'},
+  'tram@gmail.com':             {name:'Trâm',       role:'admin'},
+  'allsale.vn@gmail.com':       {name:'Huệ',        role:'mh'},
+  'linhduong@basso.vn':         {name:'Linh Dương', role:'sale'},
+  'linhthao@basso.vn':          {name:'Linh Thảo',  role:'sale'},
+  'checkout@basso.vn':          {name:'Kênh CO',    role:'sale'},
+  'asale.vn@gmail.com':         {name:'Thuỳ',       role:'sale'},
+  'shipus@basso.vn':            {name:'ShipUS',     role:'sale'},
+  'ketoan.basso@gmail.com':     {name:'Tuyền',      role:'kt'},
+};
+
+const DEFAULT_USERS = [
+  {name:'Dzuong',     user:'dzuong.bol@gmail.com',      role:'admin', active:true},
+  {name:'Thùy Linh',  user:'thuylinhbui0209@gmail.com', role:'admin', active:true},
+  {name:'Nga Linh',   user:'ngalinh@gmail.com',         role:'admin', active:true},
+  {name:'Vinh',       user:'basso.sale@gmail.com',      role:'admin', active:true},
+  {name:'Trang',      user:'t.thuytrang164@gmail.com',  role:'admin', active:true},
+  {name:'Trâm',       user:'tram@gmail.com',            role:'admin', active:true},
+  {name:'Huệ',        user:'allsale.vn@gmail.com',      role:'mh',    active:true},
+  {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true},
+  {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true},
+  {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true},
+  {name:'Thuỳ',       user:'asale.vn@gmail.com',        role:'sale',  active:true},
+  {name:'ShipUS',     user:'shipus@basso.vn',           role:'sale',  active:true},
+  {name:'Tuyền',      user:'ketoan.basso@gmail.com',    role:'kt',    active:true},
+];
+
+// Load users from localStorage or use defaults
+function loadUsers(){
+  try {
+    const raw = localStorage.getItem('xuka_users');
+    if(raw){ const saved = JSON.parse(raw); if(saved.length) return saved; }
+  } catch(e){}
+  return [...DEFAULT_USERS];
+}
+
+function saveUsers(){
+  try { localStorage.setItem('xuka_users', JSON.stringify(CFG_USERS)); } catch(e){}
+}
+
+// Gọi hàm này khi platform inject email vào app
+// VD: autoLoginByEmail(window.AI_BASSO_USER?.email)
+function autoLoginByEmail(email){
+  if(!email) return false;
+  const found = EMAIL_ROLE_MAP[email.toLowerCase().trim()];
+  if(!found) return false;
+  currentUser = found;
+  currentRole = found.role;
+  const roleSel = el('role-sel');
+  if(roleSel){ roleSel.value = found.role; roleSel.closest('.role-pill').style.display='none'; }
+  const nameDisp = el('user-name-disp');
+  if(nameDisp){ nameDisp.textContent = `👤 ${found.name}`; nameDisp.style.display=''; }
+  applyRole();
+  return true;
+}
+
+// Thử auto-login từ các nguồn platform phổ biến
+function tryAutoLogin(){
+  const sources = [
+    window.AI_BASSO_USER?.email,
+    window.BASSO_USER?.email,
+    window.currentUser?.email,
+    new URLSearchParams(location.search).get('email'),
+  ];
+  for(const email of sources){
+    if(email && autoLoginByEmail(email)) return true;
+  }
+  return false;
+}
 // User accounts — injected by ai.basso platform
 const USERS = [];
 const ROLE_LABELS = {admin:'Admin',mh:'Mua hàng',sale:'Sale/CSKH',kt:'Kế toán'};
@@ -928,10 +1056,10 @@ const SVG_PIN    = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
    ROLE PERMISSIONS
    ================================================ */
 const ROLE_TABS = {
-  admin: ['t0','t1','t2','t3','t4','cfg1','cfg2','cfg3'],
-  mh:   ['t0','t1','t3','t4'],
-  sale: ['t0','t2','t3','t4'],
-  kt:   ['t0','t3','t4']
+  admin: ['t0','t1','t2','t3','t4a','t4b','cfg1','cfg2','cfg3'],
+  mh:   ['t0','t1','t3','t4a','t4b'],
+  sale: ['t0','t2','t3','t4a','t4b'],
+  kt:   ['t0','t3','t4a','t4b']
 };
 // Tracking: which actions each role can do (column Hành động)
 // sale: nhập bill CK
@@ -947,32 +1075,31 @@ const ROLE_TRACK_ACTIONS = {
 function applyRole() {
   currentRole = document.getElementById('role-sel').value;
   currentUser = {name: document.getElementById('role-sel').options[document.getElementById('role-sel').selectedIndex].text, role: currentRole};
-  const allowed = ROLE_TABS[currentRole];
-  const allTabs = document.querySelectorAll('.tab[data-tab]');
-  let anyLocked = false;
-  allTabs.forEach(t => {
-    const tid = t.dataset.tab;
-    const lockEl = t.querySelector('.tab-lock');
-    if (!allowed.includes(tid)) {
-      t.classList.add('tab-locked');
-      if(lockEl) lockEl.textContent = '🔒';
-      anyLocked = true;
-    } else {
-      t.classList.remove('tab-locked');
-      if(lockEl) lockEl.textContent = '';
-    }
-  });
-  document.getElementById('locked-ind').style.display = anyLocked ? '' : 'none';
-  const canAddSup = ['admin','mh'].includes(currentRole);
-  const canAddKh  = ['admin','sale'].includes(currentRole);
-  const canAddCk  = ['admin','sale'].includes(currentRole);
+
+  // Show/hide menu groups based on role
+  const showSup = ['admin','mh'].includes(currentRole);
+  const showKH  = ['admin','sale'].includes(currentRole);
+  const showCfg = currentRole === 'admin';
+
+  const hide = (id) => { const e=el(id); if(e) e.style.display='none'; };
+  const show = (id) => { const e=el(id); if(e) e.style.display=''; };
+
+  showSup ? showGrp('grp-sup','m-sup') : hideGrp('grp-sup','m-sup');
+  showKH  ? showGrp('grp-kh', 'm-kh')  : hideGrp('grp-kh', 'm-kh');
+  showCfg ? showGrp('grp-cfg','m-cfg') : hideGrp('grp-cfg','m-cfg');
+
+  // Show/hide locked indicator (only for sub-tabs within visible groups)
+  document.getElementById('locked-ind').style.display = 'none';
+
+  const canAddSup = showSup;
+  const canAddKh  = showKH;
   el('btn-add-sup') && (el('btn-add-sup').disabled = !canAddSup);
   el('btn-add-kh')  && (el('btn-add-kh').disabled  = !canAddKh);
-  el('btn-add-ck')  && (el('btn-add-ck').disabled  = !canAddCk);
+  el('btn-add-ck')  && (el('btn-add-ck').disabled  = !showKH);
   const btnChot = el('btn-chot');
   if(btnChot) btnChot.style.display = currentRole === 'admin' ? '' : 'none';
   updateNoti(); showNotiPopup();
-  rt1(); rt2(); rt4();
+  rt1(); rt2(); rt4(); rt5a(); rt5b();
 }
 
 /* ================================================
@@ -1031,19 +1158,40 @@ function copyText(t){
 /* ================================================
    NAVIGATION
    ================================================ */
+function toggleMenu(id){
+  const sub = el(id);
+  if(!sub) return;
+  sub.classList.toggle('open');
+}
+
+// Hide menu group (grp + sub)
+function hideGrp(grpId, subId){
+  const g=el(grpId), s=el(subId);
+  if(g) g.style.display='none';
+  if(s){ s.style.display='none'; s.classList.remove('open'); }
+}
+function showGrp(grpId, subId){
+  const g=el(grpId), s=el(subId);
+  if(g) g.style.display='';
+  if(s) s.style.display='';
+}
+
 function go(id){
   const allowed = ROLE_TABS[currentRole];
   if(!allowed.includes(id)){ toast('🔒 Bạn không có quyền truy cập tab này', true); return; }
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   el(id).classList.add('on');
-  const tabs=['t0','t1','t2','t3','t4'];
-  const idx = tabs.indexOf(id);
-  const allTabs = document.querySelectorAll('.tab[data-tab]');
-  if(allTabs[idx]) allTabs[idx].classList.add('on');
-  const rend = {t0:rd0, t1:rt1, t2:rt2, t3:rt4, t4:rt5,
-    cfg1:()=>{CFG_USERS=[...USERS];renderCfgUsers();},
-    cfg2:()=>{CFG_MAPPING=null;renderCfgMapping();},
+  document.querySelectorAll(`.tab[data-tab="${id}"]`).forEach(t=>t.classList.add('on'));
+  // Auto-open parent menu group
+  const parentMap = {t4a:'m-sup',t1:'m-sup',t4b:'m-kh',t2:'m-kh',cfg1:'m-cfg',cfg2:'m-cfg',cfg3:'m-cfg'};
+  if(parentMap[id]){
+    const sub = el(parentMap[id]);
+    if(sub && !sub.classList.contains('open')) sub.classList.add('open');
+  }
+  const rend = {t0:rd0, t1:rt1, t2:rt2, t3:rt4, t4a:rt5a, t4b:rt5b,
+    cfg1:()=>{CFG_USERS=loadUsers(); USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u)); renderCfgUsers();},
+    cfg2:()=>{CFG_MAPPING=null; const s=el('map-filter-sup'); if(s){while(s.options.length>1)s.remove(1);} renderCfgMapping();},
     cfg3:()=>{}};
   if(rend[id]) rend[id]();
 }
@@ -1892,81 +2040,66 @@ setInterval(checkAutoChot, 60000);
 /* ================================================
    TAB 5: ĐẶC ĐIỂM
    ================================================ */
-function rt5(){
-  const q    = (el('f5q')?.value||'').toLowerCase();
+function rt5a(){
+  const q    = (el('f5qa')?.value||'').toLowerCase();
   const type = el('f5type')?.value || '';
-  const ch   = el('f5ch')?.value   || '';
+  const canEdit = ['admin','mh'].includes(currentRole);
+  if(el('btn-add-partner')) el('btn-add-partner').style.display = canEdit ? '' : 'none';
 
-  // Section visibility — always show both by default
-  const showSup = !type || type === 'Sup' || type === 'Mua hộ';
-  const showKH  = !type || type === 'KH';
-  const supSection = el('tb5a')?.closest('.tw');
-  const supTitle   = el('t4-sup-title');
-  const khSection  = el('tb5b')?.closest('.tw');
-  const khTitle    = el('t4-kh-title');
-  if(supSection) supSection.style.display = showSup ? '' : 'none';
-  if(supTitle)   supTitle.style.display   = showSup ? '' : 'none';
-  if(khSection)  { khSection.style.display = showKH ? '' : 'none'; }
-  if(khTitle)    { khTitle.style.display   = showKH ? '' : 'none'; }
-
-  // Filter Sup/MH
-  let filteredP = D.partners.filter(p=>
-    (type === '' || type === 'KH' ? type === '' : p.type === type) &&
-    (!q || p.name.toLowerCase().includes(q))
+  const filteredP = D.partners.filter(p=>
+    (!type || p.type === type) &&
+    (!q    || p.name.toLowerCase().includes(q))
   );
-
   el('tb5a').innerHTML = filteredP.length
     ? filteredP.map((p)=>{
         const i = D.partners.indexOf(p);
         return `<tr>
           <td><span class="badge ${p.type==='Sup'?'b-sup':'b-mh'}">${p.type}</span></td>
           <td style="font-weight:600">${p.name}</td>
-          <td>${p.tm}</td>
-          <td>${p.am}</td>
+          <td>${p.tm}</td><td>${p.am}</td>
           <td style="font-size:12px;max-width:200px;word-break:break-word">${p.stk||'—'}</td>
-          <td style="white-space:nowrap">
-            <button class="pill pill-edit" onclick="openEditPartner(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-            <button class="pill pill-del" onclick="delPartner(${i})"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
-          </td>
-        </tr>`;
-      }).join('')
+          <td style="white-space:nowrap">${canEdit?`
+            <button class="pill pill-edit" onclick="openEditPartner(${i})">${SVG_PENCIL}</button>
+            <button class="pill pill-del" onclick="delPartner(${i})">${SVG_TRASH}</button>`:''}</td>
+        </tr>`;}).join('')
     : '<tr><td colspan="6" class="empty">Chưa có đối tác nào</td></tr>';
-
-  // Filter KH — show when type is '' (all) or 'KH'
-  let filteredKH = [];
-  if(type === '' || type === 'KH'){
-    filteredKH = D.khChars.filter(k=>
-      (!ch || k.ch === ch) &&
-      (!q  || k.name.toLowerCase().includes(q))
-    );
-  }
-
-  if(el('tb5b')){
-    el('tb5b').innerHTML = filteredKH.length
-      ? filteredKH.map((k)=>{
-          const i = D.khChars.indexOf(k);
-          const fixedSup = getFixedSup(k.name);
-          return `<tr>
-            <td><span class="badge b-new">${k.ch||'—'}</span></td>
-            <td>${k.name}</td>
-            <td>${k.tm}</td>
-            <td>${k.am}</td>
-            <td>${fixedSup ? `<span style="font-size:12px;background:#E1F5EE;color:#04342C;padding:2px 8px;border-radius:8px;font-weight:500">${fixedSup}</span>` : '<span style="font-size:12px;color:var(--txt3)">—</span>'}</td>
-            <td style="white-space:nowrap">
-              <button class="pill pill-edit" onclick="openEditKhChar(${i})">${SVG_PENCIL}</button>
-              <button class="pill pill-del" onclick="delKhChar(${i})">${SVG_TRASH}</button>
-            </td>
-          </tr>`;}).join('')
-      : `<tr><td colspan="6" class="empty">Chưa có KH nào</td></tr>`;
-  }
-
   refreshDataLists();
 }
+
+function rt5b(){
+  const q  = (el('f5qb')?.value||'').toLowerCase();
+  const ch = el('f5ch')?.value || '';
+  const canEdit = ['admin','sale'].includes(currentRole);
+  if(el('btn-add-kh-char')) el('btn-add-kh-char').style.display = canEdit ? '' : 'none';
+
+  const filteredKH = D.khChars.filter(k=>
+    (!ch || k.ch === ch) &&
+    (!q  || k.name.toLowerCase().includes(q))
+  );
+  el('tb5b').innerHTML = filteredKH.length
+    ? filteredKH.map((k)=>{
+        const i = D.khChars.indexOf(k);
+        const fixedSup = getFixedSup(k.name);
+        return `<tr>
+          <td><span class="badge b-new">${k.ch||'—'}</span></td>
+          <td>${k.name}</td><td>${k.tm}</td><td>${k.am}</td>
+          <td>${fixedSup?`<span style="font-size:12px;background:#E1F5EE;color:#04342C;padding:2px 8px;border-radius:8px;font-weight:500">${fixedSup}</span>`:'<span style="font-size:12px;color:var(--txt3)">—</span>'}</td>
+          <td style="white-space:nowrap">${canEdit?`
+            <button class="pill pill-edit" onclick="openEditKhChar(${i})">${SVG_PENCIL}</button>
+            <button class="pill pill-del" onclick="delKhChar(${i})">${SVG_TRASH}</button>`:''}</td>
+        </tr>`;}).join('')
+    : '<tr><td colspan="6" class="empty">Chưa có KH nào</td></tr>';
+  refreshDataLists();
+}
+
+
 /* ================================================
    CÀI ĐẶT — Settings functions
    ================================================ */
-// In-memory user list (seeded from USERS const, editable)
-let CFG_USERS = [...USERS];
+// In-memory user list — loaded from localStorage or defaults
+let CFG_USERS = loadUsers();
+// Sync USERS array
+USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u));
 
 // ── Tài khoản ─────────────────────────────────
 function renderCfgUsers(){
@@ -1985,42 +2118,84 @@ function renderCfgUsers(){
     : '<tr><td colspan="5" class="empty">Chưa có tài khoản nào</td></tr>';
 }
 
-function openAddUser(){
-  const name  = prompt('Tên hiển thị:'); if(!name) return;
-  const user  = prompt('Username / Email:'); if(!user) return;
-  const pass  = prompt('Mật khẩu:') || '';
-  const role  = prompt('Vai trò (admin/mh/sale/kt):') || 'sale';
-  CFG_USERS.push({name, user, pass, role, active:true});
-  USERS.length = 0; CFG_USERS.forEach(u=>USERS.push(u));
-  renderCfgUsers(); toast('✅ Đã thêm tài khoản');
+function toggleAddUserForm(){
+  const f = el('add-user-form');
+  if(!f) return;
+  const showing = f.style.display !== 'none';
+  f.style.display = showing ? 'none' : '';
+  if(!showing){
+    el('nu-name').value=''; el('nu-user').value='';
+    el('nu-pass').value=''; el('nu-role').value='sale';
+    el('nu-active').value='1';
+    el('nu-name').focus();
+  }
 }
+
+function saveAddUser(){
+  const name = el('nu-name').value.trim();
+  const user = el('nu-user').value.trim();
+  const pass = el('nu-pass').value.trim();
+  const role = el('nu-role').value;
+  if(!name || !user){ toast('Nhập đủ Tên và Username/Email', true); return; }
+  CFG_USERS.push({name, user, pass, role, active:true});
+  USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u));
+  el('add-user-form').style.display='none';
+  renderCfgUsers();
+  toast('✅ Đã thêm tài khoản');
+}
+
+function openAddUser(){ toggleAddUserForm(); }
 
 function editUser(i){
   const u = CFG_USERS[i]; if(!u) return;
-  const name = prompt('Tên hiển thị:', u.name); if(name===null) return;
-  const role = prompt('Vai trò (admin/mh/sale/kt):', u.role); if(role===null) return;
-  const active = prompt('Trạng thái (active/inactive):', u.active===false?'inactive':'active');
-  CFG_USERS[i] = {...u, name: name||u.name, role: role||u.role, active: active!=='inactive'};
-  USERS.length = 0; CFG_USERS.forEach(u=>USERS.push(u));
-  renderCfgUsers(); toast('✅ Đã cập nhật tài khoản');
+  el('nu-name').value   = u.name;
+  el('nu-user').value   = u.user;
+  el('nu-pass').value   = u.pass||'';
+  el('nu-role').value   = u.role||'sale';
+  el('nu-active').value = u.active===false ? '0' : '1';
+  el('add-user-form').style.display = '';
+  // Change save button to update mode
+  el('add-user-form').dataset.editIdx = i;
+  el('nu-name').focus();
 }
 
-function delUser(i){
-  if(!confirm(`Xoá tài khoản "${CFG_USERS[i].name}"?`)) return;
-  CFG_USERS.splice(i,1);
-  USERS.length = 0; CFG_USERS.forEach(u=>USERS.push(u));
-  renderCfgUsers(); toast('Đã xoá tài khoản');
+function saveAddUser(){
+  const name = el('nu-name').value.trim();
+  const user = el('nu-user').value.trim();
+  const pass = el('nu-pass').value.trim();
+  const role = el('nu-role').value;
+  const active = el('nu-active').value === '1';
+  if(!name || !user){ toast('Nhập đủ Tên và Username/Email', true); return; }
+  const editIdx = el('add-user-form').dataset.editIdx;
+  if(editIdx !== undefined && editIdx !== ''){
+    CFG_USERS[parseInt(editIdx)] = {name, user, pass, role, active};
+    delete el('add-user-form').dataset.editIdx;
+  } else {
+    CFG_USERS.push({name, user, pass, role, active});
+  }
+  USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u));
+  saveUsers();
+  el('add-user-form').style.display='none';
+  renderCfgUsers();
+  toast('✅ Đã lưu tài khoản');
 }
-
-// ── Mapping KH↔Sup ─────────────────────────────
 // Use a mutable copy stored in localStorage
 let CFG_MAPPING = null;
+
+function delUser(i){
+  CFG_USERS.splice(i,1);
+  USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u));
+  saveUsers();
+  renderCfgUsers(); toast('Đã xoá tài khoản');
+}
 
 function getMapping(){
   if(!CFG_MAPPING){
     try {
       const raw = localStorage.getItem('xuka_mapping');
-      CFG_MAPPING = raw ? JSON.parse(raw) : {...KH_SUP_MAP};
+      // Merge: start from hardcoded KH_SUP_MAP, then apply any saved overrides
+      CFG_MAPPING = {...KH_SUP_MAP};
+      if(raw){ const saved = JSON.parse(raw); Object.assign(CFG_MAPPING, saved); }
     } catch(e){ CFG_MAPPING = {...KH_SUP_MAP}; }
   }
   return CFG_MAPPING;
@@ -2032,26 +2207,90 @@ function saveMapping(){
 
 function renderCfgMapping(){
   const tb = el('tb-cfg-mapping'); if(!tb) return;
-  const m = getMapping();
-  const entries = Object.entries(m);
-  tb.innerHTML = entries.length
-    ? entries.map(([kh,sup])=>`<tr>
-        <td style="font-size:13px">${kh}</td>
-        <td style="text-align:center">
-          <select onchange="updateMapping('${kh.replace(/'/g,"\\'")}', this.value)" style="font-size:13px;padding:4px 8px;border-radius:6px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-            ${D.partners.map(p=>`<option value="${p.name}" ${p.name===sup?'selected':''}>${p.name}</option>`).join('')}
-          </select>
-        </td>
-      </tr>`).join('')
-    : '<tr><td colspan="2" class="empty">Chưa có mapping nào</td></tr>';
+  const m  = getMapping();
+
+  // Auto-suggest: KH with tm=3-5 ngày OR am not "Đúng công nợ"
+  const autoKH = D.khChars.filter(k=>
+    !m[k.name] &&
+    (k.tm === '3-5 ngày' || k.tm === 'Giục nhiều lần')
+  );
+
+  // Build combined list: existing mappings + auto-suggest (pending)
+  const allEntries = [
+    ...Object.entries(m).map(([kh,sup])=>({kh, sup, pending:false})),
+    ...autoKH.map(k=>({kh:k.name, sup:'', pending:true,
+      char: D.khChars.find(c=>c.name===k.name)}))
+  ];
+
+  // Filter
+  const filterSup = el('map-filter-sup')?.value || '';
+  const filterQ   = (el('map-filter-q')?.value||'').toLowerCase();
+  const filtered  = allEntries.filter(e=>
+    (!filterSup || e.sup===filterSup) &&
+    (!filterQ   || e.kh.toLowerCase().includes(filterQ))
+  );
+
+  // Populate sup filter dropdown
+  const supSel = el('map-filter-sup');
+  if(supSel && supSel.options.length <= 1){
+    const sups = [...new Set(Object.values(m))].sort();
+    sups.forEach(s=>{
+      const o=document.createElement('option'); o.value=s; o.textContent=s;
+      supSel.appendChild(o);
+    });
+  }
+
+  const MAPPING_SUPS = ['Nguyễn Công Phước MH','Phạm Nam','Trancy','Nguyễn Công Phước GC','Nguyễn Phong','Hieu Le','Hoàng Lâm'];
+  const supList = D.partners.filter(p=>MAPPING_SUPS.includes(p.name));
+  MAPPING_SUPS.forEach(name=>{ if(!supList.find(p=>p.name===name)) supList.push({name}); });
+
+  if(!filtered.length){
+    tb.innerHTML='<tr><td colspan="4" class="empty">Không có kết quả</td></tr>';
+    return;
+  }
+
+  tb.innerHTML = filtered.map(({kh,sup,pending,char}, idx)=>{
+    const khInfo = char || D.khChars.find(c=>c.name===kh);
+    const charBadge = pending
+      ? `<span style="font-size:11px;background:#FAEEDA;color:#633806;padding:2px 7px;border-radius:6px">⏳ Chờ map</span>`
+      : '';
+    const tmAm = khInfo ? `<span style="font-size:11px;color:var(--txt2)">${khInfo.tm} · ${khInfo.am}</span>` : '';
+    const selId = `msel${idx}`;
+    const khEsc = kh.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return `<tr ${pending?'style="background:var(--amb2)"':''}>
+      <td style="font-size:13px">${kh}<br>${charBadge}</td>
+      <td>${tmAm}</td>
+      <td style="text-align:center">
+        <select id="${selId}" style="font-size:13px;padding:4px 8px;border-radius:6px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+          <option value="">-- Chưa map --</option>
+          ${supList.map(p=>`<option value="${p.name}" ${p.name===sup?'selected':''}>${p.name}</option>`).join('')}
+        </select>
+      </td>
+      <td style="white-space:nowrap;display:flex;gap:4px">
+        <button class="pill pill-edit" title="Lưu" onclick="saveMappingRow('${khEsc}', document.getElementById('${selId}').value)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        </button>
+        ${!pending ? `<button class="pill pill-del" title="Xoá" onclick="saveMappingRow('${khEsc}', '')">${SVG_TRASH}</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
 }
 
-function updateMapping(kh, newSup){
+function saveMappingRow(kh, sup){
   const m = getMapping();
-  m[kh] = newSup;
-  KH_SUP_MAP[kh] = newSup;
+  if(sup){
+    m[kh] = sup;
+    KH_SUP_MAP[kh] = sup;
+  } else {
+    delete m[kh];
+    delete KH_SUP_MAP[kh];
+  }
   saveMapping();
-  toast(`✅ Đã cập nhật: ${kh} → ${newSup}`);
+  // Rebuild sup filter
+  const supSel = el('map-filter-sup');
+  if(supSel){ while(supSel.options.length>1) supSel.remove(1); }
+  renderCfgMapping();
+  toast(sup ? `✅ Đã map: ${kh} → ${sup}` : `✅ Đã bỏ map: ${kh}`);
 }
 
 function toggleAddMappingForm(){
@@ -2063,10 +2302,10 @@ function toggleAddMappingForm(){
     const khSel = el('map-kh-sel');
     khSel.innerHTML = '<option value="">-- Chọn KH --</option>'
       + D.khChars.map(k=>`<option value="${k.name}">${k.name}</option>`).join('');
-    // Populate Sup dropdown from D.partners
+    const MSUPS = ['Nguyễn Công Phước MH','Phạm Nam','Trancy','Nguyễn Công Phước GC','Nguyễn Phong','Hieu Le','Hoàng Lâm'];
     const supSel = el('map-sup-sel');
     supSel.innerHTML = '<option value="">-- Chọn Sup/MH --</option>'
-      + D.partners.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+      + MSUPS.map(n=>`<option value="${n}">${n}</option>`).join('');
   }
   form.style.display = visible ? 'none' : '';
 }
@@ -2152,6 +2391,7 @@ function rcfg(){
 }
 
 function openEditPartner(i){
+  const p = D.partners[i]; if(!p) return;
   el('ep_idx').value=i; el('ep_type').value=p.type; el('ep_name').value=p.name;
   el('ep_stk').value=p.stk||''; el('ep_tm').value=p.tm; el('ep_am').value=p.am;
   openM('m-edit-partner');
@@ -2978,14 +3218,8 @@ function loadFromStorage(){
 // Patch all data-mutating functions to auto-save
 function autosave(){ saveToStorage(); }
 
-// Initialize app — auth handled by platform
-// Load any custom mapping overrides from localStorage
-(function(){
-  try {
-    const raw = localStorage.getItem('xuka_mapping');
-    if(raw){ const m = JSON.parse(raw); Object.assign(KH_SUP_MAP, m); }
-  } catch(e){}
-})();
+// Try auto-login from platform email injection
+tryAutoLogin();
 loadSample();
 applyRole();
 </script>
