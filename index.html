@@ -54,6 +54,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-seri
 /* MAIN CONTENT */
 .body{flex:1;padding:20px;overflow-x:hidden;min-width:0}
 .sec{display:none}.sec.on{display:block}
+.toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 
 /* BUTTONS */
 .btn{font-size:13px;padding:7px 14px;border-radius:var(--r);border:1px solid var(--brd2);cursor:pointer;background:var(--bg);color:var(--txt);display:inline-flex;align-items:center;gap:6px;font-weight:500;transition:all .15s;white-space:nowrap}
@@ -66,7 +67,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-seri
 .btn-danger{background:var(--red2);border-color:var(--red3);color:var(--red3)}
 
 /* TOOLBAR */
-.toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
 .toolbar select,.toolbar input{font-size:13px;padding:7px 10px;border-radius:var(--r);border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none}
 .toolbar input{min-width:160px}
 .toolbar select:focus,.toolbar input:focus{border-color:var(--grn)}
@@ -250,7 +250,7 @@ tr:hover td{background:var(--bg2)}
     </div>
   </div>
   <div style="padding:12px 10px;border-top:1px solid var(--brd);margin-top:auto">
-    <button onclick="resetData()" style="width:100%;background:none;border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt3);cursor:pointer;text-align:left">🗑 Reset data</button>
+    <button onclick="resetData()" style="width:100%;background:var(--bg);border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt2);cursor:pointer;text-align:left;transition:background .15s,color .15s" onmouseover="this.style.background='var(--red2)';this.style.color='var(--red3)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--txt2)'">🗑 Reset data</button>
   </div>
 </nav>
 
@@ -283,12 +283,17 @@ tr:hover td{background:var(--bg2)}
 <div id="t1" class="sec">
   <div class="sec-wrap" id="t1-wrap">
   <div class="toolbar">
+    <div style="display:flex;gap:4px">
+      <button id="f1t-all" class="btn on" onclick="setSupTypeFilter('')"       style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
+      <button id="f1t-sup" class="btn"    onclick="setSupTypeFilter('Sup')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
+      <button id="f1t-mh"  class="btn"    onclick="setSupTypeFilter('Mua hộ')" style="font-size:13px;padding:5px 14px;border-radius:8px">Mua hộ</button>
+    </div>
     <select id="f1s" onchange="rt1()"><option value="">Tất cả tình trạng</option><option>Chờ điều phối</option><option>Đã điều phối</option><option>CK 1 phần</option><option>Done</option><option>CK dư</option><option>Cancelled</option></select>
-    <select id="f1t" onchange="rt1()"><option value="">Tất cả loại</option><option>Sup</option><option>Mua hộ</option></select>
     <select id="f1nv" onchange="rt1()"><option value="">Tất cả NV</option></select>
     <input id="f1q" placeholder="🔍 Tìm tên đối tác..." oninput="rt1()" list="dl-partners">
     <datalist id="dl-partners"></datalist>
-    <button class="btn btn-p" id="btn-add-sup" onclick="openM('msup')">+ Nhập công nợ</button>
+    <input type="hidden" id="f1t" value="">
+    <button class="btn btn-p" id="btn-add-sup" onclick="openM('msup')" style="margin-left:auto">+ Nhập công nợ</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
@@ -302,12 +307,18 @@ tr:hover td{background:var(--bg2)}
 <div id="t2" class="sec">
   <div class="sec-wrap" id="t2-wrap">
   <div class="toolbar">
+    <div style="display:flex;gap:4px">
+      <button id="f2ch-all" class="btn on" onclick="setKhChFilter2('')"           style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
+      <button id="f2ch-ld"  class="btn"    onclick="setKhChFilter2('Linh Dương')" style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Dương</button>
+      <button id="f2ch-lt"  class="btn"    onclick="setKhChFilter2('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
+      <button id="f2ch-co"  class="btn"    onclick="setKhChFilter2('Kênh CO')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Kênh CO</button>
+    </div>
     <select id="f2s" onchange="rt2()"><option value="">Tất cả tình trạng</option><option>Mới nhập</option><option>Chờ khách CK</option><option>Khách đã CK</option><option>Done</option><option>CK 1 phần</option><option>Cancelled</option></select>
-    <select id="f2nv" onchange="rt2()"><option value="">Tất cả NV</option></select>
     <input id="f2q" placeholder="🔍 Tìm tên KH..." oninput="rt2()" list="dl-customers">
     <datalist id="dl-customers"></datalist>
-    <button class="btn btn-p" id="btn-add-kh" onclick="openM('mkh')">+ Nhập công nợ KH</button>
-    <button class="btn" id="btn-suggest" onclick="openSuggest()" style="margin-left:auto;background:var(--amb2);border-color:#EF9F27;color:var(--amb3);font-weight:600">💡 Match CK</button>
+    <input type="hidden" id="f2ch" value="">
+    <button class="btn btn-p" id="btn-add-kh" onclick="openM('mkh')" style="margin-left:auto">+ Nhập công nợ KH</button>
+    <button class="btn" id="btn-suggest" onclick="openSuggest()" style="background:var(--amb2);border-color:#EF9F27;color:var(--amb3);font-weight:600">💡 Match CK</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
@@ -323,7 +334,7 @@ tr:hover td{background:var(--bg2)}
     <select id="f4s" onchange="rt4()"><option value="">Tất cả tình trạng</option><option>Chờ XN & Đã tham chiếu HT</option><option>Đã XN & Nhập file Sup/MH</option><option>Done & Nhập Thu Chi</option></select>
     <select id="f4nv" onchange="rt4()"><option value="">Tất cả NV</option></select>
     <input id="f4q" placeholder="🔍 Tìm tên KH..." oninput="rt4()">
-    <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')">+ Nhập bill CK</button>
+    <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')" style="margin-left:auto">+ Nhập bill CK</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
@@ -335,40 +346,44 @@ tr:hover td{background:var(--bg2)}
 <!-- ===== TAB 4a: DANH SÁCH SUP/MH ===== -->
 <div id="t4a" class="sec">
   <div class="toolbar">
-    <button class="btn btn-p" id="btn-add-partner" onclick="openM('m-add-partner')">+ Thêm Sup/MH</button>
-    <select id="f5type" onchange="rt5a()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-      <option value="">Tất cả loại</option>
-      <option value="Sup">Sup</option>
-      <option value="Mua hộ">Mua hộ</option>
-    </select>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+    <div style="display:flex;gap:4px">
+      <button id="f5type-all" class="btn on" onclick="setSupFilter('')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
+      <button id="f5type-sup" class="btn"    onclick="setSupFilter('Sup')" style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
+      <button id="f5type-mh"  class="btn"    onclick="setSupFilter('Mua hộ')" style="font-size:13px;padding:5px 14px;border-radius:8px">Mua hộ</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
       <span style="font-size:15px;color:var(--txt2)">🔎</span>
       <input id="f5qa" placeholder="Tìm tên..." oninput="rt5a()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
     </div>
+    <button class="btn btn-p" id="btn-add-partner" onclick="openM('m-add-partner')" style="margin-left:auto">+ Thêm Sup/MH</button>
   </div>
+  <input type="hidden" id="f5type" value="">
   <div class="tw"><table><thead><tr>
     <th>Loại</th><th>Tên đối tác</th><th>Thời gian y/c bank</th><th>Số tiền y/c</th><th>STK mặc định</th><th></th>
   </tr></thead><tbody id="tb5a"></tbody></table></div>
+  <div id="pg5a" class="pgbar"></div>
 </div>
 
 <!-- ===== TAB 4b: DANH SÁCH KH ===== -->
 <div id="t4b" class="sec">
   <div class="toolbar">
-    <button class="btn btn-p" id="btn-add-kh-char" onclick="openM('m-add-kh-char')">+ Thêm KH</button>
-    <select id="f5ch" onchange="rt5b()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-      <option value="">Tất cả kênh</option>
-      <option value="Linh Duong">Linh Duong</option>
-      <option value="Linh Thảo">Linh Thảo</option>
-      <option value="Checkout">Checkout</option>
-    </select>
-    <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+    <div style="display:flex;gap:4px">
+      <button id="f5ch-all" class="btn on" onclick="setKhChFilter('')"           style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
+      <button id="f5ch-ld"  class="btn"    onclick="setKhChFilter('Linh Dương')" style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Dương</button>
+      <button id="f5ch-lt"  class="btn"    onclick="setKhChFilter('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
+      <button id="f5ch-co"  class="btn"    onclick="setKhChFilter('Kênh CO')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Kênh CO</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
       <span style="font-size:15px;color:var(--txt2)">🔎</span>
       <input id="f5qb" placeholder="Tìm tên KH..." oninput="rt5b()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
     </div>
+    <input type="hidden" id="f5ch" value="">
+    <button class="btn btn-p" id="btn-add-kh-char" onclick="openM('m-add-kh-char')" style="margin-left:auto">+ Thêm KH</button>
   </div>
   <div class="tw"><table><thead><tr>
     <th>Kênh</th><th>Tên KH + SĐT</th><th>Thời gian bank</th><th>Số tiền bank</th><th>Sup/MH mặc định</th><th></th>
   </tr></thead><tbody id="tb5b"></tbody></table></div>
+  <div id="pg5b" class="pgbar"></div>
 </div>
 
 
@@ -475,6 +490,116 @@ tr:hover td{background:var(--bg2)}
 </div><!-- /layout -->
 </div><!-- /app -->
 
+<!-- ===== MODAL: SỬA ĐIỀU PHỐI ===== -->
+<div class="modbg" id="m-edit-kh-stk">
+  <div class="mod" style="max-width:400px">
+    <button class="xbtn" onclick="closeM('m-edit-kh-stk')">×</button>
+    <!-- Step 1: Confirm -->
+    <div id="eks-step1" style="text-align:center">
+      <div style="font-size:28px;margin-bottom:8px">⚠️</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">Sửa điều phối?</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">Sale/CSKH đã được thông báo chưa?</div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-p" onclick="eksStep2()" style="min-width:110px">✅ Rồi, tiếp tục</button>
+        <button class="btn" onclick="closeM('m-edit-kh-stk')" style="min-width:80px">Huỷ</button>
+      </div>
+    </div>
+    <!-- Step 2: Edit -->
+    <div id="eks-step2" style="display:none">
+      <h2 style="margin-bottom:14px">✏️ Sửa điều phối</h2>
+      <div class="fg">
+        <div class="fr"><label>Sup/MH nhận tiền</label>
+          <select id="eks-sup-sel" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            <option value="">-- Chọn --</option>
+          </select>
+        </div>
+        <div class="fr"><label>Số tiền chỉ định (VNĐ)</label>
+          <input id="eks-amount-display" type="text" placeholder="0"
+            style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:100%"
+            oninput="const raw=this.value.replace(/[^0-9]/g,'');el('eks-amount').value=raw;this.value=raw?raw.replace(/\B(?=(\d{3})+(?!\d))/g,','):''"
+            onfocus="const v=el('eks-amount').value;this.value=v?v.replace(/\B(?=(\d{3})+(?!\d))/g,','):''"
+            onblur="const v=el('eks-amount').value;this.value=v?v.replace(/\B(?=(\d{3})+(?!\d))/g,',')+'đ':''"/>
+          <input id="eks-amount" type="hidden"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px">
+        <button class="btn btn-p" onclick="saveEditKHStk()">💾 Lưu</button>
+        <button class="btn" onclick="closeM('m-edit-kh-stk')">Huỷ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: SỬA THÔNG TIN CÔNG NỢ KH ===== -->
+<div class="modbg" id="m-edit-kh-info">
+  <div class="mod" style="max-width:420px">
+    <button class="xbtn" onclick="closeM('m-edit-kh-info')">×</button>
+    <h2 style="margin-bottom:16px">✏️ Sửa công nợ KH</h2>
+    <input type="hidden" id="eki-id"/>
+    <div class="fg">
+      <div class="fr"><label>Tên KH + SĐT</label>
+        <input id="eki-name" list="dl-kh-list" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:100%"/>
+      </div>
+      <div class="fr"><label>Công nợ (VNĐ)</label>
+        <input id="eki-amount-display" type="text" placeholder="0"
+          style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:100%"
+          oninput="const r=this.value.replace(/[^0-9]/g,'');el('eki-amount').value=r;this.value=r?r.replace(/\B(?=(\d{3})+(?!\d))/g,','):''"
+          onfocus="const v=el('eki-amount').value;this.value=v?v.replace(/\B(?=(\d{3})+(?!\d))/g,','):''"
+          onblur="const v=el('eki-amount').value;this.value=v?v.replace(/\B(?=(\d{3})+(?!\d))/g,',')+'đ':''"/>
+        <input id="eki-amount" type="hidden"/>
+      </div>
+      <div class="fr"><label>Ghi chú</label>
+        <input id="eki-note" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:100%"/>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-p" onclick="saveEditKHInfo()">💾 Lưu</button>
+      <button class="btn" onclick="closeM('m-edit-kh-info')">Huỷ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: XÁC NHẬN SỬA/XOÁ KH ===== -->
+<div class="modbg" id="m-confirm-edit-kh">
+  <div class="mod" style="max-width:360px;text-align:center">
+    <button class="xbtn" onclick="closeM('m-confirm-edit-kh')">×</button>
+    <div style="font-size:28px;margin-bottom:8px">⚠️</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:8px" id="m-cek-title">Sửa Công nợ KH?</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">Mua hàng đã được thông báo chưa?</div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-p" onclick="doConfirmEditKH()" style="min-width:100px">✅ Rồi</button>
+      <button class="btn" onclick="closeM('m-confirm-edit-kh')" style="min-width:80px">Huỷ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: HUỶ ĐIỀU PHỐI ===== -->
+<div class="modbg" id="m-undo-dispatch">
+  <div class="mod" style="max-width:360px;text-align:center">
+    <button class="xbtn" onclick="closeM('m-undo-dispatch')">×</button>
+    <div style="font-size:28px;margin-bottom:8px">⚠️</div>
+    <div style="font-size:15px;font-weight:700;margin-bottom:8px">Huỷ điều phối?</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">Đã xác nhận với Sale/CSKH chưa? Khoản sẽ trở về "Mới nhập".</div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-p" onclick="doUndoDispatch()" style="min-width:110px">✅ Xác nhận</button>
+      <button class="btn" onclick="closeM('m-undo-dispatch')" style="min-width:80px">Huỷ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: XÁC NHẬN HÀNH ĐỘNG ===== -->
+<div class="modbg" id="m-confirm-action">
+  <div class="mod" style="max-width:320px;text-align:center;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)">
+    <div style="font-size:32px;margin-bottom:12px" id="m-confirm-icon">✅</div>
+    <div style="font-size:15px;font-weight:700;color:var(--txt);margin-bottom:8px" id="m-confirm-title"></div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:24px;line-height:1.6" id="m-confirm-desc"></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-p" onclick="doConfirmAction()" style="min-width:100px">✅ Xác nhận</button>
+      <button class="btn" onclick="closeM('m-confirm-action')" style="min-width:80px">Huỷ</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== MODAL: NHẬP SUP/MH ===== -->
 <div class="modbg" id="msup">
 <div class="mod">
@@ -563,8 +688,8 @@ tr:hover td{background:var(--bg2)}
         <label>Kênh</label>
         <select id="i_k_ch">
           <option value="">-- Chọn --</option>
-          <option value="Checkout">Checkout</option>
-          <option value="Linh Duong">Linh Duong</option>
+          <option value="Kênh CO">Checkout</option>
+          <option value="Linh Dương">Linh Duong</option>
           <option value="Linh Thảo">Linh Thảo</option>
           <option value="Khác">Khác</option>
         </select>
@@ -859,7 +984,7 @@ let D = {
   ctr: 1,
   viewMonth: new Date().getMonth(),
   viewYear: new Date().getFullYear(),
-  pg1: 0, pg2: 0, pg4: 0  // current page per tab
+  pg1: 0, pg2: 0, pg4: 0, pg5a: 0, pg5b: 0  // current page per tab
 };
 
 let dpSupId = null;
@@ -1131,8 +1256,8 @@ function toast(msg, isErr=false, dur=3500){
 function openM(id){ el(id).classList.add('on'); }
 function closeM(id){
   el(id).classList.remove('on');
-  if(id==='msup'){ ['i_snv','i_sn','i_sa','i_ss','i_snote'].forEach(x=>el(x).value=''); el('sup_char_info').style.display='none'; el('sup_new_fields').style.display='none'; }
-  if(id==='mkh'){  ['i_knv','i_kn','i_ka','i_knote'].forEach(x=>el(x).value='');       el('kh_char_info').style.display='none';  el('kh_new_fields').style.display='none'; }
+  if(id==='msup'){ ['i_snv','i_sn','i_sa','i_ss','i_snote'].forEach(x=>el(x).value=''); el('i_snv').value = currentUser?.name||''; el('sup_char_info').style.display='none'; el('sup_new_fields').style.display='none'; }
+  if(id==='mkh'){  ['i_knv','i_kn','i_ka','i_knote'].forEach(x=>el(x).value='');       el('i_knv').value = currentUser?.name||''; el('kh_char_info').style.display='none';  el('kh_new_fields').style.display='none'; }
   if(id==='mck'){  ['i_cnv','i_ckh','i_clink','i_cam'].forEach(x=>el(x).value='');     el('cid_info').style.display='none'; }
 }
 
@@ -1216,12 +1341,17 @@ function refreshNvFilters(){
   setOpts('f4nv', nvCK);
 }
 function refreshDataLists(){
-  const partnerNames = D.partners.map(p=>p.name);
   const khNames = D.khChars.map(k=>k.name);
-  ['dl-partners','dl-p-sup'].forEach(id=>{
-    const dl = el(id); if(!dl) return;
-    dl.innerHTML = partnerNames.map(n=>`<option value="${n}">`).join('');
-  });
+  // dl-partners always shows all
+  const dlPartners = el('dl-partners');
+  if(dlPartners) dlPartners.innerHTML = D.partners.map(p=>`<option value="${p.name}">`).join('');
+  // dl-p-sup filters by currently selected type in modal
+  const dlPSup = el('dl-p-sup');
+  if(dlPSup){
+    const selType = el('i_st')?.value || '';
+    const filtered = selType ? D.partners.filter(p=>p.type===selType) : D.partners;
+    dlPSup.innerHTML = filtered.map(p=>`<option value="${p.name}">`).join('');
+  }
   ['dl-customers','dl-kh-list','dl-kh-ck','dl-kh-dp'].forEach(id=>{
     const dl = el(id); if(!dl) return;
     dl.innerHTML = khNames.map(n=>`<option value="${n}">`).join('');
@@ -1309,6 +1439,9 @@ function charPill(label, value, highlight=false){
   return `<span style="display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:2px 7px;border-radius:20px;background:${highlight?'var(--grn2)':'var(--bg2)'};color:${highlight?'var(--grn3)':'var(--txt2)'};border:1px solid ${highlight?'var(--grn4)':'var(--brd)'};white-space:nowrap">${label}: <b>${value}</b></span>`;
 }
 function onSupTypeChange(){
+  el('i_sn').value = '';
+  el('i_ss').value = '';
+  el('sup_char_info').style.display = 'none';
   refreshDataLists();
 }
 
@@ -1337,14 +1470,24 @@ function rd0(){
       (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi');
   });
 
-  // Determine type via linked sup
   let supTotal=0, supCount=0, mhTotal=0, mhCount=0;
   confirmed.forEach(c=>{
     const sup = D.sup.find(s=>s.idCK===c.idCK);
-    if(!sup) return;
-    if(sup.type==='Sup'){ supTotal+=c.amount; supCount++; }
-    else { mhTotal+=c.amount; mhCount++; }
+    // Determine type: from sup entry, or from partner via KH mapping, or from idCK prefix
+    let isMH = false;
+    if(sup){ isMH = sup.type !== 'Sup'; }
+    else {
+      const khEntry = D.kh.find(k=>k.idCK===c.idCK && k.name===c.kh);
+      const supName = khEntry ? getFixedSup(khEntry.name) : null;
+      const partner = supName ? D.partners.find(p=>p.name===supName) : null;
+      isMH = partner ? partner.type==='Mua hộ' : (c.idCK||'').startsWith('NL');
+    }
+    if(isMH){ mhTotal+=c.amount; mhCount++; }
+    else     { supTotal+=c.amount; supCount++; }
   });
+
+  // ckIds used for daily chart deduplication
+  const ckIds = new Set(confirmed.map(c=>c.idCK+'|'+c.kh));
 
   el('d-all-total').textContent = fmt(supTotal + mhTotal);
   el('d-all-count').textContent = (supCount + mhCount) + ' giao dịch (Sup + MH)';
@@ -1356,10 +1499,17 @@ function rd0(){
   confirmed.forEach(c=>{
     const sup = D.sup.find(s=>s.idCK===c.idCK);
     const day = new Date(c.date).getDate();
-    if(day>=1 && day<=daysInMonth){
-      if(sup && sup.type==='Sup') supDaily[day-1]+=c.amount;
-      else                        mhDaily[day-1]+=c.amount;
+    if(day<1||day>daysInMonth) return;
+    let isMH = false;
+    if(sup){ isMH = sup.type !== 'Sup'; }
+    else {
+      const khEntry = D.kh.find(k=>k.idCK===c.idCK && k.name===c.kh);
+      const supName = khEntry ? getFixedSup(khEntry.name) : null;
+      const partner = supName ? D.partners.find(p=>p.name===supName) : null;
+      isMH = partner ? partner.type==='Mua hộ' : (c.idCK||'').startsWith('NL');
     }
+    if(isMH) mhDaily[day-1]+=c.amount;
+    else     supDaily[day-1]+=c.amount;
   });
   const labels = Array.from({length:daysInMonth},(_,i)=>i+1);
 
@@ -1429,7 +1579,7 @@ function rt1(){
   // newest first (already unshifted on add, but also sort by date desc)
   list = [...list].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
-  const {items, total, pages, cur} = paginate(list, 'pg1', 10);
+  const {items, total, pages, cur} = paginate(list, 'pg1', 20);
 
   el('tb1').innerHTML = items.length ? items.map(s=>{
     const cs = calcSupStatus(s);
@@ -1452,7 +1602,7 @@ function rt1(){
       <td>${sb(s.status)}</td>
       <td style="white-space:nowrap;display:flex;gap:4px;align-items:center">
         ${canDoEdit ? `<button class="pill pill-edit" onclick="editStk('${s.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
-        ${canEdit   ? `<button class="pill pill-del" onclick="delSup('${s.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
+        ${canEdit && s.status === 'Chờ điều phối' ? `<button class="pill pill-del" onclick="delSup('${s.id}')">${SVG_TRASH}</button>` : ''}
       </td>
     </tr>`;
   }).join('') : '<tr><td colspan="11" class="empty">Chưa có dữ liệu</td></tr>';
@@ -1462,37 +1612,36 @@ function rt1(){
 
 function rt2(){
   const st = el('f2s').value, q = el('f2q').value.toLowerCase();
-  const nv = el('f2nv').value;
-  const canDp  = ['admin'].includes(currentRole);
-  let list = D.kh.filter(k=>
-    (!st||k.status===st) &&
-    (!q||k.name.toLowerCase().includes(q)) &&
-    (!nv||k.nv===nv)
-  );
+  const ch = el('f2ch')?.value || '';
+  const canDp  = ['admin'].includes(currentRole); // legacy, kept for billCell
+  let list = D.kh.filter(k=>{
+    if(st && k.status!==st) return false;
+    if(q  && !k.name.toLowerCase().includes(q)) return false;
+    if(ch){
+      const khChar = D.khChars.find(c=>c.name===k.name);
+      if(!khChar || khChar.ch!==ch) return false;
+    }
+    return true;
+  });
   list = [...list].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
-  const {items, total, pages, cur} = paginate(list, 'pg2', 10);
+  const {items, total, pages, cur} = paginate(list, 'pg2', 20);
 
   el('tb2').innerHTML = items.length ? items.map(k=>{
     const sup = k.idCK ? D.sup.find(s=>s.idCK===k.idCK) : null;
-    const supName = sup ? stkCell(sup.stk) : (k.stk ? stkCell(k.stk) : '—');
+    const supName = k.stk ? stkCell(k.stk) : (sup ? stkCell(sup.stk) : '—');
+
+    const canDpMoiNhap = ['admin','sale'].includes(currentRole);
+    const canDpChoKhach = ['admin','mh'].includes(currentRole);
 
     let dpBtn = '';
-    const khLocked = ['Done','Cancelled'].includes(k.status);
-    if(canDp && !khLocked){
-      if(k.status === 'Mới nhập'){
-        const fixedSupName = getFixedSup(k.name);
-        if(fixedSupName){
-          dpBtn = `<button class="pill pill-edit" onclick="showDpFromKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
-        } else {
-          dpBtn = `<button class="pill pill-attach" onclick="showDpFromKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg></button>`;
-        }
-      } else if(k.idCK) {
-        const fixedSupName = getFixedSup(k.name);
-        dpBtn = `<button class="pill pill-edit" onclick="showDpFromKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>`;
+    const khLocked = !['Mới nhập','Chờ khách CK'].includes(k.status);
+    if(!khLocked){
+      if(k.status === 'Mới nhập' && canDpMoiNhap){
+        dpBtn = `<button class="pill pill-edit" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>`;
+      } else if(k.status === 'Chờ khách CK' && canDpChoKhach){
+        dpBtn = `<button class="pill pill-edit" onclick="openEditKHStk('${k._id}')">${SVG_PENCIL}</button>`;
       }
-    } else if(k.status === 'Mới nhập') {
-      dpBtn = `<span style="font-size:11px;color:var(--txt3)">🔒 Chờ Admin</span>`;
     }
 
     const char = getKhChar(k.name);
@@ -1509,7 +1658,7 @@ function rt2(){
     let billCell = '<td></td>';
     if(k.idCK){
       // Check if a bill already exists in D.ck for this KH + idCK
-      const existingBill = D.ck.find(c=>c.idCK===k.idCK && c.kh===k.name && c.link);
+      const existingBill = D.ck.find(c=>c.idCK===k.idCK && c.kh===k.name && c.link && c.status!=='Done & Nhập Thu Chi');
       if(existingBill){
         // Already has bill — show view icon
         billCell = `<td style="white-space:nowrap">
@@ -1534,9 +1683,12 @@ function rt2(){
       <td class="num" style="color:var(--grn);font-weight:500">${k.cdAm?fmt(k.cdAm):'—'}</td>
       <td>${sb(k.status)}</td>
       ${billCell}
-      <td style="white-space:nowrap;display:flex;gap:4px;align-items:center">
-        ${dpBtn}
-        ${canDp && !['Done','Cancelled'].includes(k.status) ? `<button class="pill pill-del" title="Xoá" onclick="delKH('${k._id}')">${SVG_TRASH}</button>` : ''}
+      <td style="white-space:nowrap">
+        <div style="display:flex;gap:4px;align-items:center">
+          ${dpBtn}
+          ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
+          ${canDpChoKhach && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
+        </div>
       </td>
     </tr>
     <tr id="bill-row-${k._id}" style="display:none;background:var(--grn2)">
@@ -1810,7 +1962,15 @@ function rt4(){
   el('tb4').innerHTML = ckItems.length ? ckItems.map((c)=>{
     const ckIdx = D.ck.indexOf(c);
     const sup = D.sup.find(s=>s.idCK===c.idCK);
-    const partnerName = sup ? `<span class="badge ${sup.type==='Sup'?'b-sup':'b-mh'}">${sup.type}</span> ${sup.name}` : '—';
+    let partnerName = '—';
+    if(sup){
+      partnerName = `<span class="badge ${sup.type==='Sup'?'b-sup':'b-mh'}">${sup.type}</span> ${sup.name}`;
+    } else {
+      const khEntry = D.kh.find(k=>k.idCK===c.idCK && k.name===c.kh);
+      const supName = khEntry ? getFixedSup(khEntry.name) : null;
+      const partner = supName ? D.partners.find(p=>p.name===supName) : null;
+      if(partner) partnerName = `<span class="badge ${partner.type==='Sup'?'b-sup':'b-mh'}">${partner.type}</span> ${partner.name}`;
+    }
     const billLink = c.link
       ? `<div style="display:flex;gap:6px;align-items:center">
            <button style="background:none;border:none;cursor:pointer;color:var(--grn);font-size:16px;padding:0;line-height:1" title="Xem bill" onclick="window.open('${c.link.replace(/'/g,"\\'")}','_blank','noopener')">🔎</button>
@@ -1839,11 +1999,11 @@ function rt4(){
 
     let acts = '';
     if(c.status==='Chờ XN & Đã tham chiếu HT' && canSupXn)
-      acts = actBtn('Sup/MH XN', `confCK(${ckIdx})`, 'pill-attach');
+      acts = actBtn('Sup/MH XN', `askConfirmAction('supxn',${ckIdx})`, 'pill-attach');
     else if(c.status.includes('Đã XN & Nhập file Sup/MH') && canThamch)
       acts = actBtn('Tham chiếu', `thamch(${ckIdx})`, 'pill-edit');
     else if(c.status==='Đã XN & Nhập file Sup/MH' && canDuyet)
-      acts = actBtn('Duyệt', `duyet(${ckIdx})`, 'pill-attach');
+      acts = actBtn('Duyệt', `askConfirmAction('duyet',${ckIdx})`, 'pill-attach');
 
     return `<tr>
       <td class="nowrap">${c.date}</td>
@@ -1885,6 +2045,164 @@ function saveCKLink(ckIdx){
   D.ck[ckIdx].link = link;
   autosave(); rt4();
   toast('✅ Đã lưu link bill CK');
+}
+
+let _editStkKhId = null;
+
+function confirmEditSTK(khId){
+  _editStkKhId = khId;
+  el('edit-stk-confirm-area').style.display = '';
+  el('edit-stk-form-area').style.display = 'none';
+  openM('m-edit-stk');
+}
+
+function proceedEditSTK(){
+  const k = D.kh.find(x=>x._id===_editStkKhId); if(!k) return;
+  // Populate Sup dropdown
+  const sel = el('edit-stk-sup-sel');
+  sel.innerHTML = '<option value="">-- Chọn --</option>'
+    + D.partners.map(p=>`<option value="${p.name}" ${p.name===(getFixedSup(k.name)||'')?'selected':''}>${p.name} (${p.type})</option>`).join('');
+  el('edit-stk-confirm-area').style.display = 'none';
+  el('edit-stk-form-area').style.display = '';
+}
+
+function saveEditSTK(){
+  const k = D.kh.find(x=>x._id===_editStkKhId); if(!k) return;
+  const supName = el('edit-stk-sup-sel').value;
+  if(!supName){ toast('Chọn Sup/MH', true); return; }
+  const partner = D.partners.find(p=>p.name===supName);
+  k.stk = partner ? partner.stk : '';
+  // Also update D.ck entry if exists
+  const ckEntry = D.ck.find(c=>c.idCK===k.idCK && c.kh===k.name);
+  if(ckEntry){ /* no stk field in ck, partner lookup handles it */ }
+  autosave(); rt2();
+  closeM('m-edit-stk');
+  toast('✅ Đã cập nhật TK nhận');
+  _editStkKhId = null;
+}
+
+let _eksKhId = null;
+
+function openEditKHStk(khId){
+  const k = D.kh.find(x=>x._id===khId); if(!k) return;
+  _eksKhId = khId;
+  // Show step 1 (confirm)
+  el('eks-step1').style.display = '';
+  el('eks-step2').style.display = 'none';
+  openM('m-edit-kh-stk');
+}
+
+function eksStep2(){
+  const k = D.kh.find(x=>x._id===_eksKhId); if(!k) return;
+  const sel = el('eks-sup-sel');
+  const curSupName = D.partners.find(p=>p.stk===k.stk)?.name || getFixedSup(k.name);
+  sel.innerHTML = '<option value="">-- Chọn --</option>'
+    + D.partners.map(p=>`<option value="${p.name}" ${p.name===curSupName?'selected':''}>${p.name} (${p.type})</option>`).join('');
+  const fmtComma = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  const amt = k.cdAm || k.amount || 0;
+  el('eks-amount').value = amt;
+  el('eks-amount-display').value = amt ? fmtComma(amt) + 'đ' : '';
+  el('eks-step1').style.display = 'none';
+  el('eks-step2').style.display = '';
+}
+
+function saveEditKHStk(){
+  const k = D.kh.find(x=>x._id===_eksKhId); if(!k) return;
+  const supName = el('eks-sup-sel').value;
+  if(!supName){ toast('Chọn Sup/MH', true); return; }
+  const partner = D.partners.find(p=>p.name===supName);
+  const newAmt = parseInt(el('eks-amount').value) || k.cdAm || k.amount;
+  k.stk  = partner ? partner.stk : '';
+  k.cdAm = newAmt;
+  window._stkStore = {};
+  autosave(); rt2();
+  closeM('m-edit-kh-stk');
+  toast('✅ Đã cập nhật điều phối');
+  _eksKhId = null;
+}
+
+function openEditKHInfo(khId){
+  const k = D.kh.find(x=>x._id===khId); if(!k) return;
+  el('eki-id').value = khId;
+  el('eki-name').value = k.name;
+  el('eki-amount').value = k.amount;
+  el('eki-note').value = k.note||'';
+  const fmtC = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  el('eki-amount-display').value = k.amount ? fmtC(k.amount)+'đ' : '';
+  openM('m-edit-kh-info');
+}
+
+function saveEditKHInfo(){
+  const khId = el('eki-id').value;
+  const k = D.kh.find(x=>x._id===khId); if(!k) return;
+  const name = el('eki-name').value.trim();
+  const amt  = parseInt(el('eki-amount').value) || k.amount;
+  if(!name){ toast('Nhập tên KH', true); return; }
+  k.name = name;
+  k.amount = amt;
+  k.origAmount = amt;
+  k.note = el('eki-note').value.trim();
+  autosave(); rt2();
+  closeM('m-edit-kh-info');
+  toast('✅ Đã cập nhật công nợ KH');
+}
+
+let _cekId = null, _cekAction = null;
+
+function confirmEditKH(khId, action){
+  _cekId = khId; _cekAction = action;
+  el('m-cek-title').textContent = action==='del' ? 'Xoá Công nợ KH?' : 'Sửa Công nợ KH?';
+  openM('m-confirm-edit-kh');
+}
+
+function doConfirmEditKH(){
+  closeM('m-confirm-edit-kh');
+  if(_cekAction === 'del') delKH(_cekId);
+  else openEditKHInfo(_cekId);
+  _cekId = null; _cekAction = null;
+}
+
+let _undoDispatchId = null;
+
+function confirmUndoDispatch(khId){
+  _undoDispatchId = khId;
+  openM('m-undo-dispatch');
+}
+
+function doUndoDispatch(){
+  const k = D.kh.find(x=>x._id===_undoDispatchId); if(!k) return;
+  k.status = 'Mới nhập';
+  k.idCK   = '';
+  k.stk    = '';
+  k.cdAm   = 0;
+  autosave(); rt2();
+  closeM('m-undo-dispatch');
+  toast('✅ Đã huỷ điều phối, khoản trở về Mới nhập');
+  _undoDispatchId = null;
+}
+
+function askConfirmAction(type, idx){
+  const c = D.ck[idx]; if(!c) return;
+  _pendingAction = {type, idx};
+  if(type === 'supxn'){
+    el('m-confirm-icon').textContent  = '📋';
+    el('m-confirm-title').textContent = 'Xác nhận Sup/MH đã nhận tiền?';
+    el('m-confirm-desc').innerHTML    = '';
+  } else {
+    el('m-confirm-icon').textContent  = '✅';
+    el('m-confirm-title').textContent = 'Xác nhận duyệt payment?';
+    el('m-confirm-desc').innerHTML    = '';
+  }
+  openM('m-confirm-action');
+}
+
+function doConfirmAction(){
+  if(!_pendingAction) return;
+  const {type, idx} = _pendingAction;
+  _pendingAction = null;
+  closeM('m-confirm-action');
+  if(type === 'supxn') confCK(idx);
+  else                 duyet(idx);
 }
 
 function confCK(i){
@@ -2040,6 +2358,41 @@ setInterval(checkAutoChot, 60000);
 /* ================================================
    TAB 5: ĐẶC ĐIỂM
    ================================================ */
+function setKhChFilter(val){
+  el('f5ch').value = val;
+  el('f5ch-all').classList.toggle('on', val==='');
+  el('f5ch-ld').classList.toggle('on',  val==='Linh Dương');
+  el('f5ch-lt').classList.toggle('on',  val==='Linh Thảo');
+  el('f5ch-co').classList.toggle('on',  val==='Kênh CO');
+  rt5b();
+}
+
+function setKhChFilter2(val){
+  el('f2ch').value = val;
+  el('f2ch-all').classList.toggle('on', val==='');
+  el('f2ch-ld').classList.toggle('on',  val==='Linh Dương');
+  el('f2ch-lt').classList.toggle('on',  val==='Linh Thảo');
+  el('f2ch-co').classList.toggle('on',  val==='Kênh CO');
+  rt2();
+}
+
+function setSupTypeFilter(val){
+  el('f1t').value = val;
+  el('f1t-all').classList.toggle('on', val==='');
+  el('f1t-sup').classList.toggle('on', val==='Sup');
+  el('f1t-mh').classList.toggle('on', val==='Mua hộ');
+  rt1();
+}
+
+function setSupFilter(val){
+  el('f5type').value = val;
+  // Update active button
+  el('f5type-all').classList.toggle('on', val==='');
+  el('f5type-sup').classList.toggle('on', val==='Sup');
+  el('f5type-mh').classList.toggle('on', val==='Mua hộ');
+  rt5a();
+}
+
 function rt5a(){
   const q    = (el('f5qa')?.value||'').toLowerCase();
   const type = el('f5type')?.value || '';
@@ -2050,8 +2403,9 @@ function rt5a(){
     (!type || p.type === type) &&
     (!q    || p.name.toLowerCase().includes(q))
   );
-  el('tb5a').innerHTML = filteredP.length
-    ? filteredP.map((p)=>{
+  const {items, total, pages, cur} = paginate(filteredP, 'pg5a', 20);
+  el('tb5a').innerHTML = items.length
+    ? items.map((p)=>{
         const i = D.partners.indexOf(p);
         return `<tr>
           <td><span class="badge ${p.type==='Sup'?'b-sup':'b-mh'}">${p.type}</span></td>
@@ -2063,6 +2417,7 @@ function rt5a(){
             <button class="pill pill-del" onclick="delPartner(${i})">${SVG_TRASH}</button>`:''}</td>
         </tr>`;}).join('')
     : '<tr><td colspan="6" class="empty">Chưa có đối tác nào</td></tr>';
+  renderPg('pg5a', 'pg5a', pages, cur, 'rt5a');
   refreshDataLists();
 }
 
@@ -2072,12 +2427,15 @@ function rt5b(){
   const canEdit = ['admin','sale'].includes(currentRole);
   if(el('btn-add-kh-char')) el('btn-add-kh-char').style.display = canEdit ? '' : 'none';
 
-  const filteredKH = D.khChars.filter(k=>
+  // Sort: newest first (by index, since new ones are pushed to end — reverse)
+  const all = [...D.khChars].reverse();
+  const filteredKH = all.filter(k=>
     (!ch || k.ch === ch) &&
     (!q  || k.name.toLowerCase().includes(q))
   );
-  el('tb5b').innerHTML = filteredKH.length
-    ? filteredKH.map((k)=>{
+  const {items, total, pages, cur} = paginate(filteredKH, 'pg5b', 20);
+  el('tb5b').innerHTML = items.length
+    ? items.map((k)=>{
         const i = D.khChars.indexOf(k);
         const fixedSup = getFixedSup(k.name);
         return `<tr>
@@ -2089,6 +2447,7 @@ function rt5b(){
             <button class="pill pill-del" onclick="delKhChar(${i})">${SVG_TRASH}</button>`:''}</td>
         </tr>`;}).join('')
     : '<tr><td colspan="6" class="empty">Chưa có KH nào</td></tr>';
+  renderPg('pg5b', 'pg5b', pages, cur, 'rt5b');
   refreshDataLists();
 }
 
@@ -2514,10 +2873,11 @@ function saveKH(){
       idCK = fixedSup.idCK;
       fixedSup.status = 'Đã điều phối';
     } else {
-      // Tìm idCK đã dùng cho Sup này hôm nay (từ KH khác cùng mapping)
+      // Tìm idCK đã dùng cho Sup này hôm nay — chỉ reuse nếu KH chưa Done/Cancelled
       const today_date = el('i_kd').value || today();
       const existingKH = D.kh.find(k=>
-        k.idCK && getFixedSup(k.name)===fixedSupName && k.date===today_date
+        k.idCK && getFixedSup(k.name)===fixedSupName && k.date===today_date &&
+        !['Done','Cancelled','Khách đã CK'].includes(k.status)
       );
       if(existingKH){
         idCK = existingKH.idCK; // reuse same idCK
@@ -2543,7 +2903,7 @@ function saveKH(){
       toast('Vui lòng chọn đầy đủ Kênh, Thời gian và Số tiền cho KH mới', true); return;
     }
     D.khChars.push({
-      ch:  isNew ? el('i_k_ch').value  : 'Checkout',
+      ch:  isNew ? el('i_k_ch').value  : 'Kênh CO',
       name: n,
       tm:  isNew ? el('i_k_tm').value  : '1-2 ngày',
       am:  isNew ? el('i_k_am').value  : 'Đúng số CN'
@@ -2624,6 +2984,7 @@ function stkCell(raw){
 }
 
 function paginate(list, pgKey, perPage){
+  if(D[pgKey] === undefined) D[pgKey] = 0;
   const total = list.length;
   const pages = Math.max(1, Math.ceil(total/perPage));
   if(D[pgKey] >= pages) D[pgKey] = pages-1;
@@ -2634,18 +2995,11 @@ function paginate(list, pgKey, perPage){
 function renderPg(containerId, pgKey, pages, cur, renderFn){
   const c = el(containerId); if(!c) return;
   if(pages<=1){ c.innerHTML=''; return; }
-  let html = `<span>${cur*10+1}–${Math.min((cur+1)*10, pages*10)} / tổng</span>`;
-  html += `<button class="pgbtn" onclick="D.${pgKey}=0;${renderFn}()" ${cur===0?'disabled':''}>«</button>`;
-  html += `<button class="pgbtn" onclick="D.${pgKey}--;${renderFn}()" ${cur===0?'disabled':''}>‹</button>`;
-  // show max 5 page buttons
-  const start = Math.max(0, cur-2), end = Math.min(pages-1, start+4);
-  for(let i=start;i<=end;i++){
-    html += `<button class="pgbtn ${i===cur?'cur':''}" onclick="D.${pgKey}=${i};${renderFn}()">${i+1}</button>`;
-  }
-  html += `<button class="pgbtn" onclick="D.${pgKey}++;${renderFn}()" ${cur>=pages-1?'disabled':''}>›</button>`;
-  html += `<button class="pgbtn" onclick="D.${pgKey}=${pages-1};${renderFn}()" ${cur>=pages-1?'disabled':''}>»</button>`;
-  html += `<span style="margin-left:4px">/ ${pages} trang</span>`;
-  c.innerHTML = html;
+  c.innerHTML = `
+    <button class="pgbtn" onclick="D.${pgKey}--;${renderFn}()" ${cur===0?'disabled':''}>‹ Trước</button>
+    <span style="font-size:13px;color:var(--txt2)">Trang ${cur+1} / ${pages}</span>
+    <button class="pgbtn" onclick="D.${pgKey}++;${renderFn}()" ${cur>=pages-1?'disabled':''}>Sau ›</button>
+  `;
 }
 
 function previewLink(){
@@ -3077,7 +3431,6 @@ function saveEditStk(supId){
 }
 
 function delKH(id){
-  if(!confirm('Xoá khoản công nợ KH này?')) return;
   D.kh = D.kh.filter(k=>k._id!==id);
   D.pg2=0; autosave(); rt2(); rd0();
   toast('Đã xoá khoản công nợ KH');
@@ -3158,15 +3511,15 @@ function openM(id){
    SAMPLE DATA
    ================================================ */
 function loadSample(){
-  D.partners  = [{"type": "Mua hộ", "name": "Nguyễn Công Phước MH", "tm": "Không giục", "am": "Đúng công nợ", "stk": "Techcombank 888888879  Nguyen cong Phuoc ND: NL"}, {"type": "Mua hộ", "name": "Phạm Nam", "tm": "Max 3 ngày", "am": "Đúng công nợ", "stk": "VPBank 0775655566 Pham Thanh Nam ND: NL"}, {"type": "Mua hộ", "name": "Trancy", "tm": "Max 3 ngày", "am": "Đúng công nợ", "stk": "VIB 916260599 Nguyen Giang Ai Tran ND: NL"}, {"type": "Mua hộ", "name": "Nguyễn Hương", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": ""}, {"type": "Mua hộ", "name": "Hao Trieu", "tm": "Max 3 ngày", "am": "Đúng công nợ", "stk": "Techcombank 19032890539017  Trieu Quang Hao ND: NL"}, {"type": "Mua hộ", "name": "Minh Thuận", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": ""}, {"type": "Sup", "name": "Nguyễn Công Phước GC", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 19038310248019  Nguyen Cong Phuoc ND: TD"}, {"type": "Sup", "name": "Khắc Lệ", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 19032782875019 Pham Khac Le ND: TD"}, {"type": "Sup", "name": "Nguyễn Phong", "tm": "Không giục", "am": "Không y/c min", "stk": "Vietcombank 1035376951  Nguyen Van Phong ND: TD"}, {"type": "Sup", "name": "Dương Đông", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VIB 988126364 Ly Duong Ky ND: TD"}, {"type": "Sup", "name": "Hieu Le", "tm": "Không giục", "am": "Không y/c min", "stk": "BIDV  13010002045484  Lê Minh Hiếu ND:TD"}, {"type": "Sup", "name": "Dương Minh", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": "Techcombank 8686867979  Pham Yen Vy ND: TD"}, {"type": "Sup", "name": "Nguyen Duc Duy", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 2266799799 Nguyen Duc Duy ND: TD"}, {"type": "Sup", "name": "Lan Hương Anh", "tm": "Không giục", "am": "USDT", "stk": "0x57ba425873cbddf582802acabdbe86ee189d54e2 Bep20"}, {"type": "Sup", "name": "Đặng Quang Đông", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietinbank 107875007358 Dang Quang Nam ND: TD"}, {"type": "Sup", "name": "Binh Thanh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 337125387   Vo Vu Thu Tam ND: TD"}, {"type": "Sup", "name": "Ngàn Nhật Đinh", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": "MBBank Dinh Ngan Nhat 0702499996 ND:TD"}, {"type": "Sup", "name": "Hoàng Lâm", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 2888999996  Dang Hoang Lam ND: TD"}, {"type": "Sup", "name": "Nguyên Nguyễn", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": "VPBank 266917139 Nguyễn Ngọc Mai ND:TD"}, {"type": "Sup", "name": "Kiên Nguyễn", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888789 Nguyen Trung Kien ND: TD"}, {"type": "Sup", "name": "Anh Linh", "tm": "Không giục", "am": "Đúng công nợ", "stk": "VIB 854128128 Cao Thi Trang ND: TD"}, {"type": "Sup", "name": "Nguyễn Hoàng Ngọc Quang", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": "VIB 582149249  Nguyen Hoang Ngoc Quang ND: TD"}, {"type": "Sup", "name": "Tiêu Văn Quyền", "tm": "Không giục", "am": "Không y/c min", "stk": "BIDV 2202868030 Tieu Van Quyen ND: TD"}, {"type": "Sup", "name": "Đỗ Hậu", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VPBank 145551315 Do Van Hau ND:TD"}, {"type": "Sup", "name": "Đặng Quang Lý", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 2456789 Dang Quang Ly ND: TD"}, {"type": "Sup", "name": "Dung Anh Tran", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietcombank 0051000563887 Tran Kim Trong ND:TD"}, {"type": "Sup", "name": "Lê Hồng Quang", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": "Mỗi lần 1 stk"}, {"type": "Sup", "name": "Lê Thành", "tm": "Trong ngày", "am": "Đúng công nợ", "stk": "Techcombank 4127686868 Le Van Thanh ND: TD"}];
-  D.khChars   = [{"ch": "Linh Thảo", "name": "Phạm Minh - 0796466689", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Cjp Nguyen - 0919098428", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Trangtrang Quynh - 0829850596", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Thảo", "name": "Lan Anh Nguyen - 0942528883", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Uyen - 0786541443", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thuy Linh Bui - 0834194397", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Phương - 0983842809", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Tú Võ -  0398110019", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thùy Dươngg - 0983791530", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Xa Thanh Huyền - 0984483900", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Mẹ Tin Bắp - 0909026200", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Huyen Tran - 0917763020", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Nguyen My Trang - 0903282468", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Tú Vũ - 0328872654", "tm": "3-5 ngày", "am": "30 - 50tr"}, {"ch": "Linh Duong", "name": "Thảo Vân Lê - 0329113755", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Linh Duong", "name": "Nguyễn Anh Tú (Libianca) - 0978040653", "tm": "Trong ngày", "am": "20 - 30tr"}, {"ch": "Linh Duong", "name": "Hoàng Giang - 0942349899", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Nguyễn Khánh Linh - 0837162005", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Duong", "name": "Sáng Kim - 0919219529", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Duong", "name": "Nguyễn Vân Trang - 0357903939", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Yen Tran CTV - 0978662285", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Linh Bi - 0896313888", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Duong", "name": "Minh Hương - 0842689186", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Van Us - 0945665558", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Tra Truong - 0908633163", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Thùy Duyên - 00904024169", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Nguyễn Vân Huy - 0862520733", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Duong", "name": "Dương Thùy Linh - 0904239192", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Hằng Thị Phạm - 0936929339", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Nhung Tran - 0968327619", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Thanh Trúc - 0787315293", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Kim Duong Nguyen - 0972956666", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Linh Duong", "name": "Mỹ Duyên Ngọc Bích - 0982893428", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Duong", "name": "Huyền Phan - 0971815398", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Duong", "name": "Dung Thuy Nguyen - 0385688565", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Checkout", "name": "Trịnh Bá Quyền - 0901223333", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thy Ba - 0935987879", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Checkout", "name": "Bách Checkout - 0916179999", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Checkout", "name": "Kim Hân - 0949667724", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Checkout", "name": "HA Thu Huyền - 0983812318", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thảo Nguyên Nguyên - 0918288102", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Checkout", "name": "Uyên Đàm - 0989802497", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Ly - 0474946393", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Trịnh Hiền - 0966628989", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Dương Trà SỈ - 0922311996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Phí Đăng Luận - 0985034830", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hằng Nguyễn - 0904289890", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hien Duong - 0983136636", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hiệp Nguyễn - 5038889978", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hương Nguyễn - 0982898920", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Checkout", "name": "HATT Thu Nguyễn - 0948385557", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Checkout", "name": "Chị Huong Nguyenn - 0988092545", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Tống Khánh Ly - 0945645210", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Checkout", "name": "Thơ Phan - 0964450900", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HATT Nhung - 0907060691", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thuỳ Đặng - 0975684877", "tm": "Giục nhiều lần", "am": "20 - 30tr"}, {"ch": "Checkout", "name": "Trần Quang Huy - 0932211279", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Vivian Nguyen - 0909057476", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Checkout", "name": "La My - 0766565899", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Checkout", "name": "Chung Anh - 0916014061", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Joo - 0908556131", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Dâu Tây Nhỏ - 0943465688", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Phan Thanh Nga (Pu) - 0379237959", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HAHS Nguyen Chi - 0932602185", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HAKH Chi Đỗ - 0972512043", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Hồng Nhung Trần -  0968327619", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Nguyễn Thị Lê Thu - 0907979622", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HATT Hân Nguyễn - 0986953599", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Đình Lâm - 0982629656", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Nhu Quynh - 0945102255", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Nx Phuong - 0385576666", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Caroline XuXi - 0899956899", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Huong Tra Phan - 0961001486", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Mỹ Duyên - 0366078978", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Trang Nguyễn - 0904901212", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Amy Ngo - 0932174074", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HAMT Phương Nhi - 0914005731", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thảo Tây - 0772793193", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Ngô Thị Thu Hoài - 0979915855", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hong Thanh - 0909822205", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Nguyễn Xuân Bách - 0942391352", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Anh Tâm Cigars- 0911246789", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thanh Thảo - 0774912219", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Phan Nhi - 0703537174", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Dung Nguyễn - 0981543095", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HA Bao Han - 0989399104", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thoa Pham - 0971201521", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Đỗ Ngọc Thúy - 0376941841", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Duong", "name": "Selena Nguyen - 0939244082", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Anh Duy Bùi - 0356221310", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Quỳnh Anh Phạm - 0969044554", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HAKH Thanh Nhàn - 0902951995", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Trung Nguyen - 9713251765", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "HATT Quyên Dương - 0967718911", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Ha Li - 0979909937", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Thanh Hà Nguyễn - 0912536888", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Đồng Hằng - 0389906526", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Tran Ngoc Thao - 0902445547", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hải Yến - 0965255155", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Vy Phượng - 0916616778", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Phan Thi Hong Ha - 0982488760", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Dinh Thang - 0947574515", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Phạm Bích Thúy - 0989129520", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Đặng Kim Anh - 0915382382", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Nguyễn Đặng Thơ Thơ - 0979580511", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Checkout", "name": "Bành Hoàng Nhi - 0975462142", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Mai Việt - 0898606003", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Kim Thi - 0963578996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Nga Nguyễn - 0366966025", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Phạm Thi Thu Hoài - 00975647321", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Ly Mailinh - 0907018009", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Nguyễn Anh - 0982899221", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Do Hoai Thu - 0977384542", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Checkout", "name": "Lyna Mhm - 0938525789", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hanh Moon - 0977865225", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Dao Thuy Dung - 0906204366", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Nguyễn Thu Thảo - 0906982184", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Duyen Nguyen - 0975476898", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Checkout", "name": "Hieu Linh - 0969898466", "tm": "1-2 ngày", "am": "Đúng công nợ"}];
+  D.partners  = [{"type": "Mua hộ", "name": "Nguyễn Công Phước MH", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888888879  Nguyen Cong Phuoc"}, {"type": "Mua hộ", "name": "Phạm Nam", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VPBank 0775655566 Pham Thanh Nam"}, {"type": "Mua hộ", "name": "Trancy", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VIB 916260599 Nguyen Giang Ai Tran"}, {"type": "Mua hộ", "name": "Hao Trieu", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 19032890539017  Trieu Quang Hao"}, {"type": "Sup", "name": "Nguyễn Công Phước GC", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 19038310248019  Nguyen Cong Phuoc"}, {"type": "Sup", "name": "Khắc Lệ", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 19032782875019 Pham Khac Le"}, {"type": "Sup", "name": "Nguyễn Phong", "tm": "Không giục", "am": "Không y/c min", "stk": "Vietcombank 1035376951  Nguyen Van Phong"}, {"type": "Sup", "name": "Dương Đông", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VIB 988126364 Ly Duong Ky"}, {"type": "Sup", "name": "Hieu Le", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank  7979790564 Le Minh Hieu"}, {"type": "Sup", "name": "Dương Minh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 8686867979  Pham Yen Vy"}, {"type": "Sup", "name": "Nguyen Duc Duy", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 2266799799 Nguyen Duc Duy"}, {"type": "Sup", "name": "Lan Hương Anh", "tm": "Không giục", "am": "USDT", "stk": "0x57ba425873cbddf582802acabdbe86ee189d54e2 Bep20"}, {"type": "Sup", "name": "Đặng Quang Đông", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietinbank 107875007358 Dang Quang Nam"}, {"type": "Sup", "name": "Binh Thanh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 337125387   Vo Vu Thu Tam"}, {"type": "Sup", "name": "Ngàn Nhật Đinh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "MBBank Dinh Ngan Nhat 0702499996"}, {"type": "Sup", "name": "Hoàng Lâm", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 2888999996  Dang Hoang Lam"}, {"type": "Sup", "name": "Nguyên Nguyễn", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 266917139 Nguyen Ngoc Mai"}, {"type": "Sup", "name": "Kiên Nguyễn", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888789 Nguyen Trung Kien"}, {"type": "Sup", "name": "Anh Linh", "tm": "Không giục", "am": "Không y/c min", "stk": "VIB 854128128 Cao Thi Trang"}, {"type": "Sup", "name": "Nguyễn Hoàng Ngọc Quang", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VIB 582149249  Nguyen Hoang Ngoc Quang"}, {"type": "Sup", "name": "Tiêu Văn Quyền", "tm": "Không giục", "am": "Không y/c min", "stk": "BIDV 2202868030 Tieu Van Quyen"}, {"type": "Sup", "name": "Đỗ Hậu", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VPBank 145551315 Do Van Hau"}, {"type": "Sup", "name": "Đặng Quang Lý", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 2456789 Dang Quang Ly"}, {"type": "Sup", "name": "Dung Anh Tran", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietcombank 0051000563887 Tran Kim Trong"}];
+  D.khChars   = [{"ch": "Linh Thảo", "name": "Phạm Minh - 0796466689", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Cjp Nguyen - 0919098428", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Trangtrang Quynh - 0829850596", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Thảo", "name": "Lan Anh Nguyen - 0942528883", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Uyen - 0786541443", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thuy Linh Bui - 0834194397", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Phương - 0983842809", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Tú Võ -  0398110019", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thùy Dươngg - 0983791530", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Xa Thanh Huyền - 0984483900", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Mẹ Tin Bắp - 0909026200", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Huyen Tran - 0917763020", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyen My Trang - 0903282468", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tú Vũ - 0328872654", "tm": "3-5 ngày", "am": "30 - 50tr"}, {"ch": "Linh Dương", "name": "Thảo Vân Lê - 0329113755", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Nguyễn Anh Tú (Libianca) - 0978040653", "tm": "Trong ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Hoàng Giang - 0942349899", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Khánh Linh - 0837162005", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Sáng Kim - 0919219529", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Trang - 0357903939", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Yen Tran CTV - 0978662285", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Linh Bi - 0896313888", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Minh Hương - 0842689186", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Van Us - 0945665558", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tra Truong - 0908633163", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thùy Duyên - 00904024169", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Huy - 0862520733", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Dương Thùy Linh - 0904239192", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Hằng Thị Phạm - 0936929339", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nhung Tran - 0968327619", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thanh Trúc - 0787315293", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Kim Duong Nguyen - 0972956666", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Mỹ Duyên Ngọc Bích - 0982893428", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Huyền Phan - 0971815398", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Dung Thuy Nguyen - 0385688565", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "Trịnh Bá Quyền - 0901223333", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thy Ba - 0935987879", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Kênh CO", "name": "Bách Checkout - 0916179999", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Kênh CO", "name": "Kim Hân - 0949667724", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "HA Thu Huyền - 0983812318", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thảo Nguyên Nguyên - 0918288102", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Uyên Đàm - 0989802497", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ly - 0474946393", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trịnh Hiền - 0966628989", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dương Trà SỈ - 0922311996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phí Đăng Luận - 0985034830", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hằng Nguyễn - 0904289890", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hien Duong - 0983136636", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hiệp Nguyễn - 5038889978", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hương Nguyễn - 0982898920", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "HATT Thu Nguyễn - 0948385557", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "Chị Huong Nguyenn - 0988092545", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Tống Khánh Ly - 0945645210", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Thơ Phan - 0964450900", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Nhung - 0907060691", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thuỳ Đặng - 0975684877", "tm": "Giục nhiều lần", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Trần Quang Huy - 0932211279", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Vivian Nguyen - 0909057476", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "La My - 0766565899", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Kênh CO", "name": "Chung Anh - 0916014061", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Joo - 0908556131", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dâu Tây Nhỏ - 0943465688", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Thanh Nga (Pu) - 0379237959", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAHS Nguyen Chi - 0932602185", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAKH Chi Đỗ - 0972512043", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Hồng Nhung Trần -  0968327619", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Thị Lê Thu - 0907979622", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Hân Nguyễn - 0986953599", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đình Lâm - 0982629656", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nhu Quynh - 0945102255", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nx Phuong - 0385576666", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Caroline XuXi - 0899956899", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Huong Tra Phan - 0961001486", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Mỹ Duyên - 0366078978", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trang Nguyễn - 0904901212", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Amy Ngo - 0932174074", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAMT Phương Nhi - 0914005731", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thảo Tây - 0772793193", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ngô Thị Thu Hoài - 0979915855", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hong Thanh - 0909822205", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Xuân Bách - 0942391352", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Anh Tâm Cigars- 0911246789", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thanh Thảo - 0774912219", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Nhi - 0703537174", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dung Nguyễn - 0981543095", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HA Bao Han - 0989399104", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thoa Pham - 0971201521", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đỗ Ngọc Thúy - 0376941841", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Selena Nguyen - 0939244082", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Anh Duy Bùi - 0356221310", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Quỳnh Anh Phạm - 0969044554", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAKH Thanh Nhàn - 0902951995", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trung Nguyen - 9713251765", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Quyên Dương - 0967718911", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ha Li - 0979909937", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thanh Hà Nguyễn - 0912536888", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đồng Hằng - 0389906526", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Tran Ngoc Thao - 0902445547", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hải Yến - 0965255155", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Vy Phượng - 0916616778", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Thi Hong Ha - 0982488760", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dinh Thang - 0947574515", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phạm Bích Thúy - 0989129520", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đặng Kim Anh - 0915382382", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Nguyễn Đặng Thơ Thơ - 0979580511", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Kênh CO", "name": "Bành Hoàng Nhi - 0975462142", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Mai Việt - 0898606003", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Kim Thi - 0963578996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nga Nguyễn - 0366966025", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phạm Thi Thu Hoài - 00975647321", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ly Mailinh - 0907018009", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Anh - 0982899221", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Do Hoai Thu - 0977384542", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Lyna Mhm - 0938525789", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hanh Moon - 0977865225", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dao Thuy Dung - 0906204366", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Thu Thảo - 0906982184", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Duyen Nguyen - 0975476898", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hieu Linh - 0969898466", "tm": "1-2 ngày", "am": "Đúng công nợ"}];
   if(loadFromStorage()){
     refreshDataLists(); ensureKhIds(); recalcAllSupStatuses(); rd0(); return;
   }
-  D.sup = [];
-  D.kh  = [];
+  D.sup = [{"id": "s1", "date": "2026-06-19", "nv": "Huệ", "type": "Mua hộ", "name": "Nguyễn Công Phước MH", "amount": 271686285, "stk": "", "status": "Chờ điều phối", "idCK": "NL26061901", "note": ""}, {"id": "s2", "date": "2026-06-19", "nv": "Huệ", "type": "Mua hộ", "name": "Phạm Nam", "amount": 40712621, "stk": "", "status": "Chờ điều phối", "idCK": "NL26061902", "note": ""}, {"id": "s3", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Nguyễn Công Phước GC", "amount": 48000000, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061903", "note": ""}, {"id": "s4", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Dương Đông", "amount": 28051755, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061904", "note": ""}, {"id": "s5", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Nguyên Nguyễn", "amount": 15391670, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061905", "note": ""}, {"id": "s6", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Hieu Le", "amount": 45329245, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061906", "note": ""}, {"id": "s7", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Anh Linh", "amount": 2432825, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061907", "note": ""}, {"id": "s8", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Tiêu Văn Quyền", "amount": 38407111, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061908", "note": ""}, {"id": "s9", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Hoàng Lâm", "amount": 3272444, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061909", "note": ""}];
+  D.kh  = [{"_id": "kh0", "date": "2026-06-19", "nv": "Thuỷ", "name": "Thảo Nguyên Nguyên - 0918288102", "amount": 78532131, "origAmount": 78532131, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh1", "date": "2026-06-19", "nv": "Thuỷ", "name": "Bách Checkout - 0916179999", "amount": 45330000, "origAmount": 45330000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh2", "date": "2026-06-19", "nv": "Thuỷ", "name": "Kim Hân - 0949667724", "amount": 15000000, "origAmount": 15000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh3", "date": "2026-06-19", "nv": "Thuỷ", "name": "HATT Thu Nguyễn - 0948385557", "amount": 15000000, "origAmount": 15000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh4", "date": "2026-06-19", "nv": "Thuỷ", "name": "Hương Nguyễn - 0982898920", "amount": 5000000, "origAmount": 5000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh5", "date": "2026-06-19", "nv": "Thuỷ", "name": "Hương Nguyễn - 0982898920", "amount": 10000000, "origAmount": 10000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh6", "date": "2026-06-19", "nv": "Thuỷ", "name": "Anh Duy Bùi - 0356221310", "amount": 30067915, "origAmount": 30067915, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh7", "date": "2026-06-19", "nv": "Thuỷ", "name": "La My - 0766565899", "amount": 19075715, "origAmount": 19075715, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh8", "date": "2026-06-19", "nv": "Thuỷ", "name": "Thoa Pham - 0971201521", "amount": 23175434, "origAmount": 23175434, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh9", "date": "2026-06-19", "nv": "Thuỷ", "name": "HAHS Nguyen Chi - 0932602185", "amount": 15191751, "origAmount": 15191751, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh10", "date": "2026-06-19", "nv": "Thuỷ", "name": "Chị Huong Nguyenn - 0988092545", "amount": 14254720, "origAmount": 14254720, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh11", "date": "2026-06-19", "nv": "Thuỷ", "name": "Nguyễn Thị Lê Thu - 0907979622", "amount": 11953655, "origAmount": 11953655, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh12", "date": "2026-06-19", "nv": "Thuỷ", "name": "Thuỳ Đặng - 0975684877", "amount": 11386850, "origAmount": 11386850, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh13", "date": "2026-06-19", "nv": "Thuỷ", "name": "HATT Nhung - 0907060691", "amount": 10952805, "origAmount": 10952805, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh14", "date": "2026-06-19", "nv": "Thuỷ", "name": "Vivian Nguyen - 0909057476", "amount": 9720130, "origAmount": 9720130, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh15", "date": "2026-06-19", "nv": "Thuỷ", "name": "Trang Nguyễn - 0904901212", "amount": 12947105, "origAmount": 12947105, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh16", "date": "2026-06-19", "nv": "Thuỷ", "name": "Trung Nguyen - 9713251765", "amount": 8194080, "origAmount": 8194080, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh17", "date": "2026-06-19", "nv": "Thuỷ", "name": "Phan Thanh Nga (Pu) - 0379237959", "amount": 7851150, "origAmount": 7851150, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh18", "date": "2026-06-19", "nv": "Thuỷ", "name": "Mỹ Duyên - 0366078978", "amount": 7252025, "origAmount": 7252025, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh19", "date": "2026-06-19", "nv": "Thuỷ", "name": "Joo - 0908556131", "amount": 6297120, "origAmount": 6297120, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh20", "date": "2026-06-19", "nv": "Thuỷ", "name": "Đình Lâm - 0982629656", "amount": 5351580, "origAmount": 5351580, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh21", "date": "2026-06-19", "nv": "Bình", "name": "Kim Duong Nguyen - 0972956666", "amount": 50000000, "origAmount": 50000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}];
   D.ck  = [];
-  D.ctr = 1;
+  D.ctr = 60;
   refreshDataLists(); ensureKhIds(); recalcAllSupStatuses(); rd0();
 }
 /* ================================================
@@ -3174,7 +3527,7 @@ function loadSample(){
    ================================================ */
 const LS_KEY = 'xuka_cn_v1';
 const LS_VER_KEY = 'xuka_ver';
-const LS_VER = '4'; // bump to force-reset all clients
+const LS_VER = '8'; // bump to force-reset all clients
 
 // Auto-clear stale localStorage on version mismatch
 (function(){
