@@ -1,0 +1,49 @@
+name: Deploy to server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          PORT="${{ secrets.SSH_PORT }}"; PORT="${PORT:-22}"
+          ssh-keyscan -p "$PORT" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Deploy with rsync over SSH and restart PM2
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}
+        run: |
+          set -euo pipefail
+          PORT="${SSH_PORT:-22}"
+          APP="${PM2_APP_NAME:-xuka-congno}"
+          SSH="ssh -i $HOME/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=accept-new"
+
+          # Copy app files to the server (keeps server-side files like node_modules / uploads)
+          rsync -avz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            -e "$SSH" \
+            ./ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+
+          # Install prod deps and (re)start the PM2 process
+          $SSH "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && npm install --omit=dev && (pm2 reload '$APP' || pm2 start server.js --name '$APP') && pm2 save"
