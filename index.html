@@ -9,6 +9,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#8a9bf2">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="CK 3 bên">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
 <style>
 /* ===== Soft Glass Dashboard System — Xuka Công Nợ ===== */
 :root{
@@ -118,6 +126,16 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .toolbar select,.toolbar input{font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:var(--txt);outline:none;font-family:inherit}
 .toolbar input{min-width:200px}
 .toolbar select:focus,.toolbar input:focus{border-color:var(--acc)}
+
+/* SEGMENTED FILTER + SEARCH (design) */
+.seg{display:flex;gap:5px;padding:5px;border-radius:999px;background:rgba(255,255,255,0.55);border:1px solid rgba(255,255,255,0.8)}
+.seg .btn{border:none;background:transparent;box-shadow:none;border-radius:999px!important;padding:7px 16px!important;color:#797f90;font-weight:500;font-size:13px}
+.seg .btn:hover:not(.on){background:rgba(255,255,255,0.5)}
+.seg .btn.on{background:var(--grad);color:#fff;box-shadow:none}
+.search{display:flex;align-items:center;gap:9px;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.8);min-width:200px;max-width:340px;flex:1}
+.search svg{flex:none;color:#9aa0b2}
+.search input{border:none!important;background:transparent!important;outline:none;font-size:13px;color:var(--txt);font-family:inherit;flex:1;padding:0!important;min-width:0;box-shadow:none!important}
+.search input::placeholder{color:#9aa0b2}
 
 /* TABLES */
 .tw{overflow-x:auto;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-brd);border-radius:24px;box-shadow:var(--glass-sh);padding:8px 8px 4px}
@@ -246,6 +264,29 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 .month-nav button{background:rgba(255,255,255,0.8);border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;color:#5b6072;font-size:14px}
 .month-nav button:hover{background:#fff}
 .month-nav span{font-size:14px;font-weight:600;color:var(--txt);padding:0 8px}
+
+/* ===== RESPONSIVE / PWA (mobile) ===== */
+@media(max-width:860px){
+  .app{padding:12px 12px 32px}
+  .hdr{flex-wrap:wrap;gap:10px;padding:12px 14px;border-radius:18px}
+  .hdr-title{font-size:15px}
+  .layout{flex-direction:column;gap:12px}
+  .sidebar{width:100%;position:static;top:auto;height:auto;border-radius:18px;padding:8px}
+  .sidebar-section{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;gap:6px;-webkit-overflow-scrolling:touch}
+  .nav-group{flex-direction:row;align-items:center;gap:6px;flex:none}
+  .sidebar-label{display:none}
+  .tab,.menu-main{white-space:nowrap;flex:none}
+  .tab-lbl{flex:none}
+  #t0 [style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}
+  #t0 [style*="1.55fr"]{grid-template-columns:1fr!important}
+  .toolbar{gap:8px}
+  .search{min-width:140px}
+  .kpi-val{font-size:22px}
+  h1{font-size:20px!important}
+}
+@media(max-width:520px){
+  #t0 [style*="repeat(4"]{grid-template-columns:1fr!important}
+}
 </style>
 </head>
 <body>
@@ -305,7 +346,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
     </div>
   </div>
   <div style="padding:12px 10px;border-top:1px solid var(--brd);margin-top:auto">
-    <button onclick="resetData()" style="width:100%;background:var(--bg);border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt2);cursor:pointer;text-align:left;transition:background .15s,color .15s" onmouseover="this.style.background='var(--red2)';this.style.color='var(--red3)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--txt2)'">🗑 Reset data</button>
+    <button onclick="resetData()" style="width:100%;background:var(--bg);border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt2);cursor:pointer;text-align:left;transition:background .15s,color .15s" onmouseover="this.style.background='var(--red2)';this.style.color='var(--red3)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--txt2)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/></svg>Reset data</button>
   </div>
 </nav>
 
@@ -383,13 +424,13 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div id="t1" class="sec">
   <div class="sec-wrap" id="t1-wrap">
   <div class="toolbar">
-    <div style="display:flex;gap:4px">
+    <div class="seg">
       <button id="f1t-all" class="btn on" onclick="setSupTypeFilter('')"       style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
       <button id="f1t-sup" class="btn"    onclick="setSupTypeFilter('Sup')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
-      <button id="f1t-mh"  class="btn"    onclick="setSupTypeFilter('Mua hộ')" style="font-size:13px;padding:5px 14px;border-radius:8px">Mua hộ</button>
+      <button id="f1t-mh"  class="btn"    onclick="setSupTypeFilter('Checker')" style="font-size:13px;padding:5px 14px;border-radius:8px">Checker</button>
     </div>
     <select id="f1s" onchange="rt1()"><option value="">Tất cả tình trạng</option><option>Chờ điều phối</option><option>Đã điều phối</option><option>CK 1 phần</option><option>Done</option><option>CK dư</option><option>Cancelled</option></select>
-    <input id="f1q" placeholder="🔍 Tìm tên đối tác..." oninput="rt1()" list="dl-partners">
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners"></div>
     <datalist id="dl-partners"></datalist>
     <input type="hidden" id="f1t" value="">
     <button class="btn btn-p" id="btn-add-sup" onclick="openM('msup')" style="margin-left:auto">+ Nhập công nợ</button>
@@ -406,21 +447,21 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div id="t2" class="sec">
   <div class="sec-wrap" id="t2-wrap">
   <div class="toolbar">
-    <div style="display:flex;gap:4px">
+    <div class="seg">
       <button id="f2ch-all" class="btn on" onclick="setKhChFilter2('')"           style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
       <button id="f2ch-ld"  class="btn"    onclick="setKhChFilter2('Linh Dương')" style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Dương</button>
       <button id="f2ch-lt"  class="btn"    onclick="setKhChFilter2('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
       <button id="f2ch-co"  class="btn"    onclick="setKhChFilter2('Kênh CO')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Kênh CO</button>
     </div>
     <select id="f2s" onchange="rt2()"><option value="">Tất cả tình trạng</option><option>Mới nhập</option><option>Chờ khách CK</option><option>Khách đã CK</option><option>Done</option><option>CK 1 phần</option><option>Cancelled</option></select>
-    <input id="f2q" placeholder="🔍 Tìm tên KH..." oninput="rt2()" list="dl-customers">
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers"></div>
     <datalist id="dl-customers"></datalist>
     <input type="hidden" id="f2ch" value="">
     <button class="btn btn-p" id="btn-add-kh" onclick="openM('mkh')" style="margin-left:auto">+ Nhập công nợ KH</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
-    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/MH)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th>Điều phối</th>
+    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/Checker)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th>Điều phối</th>
   </tr></thead><tbody id="tb2"></tbody></table></div>
   <div id="pg2" class="pgbar"></div>
   </div>
@@ -429,14 +470,14 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <!-- ===== TAB 3: TRACKING CK (was t4) ===== -->
 <div id="t3" class="sec">
   <div class="toolbar">
-    <select id="f4s" onchange="rt4()"><option value="">Tất cả tình trạng</option><option>Chờ XN & Đã tham chiếu HT</option><option>Đã XN & Nhập file Sup/MH</option><option>Done & Nhập Thu Chi</option></select>
+    <select id="f4s" onchange="rt4()"><option value="">Tất cả tình trạng</option><option>Chờ XN & Đã tham chiếu HT</option><option>Đã XN & Nhập file Sup/Checker</option><option>Done & Nhập Thu Chi</option></select>
     <select id="f4nv" onchange="rt4()"><option value="">Tất cả NV</option></select>
-    <input id="f4q" placeholder="🔍 Tìm tên KH..." oninput="rt4()">
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f4q" placeholder="Tìm tên KH…" oninput="rt4()"></div>
     <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')" style="margin-left:auto">+ Nhập bill CK</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
-    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>ID CK</th><th>Đối tác nhận (Sup/MH)</th><th>Số tiền</th><th>Bill CK</th><th>Tình trạng</th><th>Hành động</th><th></th>
+    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>ID CK</th><th>Đối tác nhận (Sup/Checker)</th><th>Số tiền</th><th>Bill CK</th><th>Tình trạng</th><th>Hành động</th><th></th>
   </tr></thead><tbody id="tb4"></tbody></table></div>
   <div id="pg4" class="pgbar"></div>
 </div>
@@ -444,16 +485,13 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <!-- ===== TAB 4a: DANH SÁCH SUP/MH ===== -->
 <div id="t4a" class="sec">
   <div class="toolbar">
-    <div style="display:flex;gap:4px">
+    <div class="seg">
       <button id="f5type-all" class="btn on" onclick="setSupFilter('')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
       <button id="f5type-sup" class="btn"    onclick="setSupFilter('Sup')" style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
-      <button id="f5type-mh"  class="btn"    onclick="setSupFilter('Mua hộ')" style="font-size:13px;padding:5px 14px;border-radius:8px">Mua hộ</button>
+      <button id="f5type-mh"  class="btn"    onclick="setSupFilter('Checker')" style="font-size:13px;padding:5px 14px;border-radius:8px">Checker</button>
     </div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <span style="font-size:15px;color:var(--txt2)">🔎</span>
-      <input id="f5qa" placeholder="Tìm tên..." oninput="rt5a()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
-    </div>
-    <button class="btn btn-p" id="btn-add-partner" onclick="openM('m-add-partner')" style="margin-left:auto">+ Thêm Sup/MH</button>
+    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qa" placeholder="Tìm tên…" oninput="rt5a()"></div>
+    <button class="btn btn-p" id="btn-add-partner" onclick="openM('m-add-partner')" style="margin-left:auto">+ Thêm Sup/Checker</button>
   </div>
   <input type="hidden" id="f5type" value="">
   <div class="tw"><table><thead><tr>
@@ -465,21 +503,18 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <!-- ===== TAB 4b: DANH SÁCH KH ===== -->
 <div id="t4b" class="sec">
   <div class="toolbar">
-    <div style="display:flex;gap:4px">
+    <div class="seg">
       <button id="f5ch-all" class="btn on" onclick="setKhChFilter('')"           style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
       <button id="f5ch-ld"  class="btn"    onclick="setKhChFilter('Linh Dương')" style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Dương</button>
       <button id="f5ch-lt"  class="btn"    onclick="setKhChFilter('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
       <button id="f5ch-co"  class="btn"    onclick="setKhChFilter('Kênh CO')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Kênh CO</button>
     </div>
-    <div style="display:flex;align-items:center;gap:6px">
-      <span style="font-size:15px;color:var(--txt2)">🔎</span>
-      <input id="f5qb" placeholder="Tìm tên KH..." oninput="rt5b()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:180px">
-    </div>
+    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qb" placeholder="Tìm tên KH…" oninput="rt5b()"></div>
     <input type="hidden" id="f5ch" value="">
     <button class="btn btn-p" id="btn-add-kh-char" onclick="openM('m-add-kh-char')" style="margin-left:auto">+ Thêm KH</button>
   </div>
   <div class="tw"><table><thead><tr>
-    <th>Kênh</th><th>Tên KH + SĐT</th><th>Thời gian bank</th><th>Số tiền bank</th><th>Sup/MH mặc định</th><th></th>
+    <th>Kênh</th><th>Tên KH + SĐT</th><th>Thời gian bank</th><th>Số tiền bank</th><th>Sup/Checker mặc định</th><th></th>
   </tr></thead><tbody id="tb5b"></tbody></table></div>
   <div id="pg5b" class="pgbar"></div>
 </div>
@@ -528,7 +563,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div id="cfg2" class="sec">
   <div class="cfg-section">
     <div class="cfg-title" style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg>Mapping KH ↔ Sup/Checker mặc định</div>
-    <div class="cfg-desc">Các cặp KH—Sup/MH cố định. Khi nhập công nợ KH có trong danh sách này sẽ tự động điều phối.</div>
+    <div class="cfg-desc">Các cặp KH—Sup/Checker cố định. Khi nhập công nợ KH có trong danh sách này sẽ tự động điều phối.</div>
     <div class="toolbar" style="margin-bottom:10px">
       <button class="btn btn-p" onclick="toggleAddMappingForm()">+ Thêm cặp</button>
     </div>
@@ -539,9 +574,9 @@ tr:hover td{background:rgba(255,255,255,0.4)}
             <option value="">-- Chọn KH --</option>
           </select>
         </div>
-        <div class="fr"><label>Sup/MH mặc định</label>
+        <div class="fr"><label>Sup/Checker mặc định</label>
           <select id="map-sup-sel" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-            <option value="">-- Chọn Sup/MH --</option>
+            <option value="">-- Chọn Sup/Checker --</option>
           </select>
         </div>
       </div>
@@ -553,12 +588,12 @@ tr:hover td{background:rgba(255,255,255,0.4)}
     <div class="tw">
       <div style="margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <select id="map-filter-sup" onchange="renderCfgMapping()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-          <option value="">Tất cả Sup/MH</option>
+          <option value="">Tất cả Sup/Checker</option>
         </select>
-        <input id="map-filter-q" placeholder="🔍 Tìm tên KH..." oninput="renderCfgMapping()" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none;width:200px">
+        <div class="search" style="max-width:240px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="map-filter-q" placeholder="Tìm tên KH…" oninput="renderCfgMapping()"></div>
       </div>
       <table><thead><tr>
-        <th>Tên KH</th><th>Đặc điểm</th><th>Sup/MH mặc định</th><th style="width:40px"></th>
+        <th>Tên KH</th><th>Đặc điểm</th><th>Sup/Checker mặc định</th><th style="width:40px"></th>
       </tr></thead><tbody id="tb-cfg-mapping"></tbody></table>
     </div>
   </div>
@@ -568,11 +603,11 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div id="cfg3" class="sec">
   <div class="cfg-section">
     <div class="cfg-title" style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 17v-5"/><path d="m9.7 14 2.3-2.3L14.3 14"/></svg>Upload dữ liệu ban đầu</div>
-    <div class="cfg-desc">Upload file Excel Danh sách đối tác để cập nhật toàn bộ danh sách Sup/MH và KH.</div>
+    <div class="cfg-desc">Upload file Excel Danh sách đối tác để cập nhật toàn bộ danh sách Sup/Checker và KH.</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
       <div class="upload-card">
         <div class="upload-icon">🏢</div>
-        <div class="upload-label">Danh sách Sup/MH + KH</div>
+        <div class="upload-label">Danh sách Sup/Checker + KH</div>
         <div class="upload-sub">File Excel có sheet "Đặc điểm SupKhách"</div>
         <label class="btn btn-p" style="cursor:pointer;margin-top:10px">
           Chọn file
@@ -606,7 +641,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
     <div id="eks-step2" style="display:none">
       <h2 style="margin-bottom:14px">✏️ Sửa điều phối</h2>
       <div class="fg">
-        <div class="fr"><label>Sup/MH nhận tiền</label>
+        <div class="fr"><label>Sup/Checker nhận tiền</label>
           <select id="eks-sup-sel" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
             <option value="">-- Chọn --</option>
           </select>
@@ -702,14 +737,14 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div class="modbg" id="msup">
 <div class="mod">
   <button class="xbtn" onclick="closeM('msup')">×</button>
-  <h2>Nhập công nợ Sup/MH</h2>
+  <h2>Nhập công nợ Sup/Checker</h2>
   <div class="fg">
     <div class="fr"><label>Ngày</label><input type="date" id="i_sd"/></div>
     <div class="fr"><label>Nhân viên</label><input id="i_snv" placeholder="Tên nhân viên"/></div>
   </div>
   <div class="fg">
     <div class="fr"><label>Loại đối tác</label>
-      <select id="i_st" onchange="onSupTypeChange()"><option>Sup</option><option>Mua hộ</option></select>
+      <select id="i_st" onchange="onSupTypeChange()"><option>Sup</option><option>Checker</option></select>
     </div>
     <div class="fr"><label>Tên đối tác</label>
       <input id="i_sn" placeholder="Chọn hoặc nhập tên..." list="dl-p-sup" oninput="onSupNameInput()"/>
@@ -885,7 +920,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
     <div style="font-size:12px;color:var(--txt2);margin-top:4px">💡 Nếu 1 KH nợ 20tr muốn chia 2 lần → gán 2 lần với 2 số tiền khác nhau, hệ thống tự tách thành 2 khoản CN KH.</div>
   </div>
   <div class="mact mact-l">
-    <button class="btn btn-danger btn-sm" id="dp_cancel_btn" onclick="cancelDp()" style="display:none">🗑 Hủy khoản này</button>
+    <button class="btn btn-danger btn-sm" id="dp_cancel_btn" onclick="cancelDp()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14"/><path d="M10 11v6M14 11v6"/></svg>Hủy khoản này</button>
     <div style="display:flex;gap:8px">
       <button class="btn" onclick="closeM('mdp')">Đóng</button>
       <button class="btn btn-p" id="dp_save_btn" onclick="execDp()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 6"/></svg>Xác nhận điều phối</button>
@@ -898,9 +933,9 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div class="modbg" id="m-add-partner">
 <div class="mod">
   <button class="xbtn" onclick="closeM('m-add-partner')">×</button>
-  <h2>Thêm đối tác Sup/MH</h2>
+  <h2>Thêm đối tác Sup/Checker</h2>
   <div class="fg">
-    <div class="fr"><label>Loại</label><select id="ap_type"><option>Sup</option><option>Mua hộ</option></select></div>
+    <div class="fr"><label>Loại</label><select id="ap_type"><option>Sup</option><option>Checker</option></select></div>
     <div class="fr"><label>Tên đối tác</label><input id="ap_name" placeholder="Tên"/></div>
   </div>
   <div class="fr"><label>STK nhận tiền mặc định</label><textarea id="ap_stk" placeholder="Ngân hàng - STK - Chủ TK - ND CK" rows="2"></textarea></div>
@@ -982,10 +1017,10 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <div class="modbg" id="m-edit-partner">
 <div class="mod">
   <button class="xbtn" onclick="closeM('m-edit-partner')">×</button>
-  <h2>Sửa đặc điểm Sup/MH</h2>
+  <h2>Sửa đặc điểm Sup/Checker</h2>
   <input type="hidden" id="ep_idx">
   <div class="fg">
-    <div class="fr"><label>Loại</label><select id="ep_type"><option>Sup</option><option>Mua hộ</option></select></div>
+    <div class="fr"><label>Loại</label><select id="ep_type"><option>Sup</option><option>Checker</option></select></div>
     <div class="fr"><label>Tên</label><input id="ep_name"/></div>
   </div>
   <div class="fr"><label>STK nhận tiền</label><textarea id="ep_stk" rows="2"></textarea></div>
@@ -1052,8 +1087,8 @@ tr:hover td{background:rgba(255,255,255,0.4)}
   <div class="fr"><label>Tình trạng</label>
     <select id="eck_status">
       <option>Chờ XN & Đã tham chiếu HT</option>
-      <option>Đã XN & Nhập file Sup/MH</option>
-      <option>Đã XN & Nhập file Sup/MH</option>
+      <option>Đã XN & Nhập file Sup/Checker</option>
+      <option>Đã XN & Nhập file Sup/Checker</option>
       <option>Done</option>
     </select>
   </div>
@@ -1175,7 +1210,7 @@ const USERS = [];
 const ROLE_LABELS = {admin:'Admin',mh:'Mua hàng',sale:'Sale/CSKH',kt:'Kế toán'};
 
 /* ================================================
-   KH → Sup/MH MAPPING CỐ ĐỊNH
+   KH → Sup/Checker MAPPING CỐ ĐỊNH
    ================================================ */
 const KH_SUP_MAP = {
   "Cjp Nguyen - 0919098428":         "Nguyễn Công Phước MH",
@@ -1236,7 +1271,7 @@ function countPendingActions(){
 
   const count = D.ck.filter(c=>{
     if(actions.includes('supxn')    && c.status==='Chờ XN & Đã tham chiếu HT') return true;
-    if(actions.includes('duyet')    && c.status==='Đã XN & Nhập file Sup/MH')  return true;
+    if(actions.includes('duyet')    && c.status==='Đã XN & Nhập file Sup/Checker')  return true;
     if(actions.includes('duyet')    && c.status==='Done & Nhập Thu Chi')          return false;
     return false;
   }).length;
@@ -1260,7 +1295,7 @@ function showNotiPopup(){
   const count = countPendingActions();
   if(count === 0) return;
   const actions = ROLE_TRACK_ACTIONS[currentRole] || [];
-  let action = actions.includes('supxn') ? 'xác nhận Sup/MH XN' : 'duyệt payment';
+  let action = actions.includes('supxn') ? 'xác nhận Sup/Checker XN' : 'duyệt payment';
   el('noti-msg').textContent = `Có ${count} khoản đang chờ bạn ${action}.`;
   el('noti-popup').style.display = '';
 }
@@ -1292,7 +1327,7 @@ const ROLE_TABS = {
 };
 // Tracking: which actions each role can do (column Hành động)
 // sale: nhập bill CK
-// mh: xác nhận Sup/MH đã nhận
+// mh: xác nhận Sup/Checker đã nhận
 // kt: tham chiếu + duyệt payment
 const ROLE_TRACK_ACTIONS = {
   admin: ['bill','supxn','duyet'],
@@ -1373,7 +1408,7 @@ function sb(s){
     'CK 1 phần':'b-part','CK dư':'b-over','Cancelled':'b-cancel',
     'Chờ khách CK':'b-wait','Khách đã CK':'b-ckd','Mới nhập':'b-new',
     'Chờ XN & Đã tham chiếu HT':'b-wait',
-    'Đã XN & Nhập file Sup/MH':'b-assigned',
+    'Đã XN & Nhập file Sup/Checker':'b-assigned',
     'Pending':'b-new'
   };
   return `<span class="badge ${m[s]||'b-new'}">${s||'—'}</span>`;
@@ -1576,7 +1611,7 @@ function monthStats(m,y){
     if(!c.date) return;
     const d=new Date(c.date);
     if(d.getMonth()===m && d.getFullYear()===y &&
-       (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi')){
+       (c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi')){
       total+=c.amount||0; count++;
     }
   });
@@ -1593,7 +1628,7 @@ function rd0(){
     if(!c.date) return false;
     const d = new Date(c.date);
     return d.getMonth()===m && d.getFullYear()===y &&
-      (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi');
+      (c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi');
   });
 
   let supTotal=0, supCount=0, mhTotal=0, mhCount=0;
@@ -1606,7 +1641,7 @@ function rd0(){
       const khEntry = D.kh.find(k=>k.idCK===c.idCK && k.name===c.kh);
       const supName = khEntry ? getFixedSup(khEntry.name) : null;
       const partner = supName ? D.partners.find(p=>p.name===supName) : null;
-      isMH = partner ? partner.type==='Mua hộ' : (c.idCK||'').startsWith('NL');
+      isMH = partner ? partner.type==='Checker' : (c.idCK||'').startsWith('NL');
     }
     if(isMH){ mhTotal+=c.amount; mhCount++; }
     else     { supTotal+=c.amount; supCount++; }
@@ -1670,7 +1705,7 @@ function rd0(){
       const khEntry = D.kh.find(k=>k.idCK===c.idCK && k.name===c.kh);
       const supName = khEntry ? getFixedSup(khEntry.name) : null;
       const partner = supName ? D.partners.find(p=>p.name===supName) : null;
-      isMH = partner ? partner.type==='Mua hộ' : (c.idCK||'').startsWith('NL');
+      isMH = partner ? partner.type==='Checker' : (c.idCK||'').startsWith('NL');
     }
     if(isMH) mhDaily[day-1]+=c.amount;
     else     supDaily[day-1]+=c.amount;
@@ -1722,7 +1757,7 @@ function rd0(){
    ================================================ */
 function calcSupStatus(sup){
   const confirmed = D.ck.filter(c=>c.idCK===sup.idCK && sup.idCK &&
-    (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi'));
+    (c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi'));
   const total = confirmed.reduce((a,c)=>a+c.amount,0);
   if(!sup.idCK || total===0) return {total:0, status: sup.status||'Chờ điều phối'};
   if(total < sup.amount) return {total, status:'CK 1 phần'};
@@ -1825,7 +1860,7 @@ function rt2(){
       if(existingBill){
         // Already has bill — show view icon
         billCell = `<td style="white-space:nowrap">
-          <button style="background:none;border:none;cursor:pointer;font-size:17px;padding:2px 4px;line-height:1;color:var(--grn)" title="Xem bill CK" onclick="window.open('${existingBill.link.replace(/'/g,"\\'")}','_blank','noopener')">🔎</button>
+          <button style="background:none;border:none;cursor:pointer;font-size:17px;padding:2px 4px;line-height:1;color:var(--grn)" title="Xem bill CK" onclick="window.open('${existingBill.link.replace(/'/g,"\\'")}','_blank','noopener')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
         </td>`;
       } else if(k.status === 'Chờ khách CK'){
         // Has idCK but no bill yet — show attach icon
@@ -1938,7 +1973,7 @@ function saveBillFromKH(khId){
 /* ================================================
    ĐIỀU PHỐI — triggered from KH row
    showDpFromKH: opens modal with KH pre-selected,
-   user picks Sup/MH account and sets amount
+   user picks Sup/Checker account and sets amount
    ================================================ */
 
 // Give every KH entry a stable _id on save
@@ -1953,7 +1988,7 @@ function showDpFromKH(khId){
 
   const isEdit = !!k.idCK;
 
-  // Populate sup options: show all Sup/MH that have an ID or can get one
+  // Populate sup options: show all Sup/Checker that have an ID or can get one
   const supOptions = D.sup.filter(s=>!['Cancelled','Done'].includes(s.status));
 
   el('dptitle').textContent = isEdit
@@ -1975,7 +2010,7 @@ function showDpFromKH(khId){
   el('dp_kh_section').style.display='none';
   el('dp_cancel_btn').style.display = isEdit ? '' : 'none';
 
-  // Build content: KH info + pick Sup/MH + amount
+  // Build content: KH info + pick Sup/Checker + amount
   const currentSup = k.idCK ? D.sup.find(s=>s.idCK===k.idCK) : null;
   el('dpcontent').innerHTML = `
     <div class="scard" style="padding:12px;margin-bottom:14px">
@@ -1999,9 +2034,9 @@ function showDpFromKH(khId){
     </div>
 
     <div class="fr">
-      <label>Chọn tài khoản Sup/MH nhận tiền</label>
+      <label>Chọn tài khoản Sup/Checker nhận tiền</label>
       <select id="dp_sup_sel" onchange="onDpSupChange()" style="width:100%;font-size:13px;padding:8px 10px;border-radius:var(--r);border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-        <option value="">-- Chọn đối tác Sup/MH --</option>
+        <option value="">-- Chọn đối tác Sup/Checker --</option>
         ${supOptions.map(s=>`<option value="${s.id}" ${currentSup&&currentSup.id===s.id?'selected':''}>
           [${s.type}] ${s.name} — CN: ${fmt(s.amount)} — ${sb_text(s.status)}
         </option>`).join('')}
@@ -2052,16 +2087,16 @@ function execDp(){
     }
 
     const selId = el('dp_sup_sel').value;
-    if(!selId){ toast('Chọn tài khoản Sup/MH', true); return; }
+    if(!selId){ toast('Chọn tài khoản Sup/Checker', true); return; }
     const amount = parseInt((el('dp_amount_input').value||'').replace(/\D/g,''))||0;
     if(!amount){ toast('Nhập số tiền chỉ định', true); return; }
 
     if(selId==='__new__'){
-      toast('Vui lòng nhập công nợ Sup/MH trước ở tab Công nợ Sup/MH', true); return;
+      toast('Vui lòng nhập công nợ Sup/Checker trước ở tab Công nợ Sup/Checker', true); return;
     }
 
     const sup = D.sup.find(s=>s.id===selId);
-    if(!sup){ toast('Không tìm thấy Sup/MH', true); return; }
+    if(!sup){ toast('Không tìm thấy Sup/Checker', true); return; }
 
     // Ensure sup has an ID
     if(!sup.idCK) sup.idCK = gid(sup.type==='Sup'?'Sup':'MH');
@@ -2136,7 +2171,7 @@ function rt4(){
     }
     const billLink = c.link
       ? `<div style="display:flex;gap:6px;align-items:center">
-           <button style="background:none;border:none;cursor:pointer;color:var(--grn);font-size:16px;padding:0;line-height:1" title="Xem bill" onclick="window.open('${c.link.replace(/'/g,"\\'")}','_blank','noopener')">🔎</button>
+           <button style="background:none;border:none;cursor:pointer;color:var(--grn);font-size:16px;padding:0;line-height:1" title="Xem bill" onclick="window.open('${c.link.replace(/'/g,"\\'")}','_blank','noopener')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
            <button style="background:none;border:none;cursor:pointer;color:var(--txt2);font-size:16px;padding:0;line-height:1;display:inline-flex;align-items:center" title="Copy link" onclick="copyText('${c.link.replace(/'/g,"\\'")}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
          </div>`
       : `<div id="bill-upload-${ckIdx}" style="display:inline-block">
@@ -2162,10 +2197,10 @@ function rt4(){
 
     let acts = '';
     if(c.status==='Chờ XN & Đã tham chiếu HT' && canSupXn)
-      acts = actBtn('Sup/MH XN', `askConfirmAction('supxn',${ckIdx})`, 'pill-attach');
-    else if(c.status.includes('Đã XN & Nhập file Sup/MH') && canThamch)
+      acts = actBtn('Sup/Checker XN', `askConfirmAction('supxn',${ckIdx})`, 'pill-attach');
+    else if(c.status.includes('Đã XN & Nhập file Sup/Checker') && canThamch)
       acts = actBtn('Tham chiếu', `thamch(${ckIdx})`, 'pill-edit');
-    else if(c.status==='Đã XN & Nhập file Sup/MH' && canDuyet)
+    else if(c.status==='Đã XN & Nhập file Sup/Checker' && canDuyet)
       acts = actBtn('Duyệt', `askConfirmAction('duyet',${ckIdx})`, 'pill-attach');
 
     return `<tr>
@@ -2232,7 +2267,7 @@ function proceedEditSTK(){
 function saveEditSTK(){
   const k = D.kh.find(x=>x._id===_editStkKhId); if(!k) return;
   const supName = el('edit-stk-sup-sel').value;
-  if(!supName){ toast('Chọn Sup/MH', true); return; }
+  if(!supName){ toast('Chọn Sup/Checker', true); return; }
   const partner = D.partners.find(p=>p.name===supName);
   k.stk = partner ? partner.stk : '';
   // Also update D.ck entry if exists
@@ -2272,7 +2307,7 @@ function eksStep2(){
 function saveEditKHStk(){
   const k = D.kh.find(x=>x._id===_eksKhId); if(!k) return;
   const supName = el('eks-sup-sel').value;
-  if(!supName){ toast('Chọn Sup/MH', true); return; }
+  if(!supName){ toast('Chọn Sup/Checker', true); return; }
   const partner = D.partners.find(p=>p.name===supName);
   const newAmt = parseInt(el('eks-amount').value) || k.cdAm || k.amount;
   k.stk  = partner ? partner.stk : '';
@@ -2349,7 +2384,7 @@ function askConfirmAction(type, idx){
   _pendingAction = {type, idx};
   if(type === 'supxn'){
     el('m-confirm-icon').textContent  = '📋';
-    el('m-confirm-title').textContent = 'Xác nhận Sup/MH đã nhận tiền?';
+    el('m-confirm-title').textContent = 'Xác nhận Sup/Checker đã nhận tiền?';
     el('m-confirm-desc').innerHTML    = '';
   } else {
     el('m-confirm-icon').textContent  = '✅';
@@ -2369,16 +2404,16 @@ function doConfirmAction(){
 }
 
 function confCK(i){
-  D.ck[i].status = 'Đã XN & Nhập file Sup/MH';
+  D.ck[i].status = 'Đã XN & Nhập file Sup/Checker';
   updateSupStatus(D.ck[i].idCK);
   const khEntry = D.kh.find(k=>k.name===D.ck[i].kh && k.idCK===D.ck[i].idCK);
   if(khEntry) khEntry.status = 'Khách đã CK';
   rt4(); rd0(); rt1(); autosave(); updateNoti();
-  toast('✅ Đã xác nhận Sup/MH nhận tiền. Vui lòng nhập vào file Mua Hộ/Report GC Mua.');
+  toast('✅ Đã xác nhận Sup/Checker nhận tiền. Vui lòng nhập vào file Mua Hộ/Report GC Mua.');
 }
 function thamch(i){
-  D.ck[i].status = 'Đã XN & Nhập file Sup/MH';
-  rt4(); autosave(); toast('✅ Đã XN & Nhập file Sup/MH lên hệ thống');
+  D.ck[i].status = 'Đã XN & Nhập file Sup/Checker';
+  rt4(); autosave(); toast('✅ Đã XN & Nhập file Sup/Checker lên hệ thống');
 }
 function duyet(i){
   D.ck[i].status = 'Done & Nhập Thu Chi';
@@ -2510,7 +2545,7 @@ function runChotPhien(auto=false){
   });
   autosave(); rd0(); rt1(); rt2();
   if(supCount+khCount > 0)
-    toast(`⏰ ${label}: đã huỷ ${supCount} khoản Sup/MH và ${khCount} khoản KH chưa hoàn thành`, false, 6000);
+    toast(`⏰ ${label}: đã huỷ ${supCount} khoản Sup/Checker và ${khCount} khoản KH chưa hoàn thành`, false, 6000);
 }
 
 // Run on load and every minute
@@ -2543,7 +2578,7 @@ function setSupTypeFilter(val){
   el('f1t').value = val;
   el('f1t-all').classList.toggle('on', val==='');
   el('f1t-sup').classList.toggle('on', val==='Sup');
-  el('f1t-mh').classList.toggle('on', val==='Mua hộ');
+  el('f1t-mh').classList.toggle('on', val==='Checker');
   rt1();
 }
 
@@ -2552,7 +2587,7 @@ function setSupFilter(val){
   // Update active button
   el('f5type-all').classList.toggle('on', val==='');
   el('f5type-sup').classList.toggle('on', val==='Sup');
-  el('f5type-mh').classList.toggle('on', val==='Mua hộ');
+  el('f5type-mh').classList.toggle('on', val==='Checker');
   rt5a();
 }
 
@@ -2826,7 +2861,7 @@ function toggleAddMappingForm(){
       + D.khChars.map(k=>`<option value="${k.name}">${k.name}</option>`).join('');
     const MSUPS = ['Nguyễn Công Phước MH','Phạm Nam','Trancy','Nguyễn Công Phước GC','Nguyễn Phong','Hieu Le','Hoàng Lâm'];
     const supSel = el('map-sup-sel');
-    supSel.innerHTML = '<option value="">-- Chọn Sup/MH --</option>'
+    supSel.innerHTML = '<option value="">-- Chọn Sup/Checker --</option>'
       + MSUPS.map(n=>`<option value="${n}">${n}</option>`).join('');
   }
   form.style.display = visible ? 'none' : '';
@@ -2835,7 +2870,7 @@ function toggleAddMappingForm(){
 function saveAddMapping(){
   const kh  = el('map-kh-sel').value;
   const sup = el('map-sup-sel').value;
-  if(!kh || !sup){ toast('Chọn đủ KH và Sup/MH', true); return; }
+  if(!kh || !sup){ toast('Chọn đủ KH và Sup/Checker', true); return; }
   const m = getMapping();
   m[kh] = sup;
   KH_SUP_MAP[kh] = sup;
@@ -2883,15 +2918,15 @@ function uploadPartnerFile(input){
       const partners=[], khChars=[];
       rows.slice(1).forEach(row=>{
         const [t,name,tm,am,stk,,,,kc,kn,kt,ka] = row;
-        if(name) partners.push({type:String(t||'').includes('Mua')?'Mua hộ':'Sup', name:String(name).trim(), tm:String(tm||'').trim(), am:String(am||'').trim(), stk:String(stk||'').trim()});
+        if(name) partners.push({type:String(t||'').includes('Mua')?'Checker':'Sup', name:String(name).trim(), tm:String(tm||'').trim(), am:String(am||'').trim(), stk:String(stk||'').trim()});
         if(kn)   khChars.push({ch:String(kc||'').trim(), name:String(kn).trim(), tm:String(kt||'').trim(), am:String(ka||'').trim()});
       });
       D.partners = partners;
       D.khChars  = khChars;
       autosave(); refreshDataLists(); rt5();
-      status.textContent = `✅ Đã import ${partners.length} Sup/MH và ${khChars.length} KH`;
+      status.textContent = `✅ Đã import ${partners.length} Sup/Checker và ${khChars.length} KH`;
       status.style.color = 'var(--grn)';
-      toast(`✅ Upload thành công: ${partners.length} Sup/MH, ${khChars.length} KH`);
+      toast(`✅ Upload thành công: ${partners.length} Sup/Checker, ${khChars.length} KH`);
     } catch(err){
       status.textContent = '❌ Lỗi đọc file: ' + err.message;
       status.style.color = 'var(--red3)';
@@ -2934,7 +2969,7 @@ function saveEditPartner(){
       D.kh.forEach(k=>{ if(k.idCK===s.idCK) k.stk = newStk; });
     }
   });
-  closeM('m-edit-partner'); rt5(); rt1(); rt2(); autosave(); toast('✅ Đã cập nhật đặc điểm Sup/MH');
+  closeM('m-edit-partner'); rt5(); rt1(); rt2(); autosave(); toast('✅ Đã cập nhật đặc điểm Sup/Checker');
 }
 function openEditKhChar(i){
   const k = D.khChars[i]; if(!k) return;
@@ -3047,7 +3082,7 @@ function saveKH(){
       } else {
         // Tạo idCK mới cho phiên này
         const d = today_date.replace(/-/g,'').slice(2);
-        const prefix = fixedPartner?.type === 'Mua hộ' ? 'NL' : 'TD';
+        const prefix = fixedPartner?.type === 'Checker' ? 'NL' : 'TD';
         idCK = prefix + d + String(D.ctr++).padStart(2,'0');
       }
     }
@@ -3190,7 +3225,7 @@ function saveCK(){
   closeM('mck');
   refreshNvFilters();
   autosave(); rd0(); rt4(); rt2(); updateNoti();
-  toast('✅ Đã lưu bill! Tình trạng: Chờ XN & Đã tham chiếu HT từ Sup/MH');
+  toast('✅ Đã lưu bill! Tình trạng: Chờ XN & Đã tham chiếu HT từ Sup/Checker');
 }
 
 /* ================================================
@@ -3211,7 +3246,7 @@ function getCurrentSession(){
 
 /*
   Thời gian Level mapping (updated):
-  Sup/MH:
+  Sup/Checker:
     Level 1 = "Trong ngày", "Bank trước"
     Level 2 = "2-3 ngày", "Max 3 ngày"
     Level 3 = "Không giục", "Không dí", "Thoải mái"
@@ -3338,9 +3373,9 @@ function buildSuggestions(){
       note = `💰 Công nợ còn thiếu: ${fmt(targetAmount)} (đã CK ${fmt(sup.amount - targetAmount)}). `;
     }
     if(worstKhLevel > sup._level){
-      note += `⚠ KH bank ${['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]} nhưng Sup/MH y/c ${['','trong ngày','2-3 ngày','không giục'][sup._level]} — cascade do hết KH phù hợp.`;
+      note += `⚠ KH bank ${['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]} nhưng Sup/Checker y/c ${['','trong ngày','2-3 ngày','không giục'][sup._level]} — cascade do hết KH phù hợp.`;
     } else if(worstKhLevel < sup._level){
-      note += `💡 KH bank ${['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]} nhưng Sup/MH chỉ cần ${['','trong ngày','2-3 ngày','không giục'][sup._level]} — cascade.`;
+      note += `💡 KH bank ${['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]} nhưng Sup/Checker chỉ cần ${['','trong ngày','2-3 ngày','không giục'][sup._level]} — cascade.`;
     }
 
     suggestions.push({
@@ -3382,7 +3417,7 @@ function openSuggest(){
     el('sug-content').innerHTML = `
       <div class="empty" style="padding:30px">
         <div style="font-size:32px;margin-bottom:8px">🎉</div>
-        <div>Không có khoản nào cần ghép — tất cả KH đã được gán hoặc không có Sup/MH chờ điều phối.</div>
+        <div>Không có khoản nào cần ghép — tất cả KH đã được gán hoặc không có Sup/Checker chờ điều phối.</div>
       </div>`;
     el('sug-accept-all-btn').style.display='none';
     const c0=el('sug-count'); if(c0) c0.textContent='0 gợi ý';
@@ -3534,7 +3569,7 @@ function editStk(supId){
   modal.innerHTML = `
     <div class="mod" style="width:560px">
       <button class="xbtn" onclick="document.getElementById('m-edit-stk').remove()">×</button>
-      <h2>✏️ Sửa công nợ Sup/MH</h2>
+      <h2>✏️ Sửa công nợ Sup/Checker</h2>
       <div class="fg">
         <div class="fr"><label>Ngày</label>
           <input type="date" id="es_date" value="${s.date||''}"/>
@@ -3547,7 +3582,7 @@ function editStk(supId){
         <div class="fr"><label>Loại đối tác</label>
           <select id="es_type">
             <option ${s.type==='Sup'?'selected':''}>Sup</option>
-            <option ${s.type==='Mua hộ'?'selected':''}>Mua hộ</option>
+            <option ${s.type==='Checker'?'selected':''}>Checker</option>
           </select>
         </div>
         <div class="fr"><label>Tên đối tác</label>
@@ -3606,7 +3641,7 @@ function saveEditStk(supId){
   D.kh.filter(k=>k.idCK===s.idCK).forEach(k=>{ k.stk=s.stk; });
   document.getElementById('m-edit-stk').remove();
   rt1(); rt2(); autosave();
-  toast('✅ Đã cập nhật công nợ Sup/MH');
+  toast('✅ Đã cập nhật công nợ Sup/Checker');
 }
 
 function delKH(id){
@@ -3619,7 +3654,7 @@ function delSup(id){
   if(!confirm('Xoá khoản công nợ này?')) return;
   D.sup = D.sup.filter(s=>s.id!==id);
   rt1(); rd0(); autosave();
-  toast('Đã xoá khoản công nợ Sup/MH');
+  toast('Đã xoá khoản công nợ Sup/Checker');
 }
 
 function showDetSup(id){
@@ -3690,12 +3725,12 @@ function openM(id){
    SAMPLE DATA
    ================================================ */
 function loadSample(){
-  D.partners  = [{"type": "Mua hộ", "name": "Nguyễn Công Phước MH", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888888879  Nguyen Cong Phuoc"}, {"type": "Mua hộ", "name": "Phạm Nam", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VPBank 0775655566 Pham Thanh Nam"}, {"type": "Mua hộ", "name": "Trancy", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VIB 916260599 Nguyen Giang Ai Tran"}, {"type": "Mua hộ", "name": "Hao Trieu", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 19032890539017  Trieu Quang Hao"}, {"type": "Sup", "name": "Nguyễn Công Phước GC", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 19038310248019  Nguyen Cong Phuoc"}, {"type": "Sup", "name": "Khắc Lệ", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 19032782875019 Pham Khac Le"}, {"type": "Sup", "name": "Nguyễn Phong", "tm": "Không giục", "am": "Không y/c min", "stk": "Vietcombank 1035376951  Nguyen Van Phong"}, {"type": "Sup", "name": "Dương Đông", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VIB 988126364 Ly Duong Ky"}, {"type": "Sup", "name": "Hieu Le", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank  7979790564 Le Minh Hieu"}, {"type": "Sup", "name": "Dương Minh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 8686867979  Pham Yen Vy"}, {"type": "Sup", "name": "Nguyen Duc Duy", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 2266799799 Nguyen Duc Duy"}, {"type": "Sup", "name": "Lan Hương Anh", "tm": "Không giục", "am": "USDT", "stk": "0x57ba425873cbddf582802acabdbe86ee189d54e2 Bep20"}, {"type": "Sup", "name": "Đặng Quang Đông", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietinbank 107875007358 Dang Quang Nam"}, {"type": "Sup", "name": "Binh Thanh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 337125387   Vo Vu Thu Tam"}, {"type": "Sup", "name": "Ngàn Nhật Đinh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "MBBank Dinh Ngan Nhat 0702499996"}, {"type": "Sup", "name": "Hoàng Lâm", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 2888999996  Dang Hoang Lam"}, {"type": "Sup", "name": "Nguyên Nguyễn", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 266917139 Nguyen Ngoc Mai"}, {"type": "Sup", "name": "Kiên Nguyễn", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888789 Nguyen Trung Kien"}, {"type": "Sup", "name": "Anh Linh", "tm": "Không giục", "am": "Không y/c min", "stk": "VIB 854128128 Cao Thi Trang"}, {"type": "Sup", "name": "Nguyễn Hoàng Ngọc Quang", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VIB 582149249  Nguyen Hoang Ngoc Quang"}, {"type": "Sup", "name": "Tiêu Văn Quyền", "tm": "Không giục", "am": "Không y/c min", "stk": "BIDV 2202868030 Tieu Van Quyen"}, {"type": "Sup", "name": "Đỗ Hậu", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VPBank 145551315 Do Van Hau"}, {"type": "Sup", "name": "Đặng Quang Lý", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 2456789 Dang Quang Ly"}, {"type": "Sup", "name": "Dung Anh Tran", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietcombank 0051000563887 Tran Kim Trong"}];
+  D.partners  = [{"type": "Checker", "name": "Nguyễn Công Phước MH", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888888879  Nguyen Cong Phuoc"}, {"type": "Checker", "name": "Phạm Nam", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VPBank 0775655566 Pham Thanh Nam"}, {"type": "Checker", "name": "Trancy", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VIB 916260599 Nguyen Giang Ai Tran"}, {"type": "Checker", "name": "Hao Trieu", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 19032890539017  Trieu Quang Hao"}, {"type": "Sup", "name": "Nguyễn Công Phước GC", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 19038310248019  Nguyen Cong Phuoc"}, {"type": "Sup", "name": "Khắc Lệ", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 19032782875019 Pham Khac Le"}, {"type": "Sup", "name": "Nguyễn Phong", "tm": "Không giục", "am": "Không y/c min", "stk": "Vietcombank 1035376951  Nguyen Van Phong"}, {"type": "Sup", "name": "Dương Đông", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VIB 988126364 Ly Duong Ky"}, {"type": "Sup", "name": "Hieu Le", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank  7979790564 Le Minh Hieu"}, {"type": "Sup", "name": "Dương Minh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 8686867979  Pham Yen Vy"}, {"type": "Sup", "name": "Nguyen Duc Duy", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 2266799799 Nguyen Duc Duy"}, {"type": "Sup", "name": "Lan Hương Anh", "tm": "Không giục", "am": "USDT", "stk": "0x57ba425873cbddf582802acabdbe86ee189d54e2 Bep20"}, {"type": "Sup", "name": "Đặng Quang Đông", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietinbank 107875007358 Dang Quang Nam"}, {"type": "Sup", "name": "Binh Thanh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 337125387   Vo Vu Thu Tam"}, {"type": "Sup", "name": "Ngàn Nhật Đinh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "MBBank Dinh Ngan Nhat 0702499996"}, {"type": "Sup", "name": "Hoàng Lâm", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 2888999996  Dang Hoang Lam"}, {"type": "Sup", "name": "Nguyên Nguyễn", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 266917139 Nguyen Ngoc Mai"}, {"type": "Sup", "name": "Kiên Nguyễn", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888789 Nguyen Trung Kien"}, {"type": "Sup", "name": "Anh Linh", "tm": "Không giục", "am": "Không y/c min", "stk": "VIB 854128128 Cao Thi Trang"}, {"type": "Sup", "name": "Nguyễn Hoàng Ngọc Quang", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VIB 582149249  Nguyen Hoang Ngoc Quang"}, {"type": "Sup", "name": "Tiêu Văn Quyền", "tm": "Không giục", "am": "Không y/c min", "stk": "BIDV 2202868030 Tieu Van Quyen"}, {"type": "Sup", "name": "Đỗ Hậu", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VPBank 145551315 Do Van Hau"}, {"type": "Sup", "name": "Đặng Quang Lý", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 2456789 Dang Quang Ly"}, {"type": "Sup", "name": "Dung Anh Tran", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietcombank 0051000563887 Tran Kim Trong"}];
   D.khChars   = [{"ch": "Linh Thảo", "name": "Phạm Minh - 0796466689", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Cjp Nguyen - 0919098428", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Trangtrang Quynh - 0829850596", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Thảo", "name": "Lan Anh Nguyen - 0942528883", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Uyen - 0786541443", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thuy Linh Bui - 0834194397", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Phương - 0983842809", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Tú Võ -  0398110019", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thùy Dươngg - 0983791530", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Xa Thanh Huyền - 0984483900", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Mẹ Tin Bắp - 0909026200", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Huyen Tran - 0917763020", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyen My Trang - 0903282468", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tú Vũ - 0328872654", "tm": "3-5 ngày", "am": "30 - 50tr"}, {"ch": "Linh Dương", "name": "Thảo Vân Lê - 0329113755", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Nguyễn Anh Tú (Libianca) - 0978040653", "tm": "Trong ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Hoàng Giang - 0942349899", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Khánh Linh - 0837162005", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Sáng Kim - 0919219529", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Trang - 0357903939", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Yen Tran CTV - 0978662285", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Linh Bi - 0896313888", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Minh Hương - 0842689186", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Van Us - 0945665558", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tra Truong - 0908633163", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thùy Duyên - 00904024169", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Huy - 0862520733", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Dương Thùy Linh - 0904239192", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Hằng Thị Phạm - 0936929339", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nhung Tran - 0968327619", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thanh Trúc - 0787315293", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Kim Duong Nguyen - 0972956666", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Mỹ Duyên Ngọc Bích - 0982893428", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Huyền Phan - 0971815398", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Dung Thuy Nguyen - 0385688565", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "Trịnh Bá Quyền - 0901223333", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thy Ba - 0935987879", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Kênh CO", "name": "Bách Checkout - 0916179999", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Kênh CO", "name": "Kim Hân - 0949667724", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "HA Thu Huyền - 0983812318", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thảo Nguyên Nguyên - 0918288102", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Uyên Đàm - 0989802497", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ly - 0474946393", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trịnh Hiền - 0966628989", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dương Trà SỈ - 0922311996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phí Đăng Luận - 0985034830", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hằng Nguyễn - 0904289890", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hien Duong - 0983136636", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hiệp Nguyễn - 5038889978", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hương Nguyễn - 0982898920", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "HATT Thu Nguyễn - 0948385557", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "Chị Huong Nguyenn - 0988092545", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Tống Khánh Ly - 0945645210", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Thơ Phan - 0964450900", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Nhung - 0907060691", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thuỳ Đặng - 0975684877", "tm": "Giục nhiều lần", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Trần Quang Huy - 0932211279", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Vivian Nguyen - 0909057476", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "La My - 0766565899", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Kênh CO", "name": "Chung Anh - 0916014061", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Joo - 0908556131", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dâu Tây Nhỏ - 0943465688", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Thanh Nga (Pu) - 0379237959", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAHS Nguyen Chi - 0932602185", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAKH Chi Đỗ - 0972512043", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Hồng Nhung Trần -  0968327619", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Thị Lê Thu - 0907979622", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Hân Nguyễn - 0986953599", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đình Lâm - 0982629656", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nhu Quynh - 0945102255", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nx Phuong - 0385576666", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Caroline XuXi - 0899956899", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Huong Tra Phan - 0961001486", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Mỹ Duyên - 0366078978", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trang Nguyễn - 0904901212", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Amy Ngo - 0932174074", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAMT Phương Nhi - 0914005731", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thảo Tây - 0772793193", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ngô Thị Thu Hoài - 0979915855", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hong Thanh - 0909822205", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Xuân Bách - 0942391352", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Anh Tâm Cigars- 0911246789", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thanh Thảo - 0774912219", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Nhi - 0703537174", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dung Nguyễn - 0981543095", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HA Bao Han - 0989399104", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thoa Pham - 0971201521", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đỗ Ngọc Thúy - 0376941841", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Selena Nguyen - 0939244082", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Anh Duy Bùi - 0356221310", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Quỳnh Anh Phạm - 0969044554", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAKH Thanh Nhàn - 0902951995", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trung Nguyen - 9713251765", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Quyên Dương - 0967718911", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ha Li - 0979909937", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thanh Hà Nguyễn - 0912536888", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đồng Hằng - 0389906526", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Tran Ngoc Thao - 0902445547", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hải Yến - 0965255155", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Vy Phượng - 0916616778", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Thi Hong Ha - 0982488760", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dinh Thang - 0947574515", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phạm Bích Thúy - 0989129520", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đặng Kim Anh - 0915382382", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Nguyễn Đặng Thơ Thơ - 0979580511", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Kênh CO", "name": "Bành Hoàng Nhi - 0975462142", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Mai Việt - 0898606003", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Kim Thi - 0963578996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nga Nguyễn - 0366966025", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phạm Thi Thu Hoài - 00975647321", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ly Mailinh - 0907018009", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Anh - 0982899221", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Do Hoai Thu - 0977384542", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Lyna Mhm - 0938525789", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hanh Moon - 0977865225", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dao Thuy Dung - 0906204366", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Thu Thảo - 0906982184", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Duyen Nguyen - 0975476898", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hieu Linh - 0969898466", "tm": "1-2 ngày", "am": "Đúng công nợ"}];
   if(loadFromStorage()){
     refreshDataLists(); ensureKhIds(); recalcAllSupStatuses(); rd0(); return;
   }
-  D.sup = [{"id": "s1", "date": "2026-06-19", "nv": "Huệ", "type": "Mua hộ", "name": "Nguyễn Công Phước MH", "amount": 271686285, "stk": "", "status": "Chờ điều phối", "idCK": "NL26061901", "note": ""}, {"id": "s2", "date": "2026-06-19", "nv": "Huệ", "type": "Mua hộ", "name": "Phạm Nam", "amount": 40712621, "stk": "", "status": "Chờ điều phối", "idCK": "NL26061902", "note": ""}, {"id": "s3", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Nguyễn Công Phước GC", "amount": 48000000, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061903", "note": ""}, {"id": "s4", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Dương Đông", "amount": 28051755, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061904", "note": ""}, {"id": "s5", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Nguyên Nguyễn", "amount": 15391670, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061905", "note": ""}, {"id": "s6", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Hieu Le", "amount": 45329245, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061906", "note": ""}, {"id": "s7", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Anh Linh", "amount": 2432825, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061907", "note": ""}, {"id": "s8", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Tiêu Văn Quyền", "amount": 38407111, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061908", "note": ""}, {"id": "s9", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Hoàng Lâm", "amount": 3272444, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061909", "note": ""}];
+  D.sup = [{"id": "s1", "date": "2026-06-19", "nv": "Huệ", "type": "Checker", "name": "Nguyễn Công Phước MH", "amount": 271686285, "stk": "", "status": "Chờ điều phối", "idCK": "NL26061901", "note": ""}, {"id": "s2", "date": "2026-06-19", "nv": "Huệ", "type": "Checker", "name": "Phạm Nam", "amount": 40712621, "stk": "", "status": "Chờ điều phối", "idCK": "NL26061902", "note": ""}, {"id": "s3", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Nguyễn Công Phước GC", "amount": 48000000, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061903", "note": ""}, {"id": "s4", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Dương Đông", "amount": 28051755, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061904", "note": ""}, {"id": "s5", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Nguyên Nguyễn", "amount": 15391670, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061905", "note": ""}, {"id": "s6", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Hieu Le", "amount": 45329245, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061906", "note": ""}, {"id": "s7", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Anh Linh", "amount": 2432825, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061907", "note": ""}, {"id": "s8", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Tiêu Văn Quyền", "amount": 38407111, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061908", "note": ""}, {"id": "s9", "date": "2026-06-19", "nv": "Trang", "type": "Sup", "name": "Hoàng Lâm", "amount": 3272444, "stk": "", "status": "Chờ điều phối", "idCK": "TD26061909", "note": ""}];
   D.kh  = [{"_id": "kh0", "date": "2026-06-19", "nv": "Thuỷ", "name": "Thảo Nguyên Nguyên - 0918288102", "amount": 78532131, "origAmount": 78532131, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh1", "date": "2026-06-19", "nv": "Thuỷ", "name": "Bách Checkout - 0916179999", "amount": 45330000, "origAmount": 45330000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh2", "date": "2026-06-19", "nv": "Thuỷ", "name": "Kim Hân - 0949667724", "amount": 15000000, "origAmount": 15000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh3", "date": "2026-06-19", "nv": "Thuỷ", "name": "HATT Thu Nguyễn - 0948385557", "amount": 15000000, "origAmount": 15000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh4", "date": "2026-06-19", "nv": "Thuỷ", "name": "Hương Nguyễn - 0982898920", "amount": 5000000, "origAmount": 5000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh5", "date": "2026-06-19", "nv": "Thuỷ", "name": "Hương Nguyễn - 0982898920", "amount": 10000000, "origAmount": 10000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh6", "date": "2026-06-19", "nv": "Thuỷ", "name": "Anh Duy Bùi - 0356221310", "amount": 30067915, "origAmount": 30067915, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh7", "date": "2026-06-19", "nv": "Thuỷ", "name": "La My - 0766565899", "amount": 19075715, "origAmount": 19075715, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh8", "date": "2026-06-19", "nv": "Thuỷ", "name": "Thoa Pham - 0971201521", "amount": 23175434, "origAmount": 23175434, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh9", "date": "2026-06-19", "nv": "Thuỷ", "name": "HAHS Nguyen Chi - 0932602185", "amount": 15191751, "origAmount": 15191751, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh10", "date": "2026-06-19", "nv": "Thuỷ", "name": "Chị Huong Nguyenn - 0988092545", "amount": 14254720, "origAmount": 14254720, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh11", "date": "2026-06-19", "nv": "Thuỷ", "name": "Nguyễn Thị Lê Thu - 0907979622", "amount": 11953655, "origAmount": 11953655, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh12", "date": "2026-06-19", "nv": "Thuỷ", "name": "Thuỳ Đặng - 0975684877", "amount": 11386850, "origAmount": 11386850, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh13", "date": "2026-06-19", "nv": "Thuỷ", "name": "HATT Nhung - 0907060691", "amount": 10952805, "origAmount": 10952805, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh14", "date": "2026-06-19", "nv": "Thuỷ", "name": "Vivian Nguyen - 0909057476", "amount": 9720130, "origAmount": 9720130, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh15", "date": "2026-06-19", "nv": "Thuỷ", "name": "Trang Nguyễn - 0904901212", "amount": 12947105, "origAmount": 12947105, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh16", "date": "2026-06-19", "nv": "Thuỷ", "name": "Trung Nguyen - 9713251765", "amount": 8194080, "origAmount": 8194080, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh17", "date": "2026-06-19", "nv": "Thuỷ", "name": "Phan Thanh Nga (Pu) - 0379237959", "amount": 7851150, "origAmount": 7851150, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh18", "date": "2026-06-19", "nv": "Thuỷ", "name": "Mỹ Duyên - 0366078978", "amount": 7252025, "origAmount": 7252025, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh19", "date": "2026-06-19", "nv": "Thuỷ", "name": "Joo - 0908556131", "amount": 6297120, "origAmount": 6297120, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh20", "date": "2026-06-19", "nv": "Thuỷ", "name": "Đình Lâm - 0982629656", "amount": 5351580, "origAmount": 5351580, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}, {"_id": "kh21", "date": "2026-06-19", "nv": "Bình", "name": "Kim Duong Nguyen - 0972956666", "amount": 50000000, "origAmount": 50000000, "status": "Mới nhập", "idCK": "", "stk": "", "cdAm": 0, "note": ""}];
   D.ck  = [];
   D.ctr = 60;
@@ -3736,6 +3771,9 @@ function loadFromStorage(){
     D.ctr      = p.ctr      || 1;
     if(p.partners && p.partners.length)  D.partners = p.partners;
     if(p.khChars && p.khChars.length)    D.khChars  = p.khChars;
+    // Migrate legacy labels to new naming
+    const _mig = a => { try { return JSON.parse(JSON.stringify(a).replaceAll('Mua hộ','Checker').replaceAll('Sup/MH','Sup/Checker')); } catch(e){ return a; } };
+    D.sup=_mig(D.sup); D.kh=_mig(D.kh); D.ck=_mig(D.ck); D.partners=_mig(D.partners); D.khChars=_mig(D.khChars);
     // Enrich STK from partners
     D.sup.forEach(s => {
       if(!s.stk){
@@ -3754,6 +3792,11 @@ function autosave(){ saveToStorage(); }
 tryAutoLogin();
 loadSample();
 applyRole();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
 </script>
 </body>
 </html>

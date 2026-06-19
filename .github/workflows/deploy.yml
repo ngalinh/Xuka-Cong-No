@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'manifest.webmanifest'
+      - 'sw.js'
+      - 'icon.svg'
   workflow_dispatch:
 
 concurrency:
@@ -45,6 +48,17 @@ jobs:
           # (Run once on the server: sudo chown $USER <DEPLOY_PATH>/index.html)
           rsync -vz --inplace --no-perms --no-owner --no-group \
             -e "$SSH" ./index.html "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/index.html"
+
+          # PWA assets — upload in place too. These only succeed once the files
+          # exist on the server AND are owned by the deploy user. Non-fatal so the
+          # main app always deploys even before the one-time chown is done.
+          # One-time on server:
+          #   cd <DEPLOY_PATH> && sudo touch manifest.webmanifest sw.js icon.svg && sudo chown $USER manifest.webmanifest sw.js icon.svg index.html
+          for f in manifest.webmanifest sw.js icon.svg; do
+            rsync -vz --inplace --no-perms --no-owner --no-group \
+              -e "$SSH" "./$f" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/$f" \
+              || echo "::warning::Skipped $f (create it on the server and chown to the deploy user to enable PWA)"
+          done
 
           # Optional: only if you run the app as your OWN standalone PM2 process.
           # Leave PM2_APP_NAME empty for platform-served static apps (no restart needed).
