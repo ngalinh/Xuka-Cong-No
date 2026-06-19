@@ -220,6 +220,7 @@ tr:hover td{background:var(--bg2)}
       </select>
     </div>
     <div id="locked-ind" class="locked-badge" style="display:none">🔒 Một số tab bị khóa</div>
+    <button class="btn" id="btn-suggest" onclick="openSuggest()" style="font-size:12px;display:none;background:var(--amb2);border-color:#EF9F27;color:var(--amb3);font-weight:600">💡 Match CK</button>
     <button class="btn" id="btn-chot" onclick="runChotPhien(false)" style="font-size:12px;display:none;background:var(--amb2);border-color:var(--amb);color:var(--amb3);font-weight:600">⏰ Chốt phiên</button>
   </div>
 </div>
@@ -289,7 +290,6 @@ tr:hover td{background:var(--bg2)}
       <button id="f1t-mh"  class="btn"    onclick="setSupTypeFilter('Mua hộ')" style="font-size:13px;padding:5px 14px;border-radius:8px">Mua hộ</button>
     </div>
     <select id="f1s" onchange="rt1()"><option value="">Tất cả tình trạng</option><option>Chờ điều phối</option><option>Đã điều phối</option><option>CK 1 phần</option><option>Done</option><option>CK dư</option><option>Cancelled</option></select>
-    <select id="f1nv" onchange="rt1()"><option value="">Tất cả NV</option></select>
     <input id="f1q" placeholder="🔍 Tìm tên đối tác..." oninput="rt1()" list="dl-partners">
     <datalist id="dl-partners"></datalist>
     <input type="hidden" id="f1t" value="">
@@ -318,7 +318,6 @@ tr:hover td{background:var(--bg2)}
     <datalist id="dl-customers"></datalist>
     <input type="hidden" id="f2ch" value="">
     <button class="btn btn-p" id="btn-add-kh" onclick="openM('mkh')" style="margin-left:auto">+ Nhập công nợ KH</button>
-    <button class="btn" id="btn-suggest" onclick="openSuggest()" style="background:var(--amb2);border-color:#EF9F27;color:var(--amb3);font-weight:600">💡 Match CK</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
@@ -1223,6 +1222,8 @@ function applyRole() {
   el('btn-add-ck')  && (el('btn-add-ck').disabled  = !showKH);
   const btnChot = el('btn-chot');
   if(btnChot) btnChot.style.display = currentRole === 'admin' ? '' : 'none';
+  const btnSuggest = el('btn-suggest');
+  if(btnSuggest) btnSuggest.style.display = currentRole === 'admin' ? '' : 'none';
   updateNoti(); showNotiPopup();
   rt1(); rt2(); rt4(); rt5a(); rt5b();
 }
@@ -1568,12 +1569,10 @@ function calcSupStatus(sup){
 function rt1(){
   const st = el('f1s').value, tp = el('f1t').value;
   const q  = el('f1q').value.toLowerCase();
-  const nv = el('f1nv').value;
   const canEdit = ['admin','mh'].includes(currentRole);
   let list = D.sup.filter(s=>
     (!tp||s.type===tp) &&
-    (!q||s.name.toLowerCase().includes(q)) &&
-    (!nv||s.nv===nv)
+    (!q||s.name.toLowerCase().includes(q))
   );
   if(st) list = list.filter(s=>s.status===st);
   // newest first (already unshifted on add, but also sort by date desc)
