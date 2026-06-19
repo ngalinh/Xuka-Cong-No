@@ -80,6 +80,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .tab:hover:not(.tab-locked):not(.on){color:var(--txt);background:rgba(255,255,255,0.5)}
 .tab-locked{opacity:.4;cursor:not-allowed;pointer-events:none}
 .tab-icon{font-size:15px;flex-shrink:0;width:18px;text-align:center}
+.tab-ic{flex:none;display:flex;align-items:center;justify-content:center;width:18px;height:18px;color:inherit}
+.tab-ic svg{display:block}
+.nav-group{display:flex;flex-direction:column;gap:2px}
 .tab-lbl{flex:1}
 .tab-lock{font-size:10px;color:var(--txt3)}
 .sidebar-divider{height:1px;background:var(--brd);margin:4px 12px}
@@ -178,6 +181,16 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 .scard-title{font-size:12.5px;color:var(--txt2);margin-bottom:10px;font-weight:500;text-transform:none;letter-spacing:0}
 .scard-val{font-size:27px;font-weight:700;letter-spacing:-0.01em;color:var(--txt)}
 .scard-sub{font-size:12.5px;color:var(--txt2);margin-top:4px}
+.kpi{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-brd);border-radius:22px;box-shadow:var(--glass-sh);padding:22px}
+.kpi-top{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:500;color:#797f90;margin-bottom:12px}
+.kpi-ic{display:flex;align-items:center}
+.kpi-ic svg{display:block}
+.kpi-mid{display:flex;align-items:baseline;gap:8px}
+.kpi-val{font-size:27px;font-weight:700;letter-spacing:-0.01em;white-space:nowrap;color:var(--txt)}
+.kpi-trend{font-size:12.5px;font-weight:600;color:#2a9d63;white-space:nowrap}
+.kpi-bar{height:7px;border-radius:999px;background:rgba(120,120,180,0.12);margin-top:14px;overflow:hidden}
+.kpi-fill{height:100%;border-radius:999px}
+@media(max-width:1100px){#t0 [style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}}
 .chart-card{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-brd);border-radius:24px;padding:24px;margin-bottom:20px;box-shadow:var(--glass-sh)}
 .chart-card h3{font-size:15px;font-weight:600;color:var(--txt);margin-bottom:18px;text-transform:none;letter-spacing:0}
 
@@ -244,7 +257,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
     <div class="logo">⇄</div>
     <div>
       <div class="hdr-title">Quản lý dòng tiền CK 3 bên</div>
-      <div class="hdr-sub">KH → Tài khoản Sup/MH (không qua trung gian)</div>
+      <div class="hdr-sub">KH → Tài khoản Sup/Checker</div>
     </div>
   </div>
   <div class="hdr-r">
@@ -259,8 +272,8 @@ tr:hover td{background:rgba(255,255,255,0.4)}
       </select>
     </div>
     <div id="locked-ind" class="locked-badge" style="display:none">🔒 Một số tab bị khóa</div>
-    <button class="btn" id="btn-suggest" onclick="openSuggest()" style="font-size:13px;display:none;background:linear-gradient(135deg,#8a9bf2,#b39bea);border:none;color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(150,140,230,0.4)">✦ Match CK</button>
-    <button class="btn" id="btn-chot" onclick="runChotPhien(false)" style="font-size:13px;display:none;background:rgba(159,229,216,0.42);border:1px solid rgba(53,196,122,0.42);color:#1f8a5b;font-weight:600">🔒 Chốt phiên</button>
+    <button class="btn" id="btn-suggest" onclick="openSuggest()" style="font-size:13px;display:none;background:linear-gradient(135deg,#8a9bf2,#b39bea);border:none;color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(150,140,230,0.4)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.6L18.3 9.3l-4.6 1.7L12 15.6l-1.7-4.6L5.7 9.3l4.6-1.7z"/><path d="M19 13.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>Match CK</button>
+    <button class="btn" id="btn-chot" onclick="runChotPhien(false)" style="font-size:13px;display:none;background:rgba(159,229,216,0.42);border:1px solid rgba(53,196,122,0.42);color:#1f8a5b;font-weight:600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="15.3" r="1.3"/></svg>Chốt phiên</button>
   </div>
 </div>
 
@@ -270,23 +283,26 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 <!-- SIDEBAR -->
 <nav class="sidebar" id="tabs-bar">
   <div class="sidebar-section">
-    <div class="menu-main tab on" data-tab="t0" onclick="go('t0')"><span class="tab-icon">📊</span><span class="tab-lbl">Tổng quan</span><span class="tab-lock"></span></div>
-    <div class="menu-main" id="grp-sup" onclick="toggleMenu('m-sup')"><span class="tab-icon">🏢</span><span class="tab-lbl">Sup / MH</span></div>
-    <div class="menu-sub" id="m-sup">
-      <div class="tab" data-tab="t4a" onclick="go('t4a')"><span class="tab-icon" style="font-size:13px">📋</span><span class="tab-lbl">Danh sách Sup/MH</span><span class="tab-lock"></span></div>
-      <div class="tab" data-tab="t1" onclick="go('t1')"><span class="tab-icon" style="font-size:13px">💸</span><span class="tab-lbl">Công nợ Sup/MH</span><span class="tab-lock"></span></div>
+    <div class="tab on" data-tab="t0" onclick="go('t0')"><span class="tab-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span><span class="tab-lbl">Tổng quan</span></div>
+
+    <div class="nav-group" data-group="sup">
+      <div class="sidebar-label">Sup / Checker</div>
+      <div class="tab" data-tab="t4a" onclick="go('t4a')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.2-4.5h15.6L21 9"/><path d="M4.5 9.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V9.5"/><path d="M9.5 20v-5h5v5"/></svg></span><span class="tab-lbl">Danh sách</span></div>
+      <div class="tab" data-tab="t1" onclick="go('t1')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/><path d="M16.5 14.5h2"/></svg></span><span class="tab-lbl">Công nợ</span></div>
     </div>
-    <div class="menu-main" id="grp-kh" onclick="toggleMenu('m-kh')"><span class="tab-icon">🙋</span><span class="tab-lbl">Khách Hàng</span></div>
-    <div class="menu-sub" id="m-kh">
-      <div class="tab" data-tab="t4b" onclick="go('t4b')"><span class="tab-icon" style="font-size:13px">📋</span><span class="tab-lbl">Danh sách KH</span><span class="tab-lock"></span></div>
-      <div class="tab" data-tab="t2" onclick="go('t2')"><span class="tab-icon" style="font-size:13px">💰</span><span class="tab-lbl">Công nợ KH</span><span class="tab-lock"></span></div>
+
+    <div class="nav-group" data-group="kh">
+      <div class="sidebar-label">Khách hàng</div>
+      <div class="tab" data-tab="t4b" onclick="go('t4b')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.9-5.2 6.5-5.2s6.5 1.9 6.5 5.2"/><path d="M16.5 5.3a3 3 0 0 1 0 5.4"/><path d="M18 14.8c2.2.5 3.5 2 3.5 4.2"/></svg></span><span class="tab-lbl">Danh sách KH</span></div>
+      <div class="tab" data-tab="t2" onclick="go('t2')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11"/><path d="M14.8 9.3c-.6-1-1.8-1.4-3-1.3-1.3.1-2.3.9-2.3 2s.9 1.7 2.6 2 2.7.9 2.7 2.1-1.1 1.9-2.5 1.9c-1.3 0-2.5-.5-3-1.5"/></svg></span><span class="tab-lbl">Công nợ KH</span></div>
+      <div class="tab" data-tab="t3" onclick="go('t3')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg></span><span class="tab-lbl">Tracking CK</span><span id="noti-badge" style="display:none;padding:2px 9px;border-radius:999px;background:linear-gradient(135deg,#f06565,#e85b8a);color:#fff;font-size:11px;font-weight:700;margin-left:auto"></span></div>
     </div>
-    <div class="menu-main tab" data-tab="t3" onclick="go('t3')"><span class="tab-icon">📗</span><span class="tab-lbl">Tracking CK</span><span class="tab-lock"></span><span id="noti-badge" style="display:none;background:#E24B4A;color:#fff;border-radius:20px;font-size:11px;font-weight:700;padding:1px 7px;margin-left:auto"></span></div>
-    <div class="menu-main" id="grp-cfg" onclick="toggleMenu('m-cfg')"><span class="tab-icon">⚙️</span><span class="tab-lbl">Cài đặt</span></div>
-    <div class="menu-sub" id="m-cfg">
-      <div class="tab" data-tab="cfg1" onclick="go('cfg1')"><span class="tab-icon" style="font-size:13px">👤</span><span class="tab-lbl">Tài khoản</span><span class="tab-lock"></span></div>
-      <div class="tab" data-tab="cfg2" onclick="go('cfg2')"><span class="tab-icon" style="font-size:13px">🔗</span><span class="tab-lbl">Mapping KH - Sup</span><span class="tab-lock"></span></div>
-      <div class="tab" data-tab="cfg3" onclick="go('cfg3')"><span class="tab-icon" style="font-size:13px">📂</span><span class="tab-lbl">Data Upload</span><span class="tab-lock"></span></div>
+
+    <div class="nav-group" data-group="cfg">
+      <div class="sidebar-label">Cài đặt</div>
+      <div class="tab" data-tab="cfg1" onclick="go('cfg1')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg></span><span class="tab-lbl">Tài khoản</span></div>
+      <div class="tab" data-tab="cfg2" onclick="go('cfg2')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg></span><span class="tab-lbl">Mapping KH - Sup</span></div>
+      <div class="tab" data-tab="cfg3" onclick="go('cfg3')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 17v-5"/><path d="m9.7 14 2.3-2.3L14.3 14"/></svg></span><span class="tab-lbl">Data Upload</span></div>
     </div>
   </div>
   <div style="padding:12px 10px;border-top:1px solid var(--brd);margin-top:auto">
@@ -310,18 +326,57 @@ tr:hover td{background:rgba(255,255,255,0.4)}
       <button onclick="changeMonth(1)">▶</button>
     </div>
   </div>
-  <div style="display:flex;justify-content:center;margin-bottom:16px">
-    <div class="scard" style="text-align:center;padding:20px 32px;display:inline-block">
-    <div>
-      <div class="scard-title">📊 Tổng số tiền đã CK (tháng)</div>
-      <div class="scard-val" id="d-all-total">0đ</div>
-      <div class="scard-sub" id="d-all-count">0 giao dịch (Sup + MH)</div>
+  <!-- KPI row -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px">
+    <div class="kpi">
+      <div class="kpi-top"><span class="kpi-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a9bf2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/></svg></span>Tổng đã CK (tháng)</div>
+      <div class="kpi-mid"><span class="kpi-val" id="d-all-total">0đ</span><span class="kpi-trend" id="d-all-trend"></span></div>
+      <div class="kpi-bar"><div class="kpi-fill" id="d-all-fill" style="width:72%;background:linear-gradient(90deg,#8a9bf2,#a99bea)"></div></div>
     </div>
+    <div class="kpi">
+      <div class="kpi-top"><span class="kpi-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3aa8b0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l3 3-3 3"/><path d="M20 7H8a4 4 0 0 0-4 4"/><path d="M7 20l-3-3 3-3"/><path d="M4 17h12a4 4 0 0 0 4-4"/></svg></span>Số giao dịch</div>
+      <div class="kpi-mid"><span class="kpi-val" id="d-tx">0</span><span class="kpi-trend" id="d-tx-trend"></span></div>
+      <div class="kpi-bar"><div class="kpi-fill" id="d-tx-fill" style="width:58%;background:linear-gradient(90deg,#9fe5d8,#8fc8d8)"></div></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-top"><span class="kpi-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d99a2b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg></span>Chờ điều phối</div>
+      <div class="kpi-mid"><span class="kpi-val" id="d-pending">0</span><span class="kpi-trend" id="d-pending-sub" style="color:#b5852a">0 GD</span></div>
+      <div class="kpi-bar"><div class="kpi-fill" id="d-pending-fill" style="width:34%;background:linear-gradient(90deg,#f3e07c,#f0d06a)"></div></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-top"><span class="kpi-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2a9d63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5L16 9"/></svg></span>Đã Done</div>
+      <div class="kpi-mid"><span class="kpi-val" id="d-done">0</span><span class="kpi-trend" id="d-done-sub" style="color:#797f90">/ 0</span></div>
+      <div class="kpi-bar"><div class="kpi-fill" id="d-done-fill" style="width:0%;background:linear-gradient(90deg,#6f9cf2,#9f9ce8)"></div></div>
     </div>
   </div>
-  <div class="chart-card">
-    <h3>📈 Số tiền CK theo ngày — <span style="color:#5b6bd6">■ Sup</span> &nbsp; <span style="color:#9b8ee8">■ MH</span></h3>
-    <canvas id="chart-daily" height="110"></canvas>
+
+  <!-- chart + donut -->
+  <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:16px">
+    <div class="chart-card" style="margin-bottom:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
+        <span style="font-size:15px;font-weight:600">📈 Số tiền CK theo ngày</span>
+        <div style="display:flex;gap:16px;font-size:12px;color:#5b6072">
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:3px;background:#5b6bd6"></span>Sup</span>
+          <span style="display:flex;align-items:center;gap:6px"><span style="width:11px;height:11px;border-radius:3px;background:#9b8ee8"></span>Checker</span>
+        </div>
+      </div>
+      <div style="height:230px;position:relative"><canvas id="chart-daily"></canvas></div>
+    </div>
+    <div class="scard" style="padding:24px">
+      <span style="font-size:15px;font-weight:600">Tỷ trọng Sup / Checker</span>
+      <div style="display:flex;align-items:center;gap:24px;margin-top:18px">
+        <div id="donut" style="width:148px;height:148px;border-radius:50%;background:conic-gradient(#5b6bd6 0% 62%, #9b8ee8 62% 100%);display:flex;align-items:center;justify-content:center;flex:none">
+          <div style="width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 1px 4px rgba(120,120,180,0.12)">
+            <span style="font-size:26px;font-weight:700;line-height:1" id="donut-total">0</span>
+            <span style="font-size:11px;color:#8a8fa3">giao dịch</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div><div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:#5b6bd6"></span><span style="font-size:13px;color:#4a4f5e">Sup</span></div><div style="font-size:18px;font-weight:700;margin-left:18px" id="donut-sup">0%</div></div>
+          <div><div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:#9b8ee8"></span><span style="font-size:13px;color:#4a4f5e">Checker</span></div><div style="font-size:18px;font-weight:700;margin-left:18px" id="donut-mh">0%</div></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1245,25 +1300,25 @@ function applyRole() {
   currentRole = document.getElementById('role-sel').value;
   currentUser = {name: document.getElementById('role-sel').options[document.getElementById('role-sel').selectedIndex].text, role: currentRole};
 
-  // Show/hide menu groups based on role
+  const allowed = ROLE_TABS[currentRole] || [];
+  // Show/hide each sidebar item based on role permissions
+  document.querySelectorAll('.sidebar [data-tab]').forEach(t=>{
+    t.style.display = allowed.includes(t.getAttribute('data-tab')) ? '' : 'none';
+  });
+  // Hide a section group if none of its items are visible
+  document.querySelectorAll('.nav-group').forEach(g=>{
+    const items = [...g.querySelectorAll('[data-tab]')];
+    g.style.display = items.some(i=>i.style.display!=='none') ? '' : 'none';
+  });
+  // If the active tab is no longer allowed, fall back to Tổng quan
+  const active = document.querySelector('.sec.on');
+  if(active && !allowed.includes(active.id)) go('t0');
+
   const showSup = ['admin','mh'].includes(currentRole);
   const showKH  = ['admin','sale'].includes(currentRole);
-  const showCfg = currentRole === 'admin';
-
-  const hide = (id) => { const e=el(id); if(e) e.style.display='none'; };
-  const show = (id) => { const e=el(id); if(e) e.style.display=''; };
-
-  showSup ? showGrp('grp-sup','m-sup') : hideGrp('grp-sup','m-sup');
-  showKH  ? showGrp('grp-kh', 'm-kh')  : hideGrp('grp-kh', 'm-kh');
-  showCfg ? showGrp('grp-cfg','m-cfg') : hideGrp('grp-cfg','m-cfg');
-
-  // Show/hide locked indicator (only for sub-tabs within visible groups)
-  document.getElementById('locked-ind').style.display = 'none';
-
-  const canAddSup = showSup;
-  const canAddKh  = showKH;
-  el('btn-add-sup') && (el('btn-add-sup').disabled = !canAddSup);
-  el('btn-add-kh')  && (el('btn-add-kh').disabled  = !canAddKh);
+  el('locked-ind') && (el('locked-ind').style.display = 'none');
+  el('btn-add-sup') && (el('btn-add-sup').disabled = !showSup);
+  el('btn-add-kh')  && (el('btn-add-kh').disabled  = !showKH);
   el('btn-add-ck')  && (el('btn-add-ck').disabled  = !showKH);
   const btnChot = el('btn-chot');
   if(btnChot) btnChot.style.display = currentRole === 'admin' ? '' : 'none';
@@ -1503,6 +1558,26 @@ function changeMonth(delta){
   rd0();
 }
 
+function fmtShort(n){
+  n = Math.round(n||0);
+  if(n>=1e9) return (Math.round(n/1e7)/100).toString().replace('.',',')+' tỷ';
+  if(n>=1e6) return Math.round(n/1e6)+' tr';
+  if(n>=1e3) return Math.round(n/1e3)+'k';
+  return n.toLocaleString('en-US');
+}
+function monthStats(m,y){
+  let total=0,count=0;
+  D.ck.forEach(c=>{
+    if(!c.date) return;
+    const d=new Date(c.date);
+    if(d.getMonth()===m && d.getFullYear()===y &&
+       (c.status==='Đã XN & Nhập file Sup/MH'||c.status==='Done & Nhập Thu Chi')){
+      total+=c.amount||0; count++;
+    }
+  });
+  return {total,count};
+}
+
 function rd0(){
   const m = D.viewMonth, y = D.viewYear;
   const mLabel = `Tháng ${m+1}/${y}`;
@@ -1535,8 +1610,46 @@ function rd0(){
   // ckIds used for daily chart deduplication
   const ckIds = new Set(confirmed.map(c=>c.idCK+'|'+c.kh));
 
-  el('d-all-total').textContent = fmt(supTotal + mhTotal);
-  el('d-all-count').textContent = (supCount + mhCount) + ' giao dịch (Sup + MH)';
+  // ---- KPI cards ----
+  const totalAmt = supTotal + mhTotal;
+  const txCount  = supCount + mhCount;
+  const doneCount = confirmed.filter(c=>c.status==='Done & Nhập Thu Chi').length;
+
+  let pm=m-1, py=y; if(pm<0){pm=11;py--;}
+  const prev = monthStats(pm,py);
+  const setTrend=(id,cur,prevVal)=>{
+    const e=el(id); if(!e) return;
+    if(!prevVal){ e.textContent=''; return; }
+    const pct=Math.round((cur-prevVal)/prevVal*100);
+    e.textContent=(pct>=0?'↑ ':'↓ ')+Math.abs(pct)+'%';
+    e.style.color = pct>=0 ? '#2a9d63' : '#e05656';
+  };
+
+  el('d-all-total').textContent = fmtShort(totalAmt);
+  setTrend('d-all-trend', totalAmt, prev.total);
+  el('d-tx').textContent = txCount;
+  setTrend('d-tx-trend', txCount, prev.count);
+
+  // Chờ điều phối — công nợ Sup/Checker chưa điều phối
+  let pendAmt=0, pendCnt=0;
+  D.sup.forEach(s=>{ if(s.status==='Chờ điều phối'){ pendAmt+=s.amount||0; pendCnt++; } });
+  el('d-pending').textContent = fmtShort(pendAmt);
+  el('d-pending-sub').textContent = pendCnt + ' GD';
+  el('d-pending-fill').style.width = (txCount+pendCnt) ? Math.min(100, Math.round(pendCnt/(txCount+pendCnt)*100))+'%' : '0%';
+
+  // Đã Done
+  el('d-done').textContent = doneCount;
+  el('d-done-sub').textContent = '/ ' + txCount;
+  el('d-done-fill').style.width = txCount ? Math.round(doneCount/txCount*100)+'%' : '0%';
+
+  // ---- Donut: tỷ trọng Sup vs Checker theo số giao dịch ----
+  const dTot = supCount + mhCount;
+  const supPct = dTot ? Math.round(supCount/dTot*100) : 0;
+  const mhPct  = dTot ? 100 - supPct : 0;
+  el('donut-total').textContent = dTot;
+  el('donut-sup').textContent = supPct + '%';
+  el('donut-mh').textContent  = mhPct + '%';
+  el('donut').style.background = `conic-gradient(#5b6bd6 0% ${supPct}%, #9b8ee8 ${supPct}% 100%)`;
 
   // Daily chart — 2 datasets: Sup (blue) + MH (green)
   const daysInMonth = new Date(y, m+1, 0).getDate();
@@ -1575,7 +1688,7 @@ function rd0(){
           borderRadius:5
         },
         {
-          label:'Mua hộ',
+          label:'Checker',
           data: mhDaily,
           backgroundColor:'#b39bea',
           borderColor:'#9b8ee8',
@@ -1586,13 +1699,14 @@ function rd0(){
     },
     options:{
       responsive:true,
+      maintainAspectRatio:false,
       plugins:{
-        legend:{display:true, position:'top', labels:{boxWidth:12,font:{size:12}}},
+        legend:{display:false},
         tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${fmt(c.raw)}`}}
       },
       scales:{
-        y:{ticks:{callback:v=>fmt(v)},grid:{color:'rgba(120,120,180,0.1)'}},
-        x:{grid:{display:false}}
+        y:{stacked:true,ticks:{callback:v=>fmtShort(v)},grid:{color:'rgba(120,120,180,0.1)'}},
+        x:{stacked:true,grid:{display:false}}
       }
     }
   });
