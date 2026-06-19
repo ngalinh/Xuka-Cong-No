@@ -307,6 +307,91 @@ tr:hover td{background:rgba(255,255,255,0.4)}
   #noti-badge{position:absolute;top:5px;right:7px;min-width:9px;height:9px;padding:0;font-size:0;line-height:0;border-radius:50%}
   #t0 [style*="repeat(4"]{grid-template-columns:1fr!important}
 }
+
+/* ===== MOBILE: tables -> card list ===== */
+@media(max-width:760px){
+  /* unwrap the glass container; each row becomes its own card */
+  .tw{background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:none!important;box-shadow:none!important;padding:0!important;overflow:visible!important}
+  .tw table,.tw tbody,.tw tr,.tw td{display:block;width:auto}
+  .tw thead{display:none}
+  .tw tr{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-brd);border-radius:18px;box-shadow:0 8px 22px rgba(120,120,180,0.1);padding:12px 16px;margin-bottom:12px}
+  .tw tr:hover td{background:transparent}
+  .tw td{border:none!important;padding:6px 0!important;text-align:left!important;white-space:normal!important}
+  .tw td:first-child{padding-top:0!important}
+  .tw td:last-child{padding-bottom:0!important}
+  .tw td::before{content:"";display:block;font-size:10px;font-weight:700;color:#9aa0b2;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+  .tw td.num{text-align:left!important}
+  /* empty-state row */
+  .tw td[colspan]{text-align:center!important;padding:26px 0!important;color:#797f90}
+  .tw td[colspan]::before{display:none}
+  .pgbar{justify-content:center}
+
+  /* column labels per table (order matches each thead) */
+  #t1 .tw td:nth-of-type(1)::before{content:"Ngày"}
+  #t1 .tw td:nth-of-type(2)::before{content:"Nhân viên"}
+  #t1 .tw td:nth-of-type(3)::before{content:"Loại"}
+  #t1 .tw td:nth-of-type(4)::before{content:"Tên đối tác"}
+  #t1 .tw td:nth-of-type(5)::before{content:"Đặc điểm đòi tiền"}
+  #t1 .tw td:nth-of-type(6)::before{content:"Công nợ"}
+  #t1 .tw td:nth-of-type(7)::before{content:"STK nhận"}
+  #t1 .tw td:nth-of-type(8)::before{content:"ID CK"}
+  #t1 .tw td:nth-of-type(9)::before{content:"Đã CK"}
+  #t1 .tw td:nth-of-type(10)::before{content:"Tình trạng"}
+  #t1 .tw td:nth-of-type(11)::before{display:none}
+
+  #t2 .tw td:nth-of-type(1)::before{content:"Ngày"}
+  #t2 .tw td:nth-of-type(2)::before{content:"Nhân viên"}
+  #t2 .tw td:nth-of-type(3)::before{content:"Tên KH + SĐT"}
+  #t2 .tw td:nth-of-type(4)::before{content:"Đặc điểm bank"}
+  #t2 .tw td:nth-of-type(5)::before{content:"Công nợ gốc"}
+  #t2 .tw td:nth-of-type(6)::before{content:"ID CK"}
+  #t2 .tw td:nth-of-type(7)::before{content:"Tài khoản nhận"}
+  #t2 .tw td:nth-of-type(8)::before{content:"Chỉ định"}
+  #t2 .tw td:nth-of-type(9)::before{content:"Tình trạng"}
+  #t2 .tw td:nth-of-type(10)::before{content:"Bill CK"}
+  #t2 .tw td:nth-of-type(11)::before{content:"Điều phối"}
+
+  #t3 .tw td:nth-of-type(1)::before{content:"Ngày"}
+  #t3 .tw td:nth-of-type(2)::before{content:"Nhân viên"}
+  #t3 .tw td:nth-of-type(3)::before{content:"Tên KH + SĐT"}
+  #t3 .tw td:nth-of-type(4)::before{content:"ID CK"}
+  #t3 .tw td:nth-of-type(5)::before{content:"Đối tác nhận"}
+  #t3 .tw td:nth-of-type(6)::before{content:"Số tiền"}
+  #t3 .tw td:nth-of-type(7)::before{content:"Bill CK"}
+  #t3 .tw td:nth-of-type(8)::before{content:"Tình trạng"}
+  #t3 .tw td:nth-of-type(9)::before{content:"Hành động"}
+  #t3 .tw td:nth-of-type(10)::before{display:none}
+
+  #t4a .tw td:nth-of-type(1)::before{content:"Loại"}
+  #t4a .tw td:nth-of-type(2)::before{content:"Tên đối tác"}
+  #t4a .tw td:nth-of-type(3)::before{content:"Thời gian y/c bank"}
+  #t4a .tw td:nth-of-type(4)::before{content:"Số tiền y/c"}
+  #t4a .tw td:nth-of-type(5)::before{content:"STK mặc định"}
+  #t4a .tw td:nth-of-type(6)::before{display:none}
+
+  #t4b .tw td:nth-of-type(1)::before{content:"Kênh"}
+  #t4b .tw td:nth-of-type(2)::before{content:"Tên KH + SĐT"}
+  #t4b .tw td:nth-of-type(3)::before{content:"Thời gian bank"}
+  #t4b .tw td:nth-of-type(4)::before{content:"Số tiền bank"}
+  #t4b .tw td:nth-of-type(5)::before{content:"Sup/Checker mặc định"}
+  #t4b .tw td:nth-of-type(6)::before{display:none}
+
+  #cfg1 .tw td:nth-of-type(1)::before{content:"Tên"}
+  #cfg1 .tw td:nth-of-type(2)::before{content:"Email"}
+  #cfg1 .tw td:nth-of-type(3)::before{content:"Vai trò"}
+  #cfg1 .tw td:nth-of-type(4)::before{content:"Trạng thái"}
+  #cfg1 .tw td:nth-of-type(5)::before{display:none}
+
+  /* toolbars: stack full-width, add-button on its own row */
+  .toolbar{flex-direction:column;align-items:stretch}
+  .toolbar .seg{justify-content:flex-start;overflow-x:auto}
+  .toolbar .search{max-width:none!important;width:100%}
+  .toolbar>select{width:100%}
+  .toolbar .btn-p{margin-left:0!important;width:100%;justify-content:center}
+  /* modals fill the screen comfortably */
+  .modbg{padding:14px}
+  .mod{width:100%!important;border-radius:20px}
+}
 </style>
 </head>
 <body>
