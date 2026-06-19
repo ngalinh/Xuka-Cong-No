@@ -275,26 +275,36 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 .month-nav button:hover{background:#fff}
 .month-nav span{font-size:14px;font-weight:600;color:var(--txt);padding:0 8px}
 
-/* ===== RESPONSIVE / PWA (mobile) ===== */
+/* ===== RESPONSIVE (mobile) — vertical side menu kept ===== */
 @media(max-width:860px){
-  .app{padding:12px 12px 32px}
+  .app{padding:12px 10px 32px}
   .hdr{flex-wrap:wrap;gap:10px;padding:12px 14px;border-radius:18px}
   .hdr-title{font-size:15px}
-  .layout{flex-direction:column;gap:12px}
-  .sidebar{width:100%;position:static;top:auto;height:auto;border-radius:18px;padding:8px}
-  .sidebar-section{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;gap:6px;-webkit-overflow-scrolling:touch}
-  .nav-group{flex-direction:row;align-items:center;gap:6px;flex:none}
-  .sidebar-label{display:none}
-  .tab,.menu-main{white-space:nowrap;flex:none}
-  .tab-lbl{flex:none}
+  /* keep sidebar vertical, beside the content */
+  .layout{flex-direction:row;gap:10px;align-items:flex-start}
+  .sidebar{width:158px;flex:none;position:sticky;top:12px;height:auto;border-radius:18px;padding:8px}
+  .sidebar-section{flex-direction:column;gap:2px}
+  .nav-group{flex-direction:column}
+  .sidebar-label{display:block;font-size:9.5px;padding:10px 10px 4px}
+  .tab,.menu-main{padding:9px 10px;font-size:12.5px;gap:9px}
+  .body{min-width:0}
   #t0 [style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}
   #t0 [style*="1.55fr"]{grid-template-columns:1fr!important}
+  .map-grid{grid-template-columns:1fr}
   .toolbar{gap:8px}
   .search{min-width:140px}
   .kpi-val{font-size:22px}
   h1{font-size:20px!important}
 }
-@media(max-width:520px){
+/* phones: collapse the vertical menu to an icon rail (still on the side) */
+@media(max-width:560px){
+  .app{padding:10px 8px 28px}
+  .layout{gap:8px}
+  .sidebar{width:54px;padding:6px}
+  .sidebar-label{display:none}
+  .tab,.menu-main{justify-content:center;padding:11px 0;gap:0;position:relative}
+  .tab-lbl,.tab-lock{display:none}
+  #noti-badge{position:absolute;top:5px;right:7px;min-width:9px;height:9px;padding:0;font-size:0;line-height:0;border-radius:50%}
   #t0 [style*="repeat(4"]{grid-template-columns:1fr!important}
 }
 </style>
