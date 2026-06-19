@@ -39,8 +39,12 @@ jobs:
           SSH="ssh -i $HOME/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=accept-new"
 
           # This app is a single static index.html served by the platform.
-          # Replace ONLY that file — never touch other files in the managed folder.
-          rsync -avz -e "$SSH" ./index.html "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/index.html"
+          # The bot folder is owned by root (not writable by the deploy user),
+          # so we write the file content IN PLACE — this only needs the file
+          # itself to be owned/writable by the deploy user, not the directory.
+          # (Run once on the server: sudo chown $USER <DEPLOY_PATH>/index.html)
+          rsync -vz --inplace --no-perms --no-owner --no-group \
+            -e "$SSH" ./index.html "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/index.html"
 
           # Optional: only if you run the app as your OWN standalone PM2 process.
           # Leave PM2_APP_NAME empty for platform-served static apps (no restart needed).
