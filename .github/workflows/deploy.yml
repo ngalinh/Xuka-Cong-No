@@ -3,6 +3,8 @@ name: Deploy to server
 on:
   push:
     branches: [main]
+    paths:
+      - 'index.html'
   workflow_dispatch:
 
 concurrency:
@@ -24,7 +26,7 @@ jobs:
           PORT="${{ secrets.SSH_PORT }}"; PORT="${PORT:-22}"
           ssh-keyscan -p "$PORT" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Deploy with rsync over SSH and restart PM2
+      - name: Upload index.html to the bot folder
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -34,16 +36,14 @@ jobs:
         run: |
           set -euo pipefail
           PORT="${SSH_PORT:-22}"
-          APP="${PM2_APP_NAME:-xuka-congno}"
           SSH="ssh -i $HOME/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=accept-new"
 
-          # Copy app files to the server (keeps server-side files like node_modules / uploads)
-          rsync -avz \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='node_modules' \
-            -e "$SSH" \
-            ./ "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/"
+          # This app is a single static index.html served by the platform.
+          # Replace ONLY that file — never touch other files in the managed folder.
+          rsync -avz -e "$SSH" ./index.html "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/index.html"
 
-          # Install prod deps and (re)start the PM2 process
-          $SSH "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && npm install --omit=dev && (pm2 reload '$APP' || pm2 start server.js --name '$APP') && pm2 save"
+          # Optional: only if you run the app as your OWN standalone PM2 process.
+          # Leave PM2_APP_NAME empty for platform-served static apps (no restart needed).
+          if [ -n "${PM2_APP_NAME:-}" ]; then
+            $SSH "$SSH_USER@$SSH_HOST" "pm2 reload '$PM2_APP_NAME' 2>/dev/null || true"
+          fi
