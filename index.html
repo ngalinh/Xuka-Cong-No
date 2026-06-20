@@ -1161,7 +1161,6 @@ function icoSvg(path,sz){
 // ============================================================
 function loadData(){
   try{
-    if(localStorage.getItem(LS_VER_KEY)!==LS_VER) return;
     const raw=localStorage.getItem(LS_KEY);
     if(!raw) return;
     const p=JSON.parse(raw);
@@ -1725,6 +1724,7 @@ function handleUpload(input){
 // INIT
 // ============================================================
 function init(){
+  try{ localStorage.setItem(LS_VER_KEY,LS_VER); }catch(e){}
   loadData();
   CFG_USERS=loadUsers();
   KH_SUP_MAP=loadMapping();
