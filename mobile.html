@@ -45,8 +45,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   flex-shrink:0;color:#2a2e3a;
 }
 .hdr-center{flex:1;text-align:center}
-.hdr-title{font-size:16px;font-weight:600;color:#2a2e3a;letter-spacing:-0.01em}
-.hdr-sub{font-size:11px;color:#797f90;font-weight:400}
+.hdr-title{font-size:18px;font-weight:700;color:#2a2e3a;letter-spacing:-0.01em}
+.hdr-sub{font-size:11.5px;color:#8a8fa3;font-weight:400}
 .hdr-right{width:44px;display:flex;justify-content:flex-end;flex-shrink:0}
 .hdr-icon-btn{
   width:38px;height:38px;border-radius:12px;
@@ -67,10 +67,10 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 
 /* === GLASS CARD === */
 .g-card{
-  background:linear-gradient(160deg,rgba(255,255,255,0.72),rgba(255,255,255,0.46));
-  border:1px solid rgba(255,255,255,0.72);
-  border-radius:18px;
-  box-shadow:0 6px 18px rgba(120,120,180,0.1);
+  background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));
+  border:1px solid rgba(255,255,255,0.70);
+  border-radius:20px;
+  box-shadow:0 8px 22px rgba(120,120,180,0.12);
   padding:15px 16px;
 }
 
@@ -89,29 +89,29 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .chip.inactive{background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.8);color:#797f90}
 
 /* === KPI CARD === */
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .kpi-card{
-  background:linear-gradient(160deg,rgba(255,255,255,0.72),rgba(255,255,255,0.46));
-  border:1px solid rgba(255,255,255,0.72);border-radius:18px;
-  box-shadow:0 6px 18px rgba(120,120,180,0.1);padding:14px 14px;
+  background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));
+  border:1px solid rgba(255,255,255,0.70);border-radius:20px;
+  box-shadow:0 8px 22px rgba(120,120,180,0.12);padding:16px;
 }
-.kpi-label{font-size:10.5px;color:#797f90;font-weight:500;margin-bottom:4px}
-.kpi-value{font-size:19px;font-weight:700;color:#2a2e3a;letter-spacing:-0.02em}
-.kpi-sub{font-size:10.5px;color:#9aa0b2;margin-top:2px}
+.kpi-label{font-size:11.5px;color:#797f90;font-weight:500;margin-bottom:8px}
+.kpi-value{font-size:21px;font-weight:700;color:#2a2e3a;letter-spacing:-0.01em}
+.kpi-sub{font-size:11.5px;color:#9aa0b2;margin-top:2px}
 
 /* === FAB === */
 .fab{
   width:56px;height:56px;border-radius:50%;
   background:linear-gradient(135deg,#8a9bf2,#b39bea);
   box-shadow:0 10px 26px rgba(150,140,230,0.55);
-  position:fixed;bottom:24px;right:16px;z-index:90;
+  position:fixed;bottom:46px;right:16px;z-index:90;
   border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
   color:#fff;
 }
 .fab-pill{
   background:linear-gradient(135deg,#8a9bf2,#b39bea);
   box-shadow:0 10px 26px rgba(150,140,230,0.55);
-  position:fixed;bottom:24px;right:16px;z-index:90;
+  position:fixed;bottom:46px;right:16px;z-index:90;
   border:none;cursor:pointer;
   display:flex;align-items:center;gap:8px;
   padding:0 20px 0 16px;height:52px;border-radius:999px;
@@ -128,7 +128,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
   background:linear-gradient(160deg,rgba(255,255,255,0.72),rgba(255,255,255,0.46));
   border:1px solid rgba(255,255,255,0.72);
   border-radius:18px;box-shadow:0 6px 18px rgba(120,120,180,0.1);
-  padding:14px 15px;margin-bottom:10px;
+  padding:15px 16px;margin-bottom:10px;
 }
 .row-title{font-size:14px;font-weight:600;color:#2a2e3a;margin-bottom:4px}
 .row-meta{font-size:11.5px;color:#797f90;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -146,15 +146,12 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 /* === DRAWER === */
 #drawer{position:fixed;inset:0;z-index:200;display:none}
 #drawer.open{display:block}
-#drawer-backdrop{position:absolute;inset:0;background:rgba(60,60,95,0.35);backdrop-filter:blur(3px)}
+#drawer-backdrop{position:absolute;inset:0;background:rgba(60,60,95,0.25);backdrop-filter:blur(2px)}
 #drawer-panel{
-  position:absolute;top:0;left:0;bottom:0;width:min(85vw,320px);
-  background:linear-gradient(160deg,rgba(255,255,255,0.88),rgba(255,255,255,0.68));
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-right:1px solid rgba(255,255,255,0.8);
-  padding:60px 16px 32px;overflow-y:auto;
-  box-shadow:6px 0 24px rgba(120,120,180,0.18);
-  transform:translateX(-100%);transition:transform .25s ease;
+  position:absolute;top:0;left:0;bottom:0;width:100%;
+  background:linear-gradient(160deg,#d3ece8 0%,#dadbf3 52%,#d7d1f3 100%);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  transform:translateX(-100%);transition:transform .25s ease-out;
 }
 #drawer.open #drawer-panel{transform:translateX(0)}
 .drawer-logo{
@@ -232,31 +229,31 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
 
 /* === MONTH SWITCHER === */
 .month-pill{
-  display:flex;align-items:center;gap:0;
+  display:flex;align-items:center;justify-content:space-between;
   background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.8);
-  border-radius:999px;overflow:hidden;margin-bottom:14px;
+  border-radius:999px;padding:8px 6px 8px 14px;margin-bottom:14px;
 }
 .month-btn{
-  width:40px;height:38px;border:none;background:transparent;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;color:#5b6bd6;
+  width:30px;height:30px;border:none;background:rgba(255,255,255,0.8);border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#5b6072;flex-shrink:0;
 }
-.month-label{flex:1;text-align:center;font-size:13.5px;font-weight:600;color:#2a2e3a}
+.month-label{flex:1;text-align:center;font-size:14px;font-weight:600;color:#2a2e3a}
 
 /* === CHART AREA === */
 .chart-wrap{
-  background:linear-gradient(160deg,rgba(255,255,255,0.72),rgba(255,255,255,0.46));
-  border:1px solid rgba(255,255,255,0.72);border-radius:18px;
-  box-shadow:0 6px 18px rgba(120,120,180,0.1);
-  padding:16px;margin-bottom:14px;
+  background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));
+  border:1px solid rgba(255,255,255,0.70);border-radius:22px;
+  box-shadow:0 8px 22px rgba(120,120,180,0.12);
+  padding:18px;margin-bottom:14px;
 }
 .chart-title{font-size:12.5px;font-weight:600;color:#4a4f5e;margin-bottom:12px}
-.bar-chart{display:flex;align-items:flex-end;gap:3px;height:80px;overflow-x:auto;scrollbar-width:none}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;height:130px;overflow-x:auto;scrollbar-width:none}
 .bar-chart::-webkit-scrollbar{display:none}
-.bar-day{display:flex;flex-direction:column;align-items:center;gap:1px;flex-shrink:0;min-width:20px}
-.bar-stack{width:14px;border-radius:4px 4px 0 0;transition:height .3s}
+.bar-day{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;flex:1;height:100%;min-width:14px}
+.bar-stack{width:100%;max-width:18px;border-radius:4px 4px 0 0;transition:height .3s}
 .bar-lbl{font-size:8px;color:#9aa0b2;margin-top:2px}
-.donut-wrap{display:flex;align-items:center;gap:16px}
-.donut-canvas{width:90px;height:90px;border-radius:50%;flex-shrink:0}
+.donut-wrap{display:flex;align-items:center;gap:24px}
+.donut-canvas{width:120px;height:120px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .donut-legend{flex:1;display:flex;flex-direction:column;gap:6px}
 .legend-item{display:flex;align-items:center;gap:8px;font-size:12px;color:#4a4f5e}
 .legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
@@ -335,52 +332,89 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
   <div id="drawer">
     <div id="drawer-backdrop" onclick="closeDrawer()"></div>
     <div id="drawer-panel">
-      <div class="drawer-logo">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10h10l-3-3"/><path d="M17 14H7l3 3"/></svg>
+      <!-- Drawer header -->
+      <div style="position:sticky;top:0;z-index:8;padding:54px 16px 14px;display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.25));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,0.6);">
+        <button style="border:none;cursor:pointer;width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,0.7);box-shadow:0 4px 12px rgba(120,120,180,0.12);display:flex;align-items:center;justify-content:center;color:#2a2e3a;font-size:19px;flex-shrink:0" onclick="closeDrawer()">✕</button>
+        <div style="flex:1"><div style="font-size:18px;font-weight:700;letter-spacing:-0.01em">Điều hướng</div></div>
+        <div style="display:flex;align-items:center;gap:7px;padding:6px 8px 6px 14px;border-radius:999px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.8)"><span style="font-size:11.5px;color:#797f90">Vai trò</span><span style="padding:4px 11px;border-radius:999px;background:rgba(159,229,216,0.42);color:#1f8a7a;font-size:12px;font-weight:600">Sale</span></div>
       </div>
-      <div class="drawer-title">Xuka Công Nợ</div>
-      <div class="drawer-sub">Dòng tiền CK 3 bên</div>
-      <div class="drawer-section-lbl">Tổng quan</div>
-      <div class="drawer-item active" id="di-overview" onclick="navTo('overview')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        Tổng quan
+      <!-- Drawer body -->
+      <div style="padding:16px;display:flex;flex-direction:column;gap:18px;padding-bottom:40px">
+
+        <!-- Tổng quan standalone -->
+        <div style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.12);overflow:hidden;cursor:pointer" onclick="navTo('overview');closeDrawer()">
+          <div style="display:flex;align-items:center;gap:13px;padding:15px 16px">
+            <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></div>
+            <span style="flex:1;font-size:15px;font-weight:600">Tổng quan</span>
+            <svg width="8" height="14" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" stroke="#b6bac8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+
+        <!-- Khách hàng group -->
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Khách hàng</div>
+          <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('khList');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(159,229,216,0.5);color:#1f8a7a;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.9-5.2 6.5-5.2s6.5 1.9 6.5 5.2"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Danh sách KH</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('khDebt');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(125,142,240,0.16);color:#5b6bd6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11"/><path d="M14.8 9.3c-.6-1-1.8-1.4-3-1.3-1.3.1-2.3.9-2.3 2s.9 1.7 2.6 2 2.7.9 2.7 2.1-1.1 1.9-2.5 1.9c-1.3 0-2.5-.5-3-1.5"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Công nợ KH</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('tracking');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(177,151,230,0.22);color:#8a6fc4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Tracking CK</span>
+              <span style="padding:2px 9px;border-radius:999px;background:linear-gradient(135deg,#f06565,#e85b8a);color:#fff;font-size:11px;font-weight:700" id="tracking-badge"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sup / Checker group -->
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Sup / Checker</div>
+          <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('supList');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(125,142,240,0.16);color:#5b6bd6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.2-4.5h15.6L21 9"/><path d="M4.5 9.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V9.5"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Danh sách Sup/Checker</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('supDebt');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(243,200,90,0.28);color:#9a6a12;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Công nợ Sup/Checker</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cài đặt group -->
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Cài đặt</div>
+          <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settings');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Tài khoản</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settings');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Mapping KH ↔ Sup</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('settings');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 17v-5"/><path d="m9.7 14 2.3-2.3L14.3 14"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Data Upload</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Match CK + Desktop link -->
+        <div style="display:flex;gap:10px;margin-top:2px">
+          <button style="flex:1;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px;border-radius:16px;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 8px 18px rgba(150,140,230,0.4)" onclick="openMatchOverlay();closeDrawer()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.6L18.3 9.3l-4.6 1.7L12 15.6l-1.7-4.6L5.7 9.3l4.6-1.7z"/></svg>Match CK
+          </button>
+        </div>
+        <a href="/index.html" style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-radius:14px;border:1px solid rgba(140,150,230,0.2);background:rgba(255,255,255,0.5);color:#4a4f5e;text-decoration:none;font-size:13.5px;font-weight:500">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          Chuyển sang Desktop
+        </a>
       </div>
-      <div class="drawer-section-lbl">Công nợ</div>
-      <div class="drawer-item" id="di-khDebt" onclick="navTo('khDebt')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Công nợ KH
-      </div>
-      <div class="drawer-item" id="di-supDebt" onclick="navTo('supDebt')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        Công nợ Sup/Checker
-      </div>
-      <div class="drawer-section-lbl">Danh mục</div>
-      <div class="drawer-item" id="di-khList" onclick="navTo('khList')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-        Danh sách KH
-      </div>
-      <div class="drawer-item" id="di-supList" onclick="navTo('supList')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-        Danh sách Sup/Checker
-      </div>
-      <div class="drawer-item" id="di-tracking" onclick="navTo('tracking')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Tracking CK
-      </div>
-      <div class="drawer-divider"></div>
-      <div class="drawer-item" id="di-settings" onclick="navTo('settings')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Cài đặt
-      </div>
-      <button class="drawer-match-btn" onclick="openMatchOverlay();closeDrawer()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.6L18.3 9.3l-4.6 1.7L12 15.6l-1.7-4.6L5.7 9.3l4.6-1.7z"/><path d="M19 13.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
-        Match CK
-      </button>
-      <div style="height:24px"></div>
-      <a href="/index.html" style="display:flex;align-items:center;gap:8px;padding:11px 14px;border-radius:14px;border:1px solid rgba(140,150,230,0.2);background:rgba(255,255,255,0.5);color:#4a4f5e;text-decoration:none;font-size:13.5px;font-weight:500;margin-top:4px">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-        Chuyển sang Desktop
-      </a>
     </div>
   </div>
 
@@ -879,11 +913,11 @@ function renderOverview(){
   for(let day=1;day<=barDays;day++){
     const sv=supByDay[day]||0;
     const cv=ckByDay[day]||0;
-    const sh=Math.max(2,Math.round((sv/maxBar)*68));
-    const ch=Math.max(0,Math.round((cv/maxBar)*20));
+    const sh=Math.max(2,Math.round((sv/maxBar)*110));
+    const ckh=Math.max(0,Math.round((cv/maxBar)*30));
     bars+=`<div class="bar-day">
-      ${cv>0?`<div class="bar-stack" style="height:${ch}px;background:rgba(177,151,230,0.6);width:14px;border-radius:3px 3px 0 0"></div>`:'<div style="height:0"></div>'}
-      <div class="bar-stack" style="height:${sh}px;background:rgba(125,142,240,0.7);width:14px;border-radius:${cv>0?'0':'3px 3px'} 0 0"></div>
+      ${ckh>0?`<div class="bar-stack" style="height:${ckh}px;background:linear-gradient(180deg,#b39bea,#9b8ee8)"></div>`:''}
+      <div class="bar-stack" style="height:${sh}px;background:linear-gradient(180deg,#7d8ef0,#5b6bd6)"></div>
       <div class="bar-lbl">${day}</div>
     </div>`;
   }
@@ -894,49 +928,71 @@ function renderOverview(){
   const grandTotal=supTotal2+ckTotal2||1;
   const supPct=Math.round(supTotal2/grandTotal*100);
   const ckPct=100-supPct;
-  const donutStyle=`conic-gradient(rgba(125,142,240,0.75) 0% ${supPct}%, rgba(177,151,230,0.75) ${supPct}% 100%)`;
+  const donutBg=`conic-gradient(#5b6bd6 0% ${supPct}%, #9b8ee8 ${supPct}% 100%)`;
+  const countLabel=countGD;
 
   el.innerHTML=`
     ${buildHdr({left:'menu',title:'Tổng quan',sub:'Dòng tiền CK 3 bên',right:'avatar'})}
     <div class="scr-body">
       <div class="month-pill">
-        <button class="month-btn" onclick="changeMonth(-1)">${icoSvg(ICO_LEFT,18)}</button>
+        <button class="month-btn" onclick="changeMonth(-1)">◀</button>
         <span class="month-label">${monthLabel}</span>
-        <button class="month-btn" onclick="changeMonth(1)">${icoSvg(ICO_RIGHT,18)}</button>
+        <button class="month-btn" onclick="changeMonth(1)">▶</button>
       </div>
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-label">Tổng đã CK</div>
           <div class="kpi-value">${fmtVND(totalCK)}</div>
-          <div class="kpi-sub">${countGD} giao dịch</div>
+          <div style="font-size:11.5px;font-weight:600;color:#2a9d63;margin-top:2px">${countGD} giao dịch</div>
+          <div style="height:6px;border-radius:999px;background:rgba(120,120,180,0.12);margin-top:10px;overflow:hidden"><div style="width:72%;height:100%;background:linear-gradient(90deg,#8a9bf2,#a99bea)"></div></div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Số GD</div>
+          <div class="kpi-label">Số giao dịch</div>
           <div class="kpi-value">${countGD}</div>
-          <div class="kpi-sub">trong tháng</div>
+          <div style="font-size:11.5px;font-weight:600;color:#2a9d63;margin-top:2px">trong tháng</div>
+          <div style="height:6px;border-radius:999px;background:rgba(120,120,180,0.12);margin-top:10px;overflow:hidden"><div style="width:58%;height:100%;background:linear-gradient(90deg,#9fe5d8,#8fc8d8)"></div></div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Chờ điều phối</div>
           <div class="kpi-value">${fmtVND(supCDPAmt)}</div>
-          <div class="kpi-sub">${supCDP.length} lệnh</div>
+          <div style="font-size:11.5px;font-weight:600;color:#b5852a;margin-top:2px">${supCDP.length} GD</div>
+          <div style="height:6px;border-radius:999px;background:rgba(120,120,180,0.12);margin-top:10px;overflow:hidden"><div style="width:34%;height:100%;background:linear-gradient(90deg,#f3e07c,#f0d06a)"></div></div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Đã Done</div>
-          <div class="kpi-value">${supDone}/${supTotal}</div>
-          <div class="kpi-sub">${supTotal>0?Math.round(supDone/supTotal*100):0}%</div>
+          <div class="kpi-value">${supDone} <span style="font-size:12.5px;font-weight:600;color:#797f90">/ ${supTotal}</span></div>
+          <div style="font-size:11.5px;font-weight:600;color:#2a9d63;margin-top:2px">${supTotal>0?Math.round(supDone/supTotal*100):0}%</div>
+          <div style="height:6px;border-radius:999px;background:rgba(120,120,180,0.12);margin-top:10px;overflow:hidden"><div style="width:${supTotal>0?Math.round(supDone/supTotal*100):0}%;height:100%;background:linear-gradient(90deg,#6f9cf2,#9f9ce8)"></div></div>
         </div>
       </div>
       <div class="chart-wrap">
-        <div class="chart-title">Sup (xanh) · Checker (tím) — ${barDays} ngày đầu</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <span style="font-size:14px;font-weight:600">Số tiền CK theo ngày</span>
+          <div style="display:flex;gap:12px;font-size:11px;color:#5b6072">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:3px;background:#5b6bd6;display:inline-block"></span>Sup</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:3px;background:#9b8ee8;display:inline-block"></span>Checker</span>
+          </div>
+        </div>
         <div class="bar-chart">${bars||'<div style="color:#9aa0b2;font-size:12px;padding:10px">Chưa có dữ liệu</div>'}</div>
       </div>
       <div class="chart-wrap">
-        <div class="chart-title">Tỉ lệ Sup / Checker tháng này</div>
-        <div class="donut-wrap">
-          <div class="donut-canvas" style="background:${donutStyle}"></div>
-          <div class="donut-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:rgba(125,142,240,0.75)"></div>Sup: ${fmtVND(supTotal2)} (${supPct}%)</div>
-            <div class="legend-item"><div class="legend-dot" style="background:rgba(177,151,230,0.75)"></div>Checker: ${fmtVND(ckTotal2)} (${ckPct}%)</div>
+        <span style="font-size:14px;font-weight:600">Tỷ trọng Sup / Checker</span>
+        <div class="donut-wrap" style="margin-top:14px">
+          <div class="donut-canvas" style="background:${donutBg}">
+            <div style="width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,0.94);display:flex;flex-direction:column;align-items:center;justify-content:center">
+              <span style="font-size:22px;font-weight:700;line-height:1">${countLabel}</span>
+              <span style="font-size:10px;color:#8a8fa3">giao dịch</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:#5b6bd6;display:inline-block"></span><span style="font-size:13px;color:#4a4f5e">Sup</span></div>
+              <div style="font-size:18px;font-weight:700;margin-left:18px">${supPct}%</div>
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:50%;background:#9b8ee8;display:inline-block"></span><span style="font-size:13px;color:#4a4f5e">Checker</span></div>
+              <div style="font-size:18px;font-weight:700;margin-left:18px">${ckPct}%</div>
+            </div>
           </div>
         </div>
       </div>
@@ -966,20 +1022,26 @@ function renderKhDebt(){
 
   const list=rows.length?rows.map(k=>{
     const ch=khChannel(k);
-    const chColor=ch==='Linh Dương'?'rgba(125,142,240,0.15)':ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.45)';
+    const chColor=ch==='Linh Dương'?'rgba(125,142,240,0.15)':ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.4)';
     const chFg=ch==='Linh Dương'?'#5b6bd6':ch==='Linh Thảo'?'#8a6fc4':'#1f8a7a';
     return `<div class="list-row">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
-        <div class="row-title">${k.name||'—'}</div>
-        <div class="row-amount">${fmtVND(k.amount)}</div>
-      </div>
-      <div class="row-meta">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <div style="flex:1">
+          <div style="font-size:14.5px;font-weight:600;">${k.name||'—'}</div>
+          <div style="font-size:11.5px;color:#9aa0b2;margin-top:1px">${k.nv||''}</div>
+        </div>
         ${statusPill(k.status||'Mới nhập')}
-        ${ch?`<span class="pill" style="background:${chColor};color:${chFg}">${ch}</span>`:''}
-        <span>${fmtDate(k.date)}</span>
-        ${k.idCK?`<span class="mono">${k.idCK}</span>`:''}
       </div>
-      ${k.note?`<div style="font-size:11.5px;color:#797f90;margin-top:6px;font-style:italic">${k.note}</div>`:''}
+      <div style="display:flex;align-items:flex-end;justify-content:space-between">
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${ch?`<span class="pill" style="background:${chColor};color:${chFg};font-size:10.5px;padding:3px 9px;width:max-content">${ch}</span>`:''}
+          <span style="font-size:11px;color:#797f90">${fmtDate(k.date)}${k.note?' · '+k.note:''}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:17px;font-weight:700;letter-spacing:-0.01em">${fmtVND(k.amount)}</div>
+          ${k.idCK?`<div class="mono">${k.idCK}</div>`:''}
+        </div>
+      </div>
     </div>`;
   }).join(''):emptyState('Chưa có dữ liệu công nợ KH');
 
@@ -1069,16 +1131,16 @@ function renderKhList(){
   if(khListSearch) rows=rows.filter(c=>c.name.toLowerCase().includes(khListSearch.toLowerCase()));
 
   const list=rows.length?rows.map(c=>{
-    const chColor=c.ch==='Linh Dương'?'rgba(125,142,240,0.15)':c.ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.45)';
+    const chColor=c.ch==='Linh Dương'?'rgba(125,142,240,0.15)':c.ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.4)';
     const chFg=c.ch==='Linh Dương'?'#5b6bd6':c.ch==='Linh Thảo'?'#8a6fc4':'#1f8a7a';
-    return `<div class="list-row" style="display:flex;align-items:center;gap:12px">
-      <div class="av-tile">${initials(c.name)}</div>
+    return `<div style="display:flex;align-items:center;gap:13px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.72);border-radius:16px;box-shadow:0 5px 14px rgba(120,120,180,0.08);padding:13px 15px;margin-bottom:10px">
+      <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(150deg,#9fe5d8,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:none">${initials(c.name)}</div>
       <div style="flex:1;min-width:0">
-        <div class="row-title">${c.name}</div>
-        <div class="row-meta">
-          <span class="pill" style="background:${chColor};color:${chFg}">${c.ch}</span>
-          ${c.tm?`<span>TM: ${c.tm} phút</span>`:''}
-        </div>
+        <div style="font-size:14px;font-weight:600">${c.name}</div>
+        <div style="font-size:11.5px;color:#9aa0b2;margin-top:1px">${c.tm?`TM: ${c.tm} phút`:''}</div>
+      </div>
+      <div style="text-align:right">
+        <span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;background:${chColor};color:${chFg}">${c.ch||''}</span>
       </div>
     </div>`;
   }).join(''):emptyState('Chưa có danh sách KH');
@@ -1141,16 +1203,17 @@ function renderTracking(){
   const tabs=TABS.map(t=>`<button class="tab-btn ${ckTab===t.id?'active':''}" onclick="setCKTab('${t.id}')">${t.label}</button>`).join('');
 
   const list=rows.length?rows.map(r=>`<div class="list-row">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
-      <div class="row-title">${r.kh||'—'}</div>
-      <div class="row-amount">${fmtVND(r.amount)}</div>
-    </div>
-    <div class="row-meta">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px">
+      <div>
+        <div style="font-size:14px;font-weight:600">${r.kh||'—'}</div>
+        ${r.idCK?`<div class="mono" style="margin-top:2px">${r.idCK}</div>`:''}
+      </div>
       ${statusPill(r.status)}
-      ${r.partner?`<span style="font-size:11.5px;color:#5b6bd6;font-weight:500">${r.partner}</span>`:''}
-      <span>${fmtDate(r.date)}</span>
     </div>
-    ${r.idCK?`<div class="mono" style="margin-top:6px">${r.idCK}</div>`:''}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(120,120,180,0.12)">
+      <div style="font-size:12px;color:#797f90">→ <strong style="color:#5b6072;font-weight:600">${r.partner||'—'}</strong></div>
+      <div style="font-size:15px;font-weight:700">${fmtVND(r.amount)}</div>
+    </div>
   </div>`).join(''):emptyState('Không có dữ liệu');
 
   el.innerHTML=`
@@ -1222,28 +1285,38 @@ function renderMatchOverlay(){
   }
   body.innerHTML=pending.map((s,si)=>{
     const khRows=khNew.slice(0,3).map((k,ki)=>`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.5);border-radius:12px;margin-top:8px;gap:8px">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;background:rgba(125,142,240,0.07);border:1px solid rgba(125,142,240,0.14)">
         <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:600;color:#2a2e3a">${k.name}</div>
-          <div style="font-size:11.5px;color:#797f90">${fmtVND(k.amount)} · ${fmtDate(k.date)}</div>
+          <div style="font-size:13px;font-weight:600">${k.name}</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:#797f90;margin-top:2px"><span>${fmtVND(k.amount)}</span><span style="opacity:.45">·</span><span>${fmtDate(k.date)}</span></div>
         </div>
-        <div style="display:flex;gap:6px">
-          <button onclick="acceptMatch(${si},${ki})" style="width:32px;height:32px;border-radius:50%;border:none;background:rgba(53,196,122,0.2);color:#2a9d63;cursor:pointer;display:flex;align-items:center;justify-content:center">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
-          </button>
-          <button onclick="rejectMatch(${si},${ki})" style="width:32px;height:32px;border-radius:50%;border:none;background:rgba(240,101,101,0.13);color:#e05656;cursor:pointer;display:flex;align-items:center;justify-content:center">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-          </button>
-        </div>
+        <button onclick="rejectMatch(${si},${ki})" style="width:32px;height:32px;border-radius:50%;border:none;background:rgba(240,101,101,0.13);color:#e05656;cursor:pointer;display:flex;align-items:center;justify-content:center">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+        <button onclick="acceptMatch(${si},${ki})" style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(53,196,122,0.18);color:#2a9d63;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(53,196,122,0.25)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 6"/></svg>
+        </button>
       </div>`).join('');
-    return `<div class="g-card" style="margin-bottom:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
-        <div style="font-size:14px;font-weight:700;color:#2a2e3a">${s.name}</div>
-        ${typePill(s.type)}
+    const totalKh=khNew.slice(0,3).reduce((a,k)=>a+(Number(k.amount)||0),0);
+    const pct=s.amount>0?Math.round(totalKh/s.amount*100):0;
+    const pctBg=pct>=85?'rgba(53,196,122,0.16)':pct>=50?'rgba(243,200,90,0.22)':'rgba(240,101,101,0.13)';
+    const pctFg=pct>=85?'#2a9d63':pct>=50?'#9a6a12':'#e05656';
+    const short=Math.max(0,s.amount-totalKh);
+    return `<div style="background:linear-gradient(160deg,rgba(255,255,255,0.74),rgba(255,255,255,0.48));border:1px solid rgba(255,255,255,0.75);border-radius:20px;box-shadow:0 8px 20px rgba(120,120,180,0.12);padding:16px;margin-bottom:14px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-size:14.5px;font-weight:700">${s.name}</span>${typePill(s.type)}</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#797f90;margin-top:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><span>${fmtDate(s.date)}</span></div>
+        </div>
+        <div style="text-align:right"><div style="font-size:10px;color:#9aa0b2;font-weight:600;text-transform:uppercase">Công nợ</div><div style="font-size:15px;font-weight:700">${fmtVND(s.amount)}</div></div>
       </div>
-      <div style="font-size:12px;color:#797f90;margin-bottom:4px">${fmtVND(s.amount)} · ${fmtDate(s.date)}</div>
-      <div style="font-size:11.5px;color:#9aa0b2;margin-bottom:8px">Gợi ý KH phù hợp:</div>
-      ${khRows||'<div style="font-size:12px;color:#9aa0b2">Không có KH mới nhập</div>'}
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+        ${khRows||'<div style="font-size:12px;color:#9aa0b2">Không có KH mới nhập</div>'}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid rgba(120,120,180,0.12)">
+        <span style="padding:5px 11px;border-radius:999px;font-size:11.5px;font-weight:700;background:${pctBg};color:${pctFg}">${pct}% công nợ</span>
+        ${short>0?`<span style="font-size:11px;color:#797f90">thiếu <strong style="color:#e05656">${fmtVND(short)}</strong></span>`:''}
+      </div>
     </div>`;
   }).join('');
 }
@@ -1277,17 +1350,22 @@ function renderSupDebt(){
   const tabs=TABS.map(t=>`<button class="tab-btn ${supTab===t.id?'active':''}" onclick="setSupTab('${t.id}')">${t.label}</button>`).join('');
 
   const list=rows.length?rows.map(s=>`<div class="list-row">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
-      <div class="row-title">${s.name||'—'}</div>
-      <div class="row-amount">${fmtVND(s.amount)}</div>
-    </div>
-    <div class="row-meta">
-      ${typePill(s.type)}
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:14px;font-weight:600">${s.name||'—'}</span>${typePill(s.type)}
+      </div>
       ${statusPill(s.status||'Mới nhập')}
-      <span>${fmtDate(s.date)}</span>
     </div>
-    ${s.idCK?`<div class="mono" style="margin-top:6px">${s.idCK}</div>`:''}
-    ${s.note?`<div style="font-size:11.5px;color:#797f90;margin-top:5px;font-style:italic">${s.note}</div>`:''}
+    <div style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:#797f90">
+        <span style="display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>${fmtDate(s.date)}</span>
+        ${s.stk?`<span style="display:flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11"/><path d="M14.8 9.3c-.6-1-1.8-1.4-3-1.3-1.3.1-2.3.9-2.3 2s.9 1.7 2.6 2 2.7.9 2.7 2.1-1.1 1.9-2.5 1.9c-1.3 0-2.5-.5-3-1.5"/></svg>${s.stk}</span>`:''}
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:16px;font-weight:700">${fmtVND(s.amount)}</div>
+        ${s.idCK?`<div class="mono">${s.idCK}</div>`:''}
+      </div>
+    </div>
   </div>`).join(''):emptyState('Chưa có công nợ Sup/Checker');
 
   el.innerHTML=`
@@ -1348,15 +1426,13 @@ function saveSupForm(){
 // ============================================================
 function renderSupList(){
   const el=document.getElementById('scr-supList');
-  const list=D.partners.length?D.partners.map(p=>`<div class="list-row" style="display:flex;align-items:center;gap:12px">
-    <div class="av-tile" style="background:${p.type==='Checker'?'linear-gradient(135deg,#b39bea,#8a9bf2)':'linear-gradient(135deg,#8a9bf2,#b39bea)'}">${initials(p.name)}</div>
+  const list=D.partners.length?D.partners.map(p=>`<div style="display:flex;align-items:center;gap:13px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.72);border-radius:16px;box-shadow:0 5px 14px rgba(120,120,180,0.08);padding:13px 15px;margin-bottom:10px">
+    <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(150deg,#8a9bf2,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:none">${initials(p.name)}</div>
     <div style="flex:1;min-width:0">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-        <div class="row-title">${p.name}</div>
-        ${typePill(p.type)}
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
+        <span style="font-size:13.5px;font-weight:600">${p.name}</span>${typePill(p.type)}
       </div>
       ${p.stk?`<div class="mono">${p.stk}</div>`:''}
-      ${p.tm?`<div style="font-size:11.5px;color:#797f90">TM: ${p.tm} phút</div>`:''}
     </div>
   </div>`).join(''):emptyState('Chưa có Sup/Checker nào');
 
@@ -1393,44 +1469,53 @@ function savePartnerForm(){
 // ============================================================
 function renderSettings(){
   const el=document.getElementById('scr-settings');
-  const userRows=CFG_USERS.map(u=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(120,120,180,0.08)">
-    <div class="av-tile" style="width:38px;height:38px;border-radius:12px">${initials(u.name)}</div>
+  const userRows=CFG_USERS.map(u=>`<div style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid rgba(120,120,180,0.1)">
+    <div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(150deg,#9fe5d8,#8a9bf2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex:none">${initials(u.name)}</div>
     <div style="flex:1;min-width:0">
       <div style="font-size:13.5px;font-weight:600;color:#2a2e3a">${u.name}</div>
-      <div style="font-size:11.5px;color:#797f90">${u.email||u.user||''}</div>
+      <div style="font-size:11px;color:#9aa0b2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email||u.user||''}</div>
     </div>
     ${rolePill(u.role)}
   </div>`).join('');
 
   const mapRows=Object.entries(KH_SUP_MAP).length?Object.entries(KH_SUP_MAP).map(([kh,sup])=>`
-    <div class="map-row">
-      <span class="map-kh-name">${kh}</span>
-      <div class="map-arrow-ic">${icoSvg(ICO_ARROW,14)}</div>
-      <span class="map-sup-name">${sup}</span>
+    <div style="display:flex;align-items:center;gap:10px;padding:13px 15px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:16px;box-shadow:0 5px 14px rgba(120,120,180,0.08);margin-bottom:10px">
+      <div style="flex:1">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">KH</div>
+        <div style="font-size:13.5px;font-weight:600">${kh}</div>
+      </div>
+      <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px">→</div>
+      <div style="flex:1;text-align:right">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">Sup</div>
+        <div style="font-size:13.5px;font-weight:600;color:#5b6bd6">${sup}</div>
+      </div>
     </div>`).join(''):emptyState('Chưa có mapping nào');
 
   el.innerHTML=`
     ${buildHdr({left:'menu',title:'Cài đặt'})}
     <div class="scr-body">
-      <div class="g-card" style="margin-bottom:14px">
-        <div style="font-size:13px;font-weight:700;color:#2a2e3a;margin-bottom:12px">Tài khoản đăng nhập</div>
-        ${userRows||'<div style="color:#9aa0b2;font-size:13px">Chưa có tài khoản</div>'}
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Tài khoản đăng nhập</div>
+        <div style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
+          ${userRows||'<div style="color:#9aa0b2;font-size:13px;padding:15px">Chưa có tài khoản</div>'}
+        </div>
       </div>
-      <div class="g-card" style="margin-bottom:14px">
-        <div style="font-size:13px;font-weight:700;color:#2a2e3a;margin-bottom:12px">Mapping KH ↔ Sup</div>
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Mapping KH ↔ Sup</div>
         ${mapRows}
       </div>
-      <div class="g-card" style="margin-bottom:14px">
-        <div style="font-size:13px;font-weight:700;color:#2a2e3a;margin-bottom:12px">Data Upload</div>
-        <div class="upload-area" onclick="triggerUpload()">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <p>Chạm để tải lên file dữ liệu</p>
-          <p style="font-size:11px;margin-top:4px">.xlsx / .json</p>
+      <div style="margin-bottom:20px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Data Upload</div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 20px;background:linear-gradient(160deg,rgba(255,255,255,0.60),rgba(255,255,255,0.34));border:2px dashed rgba(140,150,230,0.4);border-radius:22px;cursor:pointer" onclick="triggerUpload()">
+          <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 20px rgba(150,140,230,0.35)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg></div>
+          <div style="font-size:14px;font-weight:600;text-align:center">Tải file sao kê / Excel</div>
+          <div style="font-size:11.5px;color:#8a8fa3;text-align:center">.xlsx, .csv — tự động đối chiếu công nợ & bill CK</div>
+          <button style="border:none;cursor:pointer;font-family:inherit;margin-top:2px;padding:11px 24px;border-radius:999px;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 18px rgba(150,140,230,0.4)">Chọn file</button>
         </div>
         <input type="file" id="upload-input" accept=".xlsx,.json" style="display:none" onchange="handleUpload(this)">
       </div>
       <a href="/index.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:18px;border:1px solid rgba(140,150,230,0.25);background:rgba(255,255,255,0.5);color:#5b6bd6;text-decoration:none;font-size:14px;font-weight:600;margin-bottom:14px">
-        ${icoSvg('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/>',18)}
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
         Mở phiên bản Desktop
       </a>
     </div>`;
