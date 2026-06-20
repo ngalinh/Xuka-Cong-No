@@ -73,28 +73,15 @@ jobs:
           " || echo "::warning::pm2 step failed — start api.js manually"
 
           # Configure nginx proxy for /api/ → localhost:3456 (one-time setup)
-          $SSH "$SSH_USER@$SSH_HOST" "
-            if grep -r 'xuka-api\|3456' /etc/nginx/ 2>/dev/null | grep -q .; then
-              echo 'nginx proxy already configured'
-            else
-              echo '--- ACTION REQUIRED ---'
-              echo 'Add this location block to the ai.basso.vn server block in nginx:'
-              echo '  location /api/ {'
-              echo '    proxy_pass http://127.0.0.1:3456;'
-              echo '    proxy_http_version 1.1;'
-              echo '  }'
-              echo 'Then run: sudo nginx -t && sudo systemctl reload nginx'
-              echo '-----------------------'
-              # Try to add automatically
-              sudo tee /etc/nginx/snippets/xuka-api.conf > /dev/null <<'NGINX'
-location /api/ {
-    proxy_pass http://127.0.0.1:3456;
-    proxy_http_version 1.1;
-}
-NGINX
-              sudo nginx -t && sudo systemctl reload nginx && echo 'nginx reloaded OK' || echo '::warning::nginx reload failed — add proxy manually'
-            fi
-          " || echo "::warning::nginx step failed — add proxy config manually"
+          $SSH "$SSH_USER@$SSH_HOST" \
+            'if grep -qr "3456\|xuka-api" /etc/nginx/ 2>/dev/null; then
+               echo "nginx proxy already configured";
+             else
+               CONF="location /api/ { proxy_pass http://127.0.0.1:3456; proxy_http_version 1.1; }";
+               echo "$CONF" | sudo tee /etc/nginx/snippets/xuka-api.conf > /dev/null &&
+               sudo nginx -t && sudo systemctl reload nginx && echo "nginx reloaded OK" ||
+               echo "ACTION REQUIRED: add location /api/ { proxy_pass http://127.0.0.1:3456; } to nginx ai.basso.vn server block, then reload nginx";
+             fi' || echo "::warning::nginx step skipped"
 
           # Optional: reload existing pm2 app if configured
           if [ -n "${PM2_APP_NAME:-}" ]; then
