@@ -15,19 +15,25 @@ http.createServer((req, res) => {
 
   if (req.method === 'GET') {
     try {
-      const data = fs.existsSync(DATA_FILE) ? fs.readFileSync(DATA_FILE, 'utf8') : 'null';
+      const raw = fs.existsSync(DATA_FILE) ? fs.readFileSync(DATA_FILE, 'utf8') : 'null';
+      const parsed = JSON.parse(raw);
+      // Normalize: if stored as raw xuka_cn_v1 object (old format), wrap it
+      let result = parsed;
+      if (parsed && parsed.sup !== undefined && parsed.xuka_cn_v1 === undefined) {
+        result = { xuka_cn_v1: parsed };
+      }
       res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(data);
-    } catch(e) { res.writeHead(500); res.end('null'); }
+      res.end(JSON.stringify(result));
+    } catch(e) { res.writeHead(200, {'Content-Type': 'application/json'}); res.end('null'); }
 
   } else if (req.method === 'POST') {
     let body = '';
-    req.on('data', chunk => { body += chunk; if (body.length > 10e6) req.destroy(); });
+    req.on('data', chunk => { body += chunk; if (body.length > 20e6) req.destroy(); });
     req.on('end', () => {
       try {
         const d = JSON.parse(body);
         if (!d || typeof d !== 'object') throw new Error();
-        fs.writeFileSync(DATA_FILE, body, 'utf8');
+        fs.writeFileSync(DATA_FILE, JSON.stringify(d), 'utf8');
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end('{"ok":true}');
       } catch(e) { res.writeHead(400); res.end('{"error":"invalid"}'); }
@@ -36,5 +42,3 @@ http.createServer((req, res) => {
     res.writeHead(405); res.end();
   }
 }).listen(PORT, '127.0.0.1', () => console.log('xuka-api listening on port ' + PORT));
-
- 

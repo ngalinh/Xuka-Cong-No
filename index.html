@@ -410,10 +410,14 @@ var API_URL = '/api/data';
 var _remoteFetched = false;
 
 function postToAPI(data) {
+  // Bundle all localStorage keys into one API call
+  var payload = { xuka_cn_v1: data };
+  try { var u = localStorage.getItem('xuka_users'); if (u) payload.xuka_users = JSON.parse(u); } catch(e){}
+  try { var m = localStorage.getItem('xuka_mapping'); if (m) payload.xuka_mapping = JSON.parse(m); } catch(e){}
   fetch(API_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(data)
+    body: JSON.stringify(payload)
   }).catch(function(){});
 }
 
@@ -424,12 +428,23 @@ function fetchRemoteData() {
     .then(function(res) {
       if (!res.ok) return;
       return res.json().then(function(d) {
-        if (d && typeof d === 'object' && (d.sup || d.kh || d.partners)) {
-          try {
-            localStorage.setItem('xuka_cn_v1', JSON.stringify(d));
+        if (!d || typeof d !== 'object') return;
+        try {
+          // Restore main data
+          var main = d.xuka_cn_v1 || d;
+          if (main && (main.sup || main.kh || main.partners)) {
+            localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
             localStorage.setItem('xuka_ver', '8');
-          } catch(e) {}
-        }
+          }
+          // Restore users
+          if (d.xuka_users && Array.isArray(d.xuka_users) && d.xuka_users.length) {
+            localStorage.setItem('xuka_users', JSON.stringify(d.xuka_users));
+          }
+          // Restore mapping
+          if (d.xuka_mapping && typeof d.xuka_mapping === 'object') {
+            localStorage.setItem('xuka_mapping', JSON.stringify(d.xuka_mapping));
+          }
+        } catch(e) {}
       });
     })
     .catch(function(){});
