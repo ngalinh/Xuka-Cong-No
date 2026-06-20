@@ -9,6 +9,7 @@ on:
       - 'manifest.webmanifest'
       - 'sw.js'
       - 'icon.svg'
+      - 'api.js'
   workflow_dispatch:
 
 concurrency:
@@ -42,26 +43,60 @@ jobs:
           PORT="${SSH_PORT:-22}"
           SSH="ssh -i $HOME/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=accept-new"
 
-          # Main app files — upload in place (file must be owned by deploy user on server).
-          # One-time on server: sudo chown $USER <DEPLOY_PATH>/index.html <DEPLOY_PATH>/mobile.html
+          # Main app files
           for f in index.html mobile.html; do
             rsync -vz --inplace --no-perms --no-owner --no-group \
               -e "$SSH" "./$f" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/$f"
           done
 
-          # PWA assets — upload in place too. These only succeed once the files
-          # exist on the server AND are owned by the deploy user. Non-fatal so the
-          # main app always deploys even before the one-time chown is done.
-          # One-time on server:
-          #   cd <DEPLOY_PATH> && sudo touch manifest.webmanifest sw.js icon.svg && sudo chown $USER manifest.webmanifest sw.js icon.svg
+          # PWA assets
           for f in manifest.webmanifest sw.js icon.svg; do
             rsync -vz --inplace --no-perms --no-owner --no-group \
               -e "$SSH" "./$f" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/$f" \
-              || echo "::warning::Skipped $f (create it on the server and chown to the deploy user to enable PWA)"
+              || echo "::warning::Skipped $f"
           done
 
-          # Optional: only if you run the app as your OWN standalone PM2 process.
-          # Leave PM2_APP_NAME empty for platform-served static apps (no restart needed).
+          # API server
+          rsync -vz --inplace --no-perms --no-owner --no-group \
+            -e "$SSH" "./api.js" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/api.js" \
+            || echo "::warning::Skipped api.js"
+
+          # Start / restart API with pm2
+          $SSH "$SSH_USER@$SSH_HOST" "
+            cd '$DEPLOY_PATH'
+            if pm2 describe xuka-api > /dev/null 2>&1; then
+              pm2 reload xuka-api
+            else
+              pm2 start api.js --name xuka-api
+            fi
+            pm2 save
+          " || echo "::warning::pm2 step failed — start api.js manually"
+
+          # Configure nginx proxy for /api/ → localhost:3456 (one-time setup)
+          $SSH "$SSH_USER@$SSH_HOST" "
+            if grep -r 'xuka-api\|3456' /etc/nginx/ 2>/dev/null | grep -q .; then
+              echo 'nginx proxy already configured'
+            else
+              echo '--- ACTION REQUIRED ---'
+              echo 'Add this location block to the ai.basso.vn server block in nginx:'
+              echo '  location /api/ {'
+              echo '    proxy_pass http://127.0.0.1:3456;'
+              echo '    proxy_http_version 1.1;'
+              echo '  }'
+              echo 'Then run: sudo nginx -t && sudo systemctl reload nginx'
+              echo '-----------------------'
+              # Try to add automatically
+              sudo tee /etc/nginx/snippets/xuka-api.conf > /dev/null <<'NGINX'
+location /api/ {
+    proxy_pass http://127.0.0.1:3456;
+    proxy_http_version 1.1;
+}
+NGINX
+              sudo nginx -t && sudo systemctl reload nginx && echo 'nginx reloaded OK' || echo '::warning::nginx reload failed — add proxy manually'
+            fi
+          " || echo "::warning::nginx step failed — add proxy config manually"
+
+          # Optional: reload existing pm2 app if configured
           if [ -n "${PM2_APP_NAME:-}" ]; then
             $SSH "$SSH_USER@$SSH_HOST" "pm2 reload '$PM2_APP_NAME' 2>/dev/null || true"
           fi

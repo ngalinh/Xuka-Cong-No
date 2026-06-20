@@ -403,6 +403,39 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 </head>
 <body>
 <script>
+// ============================================================
+// REMOTE API SYNC — shared between mobile and desktop
+// ============================================================
+var API_URL = '/api/data';
+var _remoteFetched = false;
+
+function postToAPI(data) {
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  }).catch(function(){});
+}
+
+function fetchRemoteData() {
+  if (_remoteFetched) return Promise.resolve();
+  _remoteFetched = true;
+  return fetch(API_URL, {signal: AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined})
+    .then(function(res) {
+      if (!res.ok) return;
+      return res.json().then(function(d) {
+        if (d && typeof d === 'object' && (d.sup || d.kh || d.partners)) {
+          try {
+            localStorage.setItem('xuka_cn_v1', JSON.stringify(d));
+            localStorage.setItem('xuka_ver', '8');
+          } catch(e) {}
+        }
+      });
+    })
+    .catch(function(){});
+}
+</script>
+<script>
 (function(){
   var isMobile = (window.innerWidth <= 768) ||
     (navigator.maxTouchPoints > 0 && window.innerWidth <= 900);
@@ -1174,9 +1207,9 @@ function loadData(){
 }
 function saveData(){
   try{
-    localStorage.setItem(LS_KEY,JSON.stringify({
-      sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars
-    }));
+    const payload={sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars};
+    localStorage.setItem(LS_KEY,JSON.stringify(payload));
+    postToAPI(payload);
   }catch(e){}
 }
 function loadUsers(){
@@ -1276,20 +1309,6 @@ function buildHdr(opts){
 // ============================================================
 function renderOverview(){
   const el=document.getElementById('scr-overview');
-  // DEBUG OVERLAY - will be removed after diagnosis
-  try{
-    const raw=localStorage.getItem(LS_KEY);
-    let dbg='';
-    if(!raw){dbg='<b>localStorage '+LS_KEY+': KHÔNG CÓ</b>';}
-    else{
-      const p=JSON.parse(raw);
-      dbg='<b>localStorage OK</b><br>sup:'+( p.sup?p.sup.length:0)+' | kh:'+(p.kh?p.kh.length:0)+' | partners:'+(p.partners?p.partners.length:0)+'<br>D.sup:'+D.sup.length+' | D.partners:'+D.partners.length;
-    }
-    const dbgEl=document.createElement('div');
-    dbgEl.style.cssText='position:fixed;top:0;left:0;right:0;background:#ff0;color:#000;font-size:12px;padding:6px 10px;z-index:99999;word-break:break-all;';
-    dbgEl.innerHTML=dbg+' <button onclick="this.parentNode.remove()" style="margin-left:8px;font-size:11px;">X</button>';
-    document.body.prepend(dbgEl);
-  }catch(e){console.error('debug err',e);}
   const MONTHS=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
   const monthLabel=MONTHS[viewMonth-1]+' '+viewYear;
 
@@ -1737,8 +1756,9 @@ function handleUpload(input){
 // ============================================================
 // INIT
 // ============================================================
-function init(){
+async function init(){
   try{ localStorage.setItem(LS_VER_KEY,LS_VER); }catch(e){}
+  await fetchRemoteData();
   loadData();
   CFG_USERS=loadUsers();
   KH_SUP_MAP=loadMapping();
@@ -5240,6 +5260,7 @@ function saveToStorage(){
   try {
     const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    postToAPI(payload);
   } catch(e){ /* quota exceeded or private mode */ }
 }
 
@@ -5272,9 +5293,12 @@ function loadFromStorage(){
 function autosave(){ saveToStorage(); }
 
 // Try auto-login from platform email injection
-tryAutoLogin();
-loadSample();
-applyRole();
+(async function(){
+  await fetchRemoteData();
+  tryAutoLogin();
+  loadSample();
+  applyRole();
+})();
 } // end if(!window.__mobile)
 </script>
 <script>
