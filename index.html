@@ -1309,6 +1309,20 @@ function buildHdr(opts){
 // ============================================================
 function renderOverview(){
   const el=document.getElementById('scr-overview');
+  // DEBUG OVERLAY - will be removed after diagnosis
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    let dbg='';
+    if(!raw){dbg='<b>localStorage '+LS_KEY+': KHÔNG CÓ</b>';}
+    else{
+      const p=JSON.parse(raw);
+      dbg='<b>localStorage OK</b><br>sup:'+( p.sup?p.sup.length:0)+' | kh:'+(p.kh?p.kh.length:0)+' | partners:'+(p.partners?p.partners.length:0)+'<br>D.sup:'+D.sup.length+' | D.partners:'+D.partners.length;
+    }
+    const dbgEl=document.createElement('div');
+    dbgEl.style.cssText='position:fixed;top:0;left:0;right:0;background:#ff0;color:#000;font-size:12px;padding:6px 10px;z-index:99999;word-break:break-all;';
+    dbgEl.innerHTML=dbg+' <button onclick="this.parentNode.remove()" style="margin-left:8px;font-size:11px;">X</button>';
+    document.body.prepend(dbgEl);
+  }catch(e){console.error('debug err',e);}
   const MONTHS=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
   const monthLabel=MONTHS[viewMonth-1]+' '+viewYear;
 
