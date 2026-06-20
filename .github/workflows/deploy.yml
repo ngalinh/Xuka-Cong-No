@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'mobile.html'
       - 'manifest.webmanifest'
       - 'sw.js'
       - 'icon.svg'
@@ -29,7 +30,7 @@ jobs:
           PORT="${{ secrets.SSH_PORT }}"; PORT="${PORT:-22}"
           ssh-keyscan -p "$PORT" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
-      - name: Upload index.html to the bot folder
+      - name: Upload files to the bot folder
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -41,19 +42,18 @@ jobs:
           PORT="${SSH_PORT:-22}"
           SSH="ssh -i $HOME/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=accept-new"
 
-          # This app is a single static index.html served by the platform.
-          # The bot folder is owned by root (not writable by the deploy user),
-          # so we write the file content IN PLACE — this only needs the file
-          # itself to be owned/writable by the deploy user, not the directory.
-          # (Run once on the server: sudo chown $USER <DEPLOY_PATH>/index.html)
-          rsync -vz --inplace --no-perms --no-owner --no-group \
-            -e "$SSH" ./index.html "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/index.html"
+          # Main app files — upload in place (file must be owned by deploy user on server).
+          # One-time on server: sudo chown $USER <DEPLOY_PATH>/index.html <DEPLOY_PATH>/mobile.html
+          for f in index.html mobile.html; do
+            rsync -vz --inplace --no-perms --no-owner --no-group \
+              -e "$SSH" "./$f" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/$f"
+          done
 
           # PWA assets — upload in place too. These only succeed once the files
           # exist on the server AND are owned by the deploy user. Non-fatal so the
           # main app always deploys even before the one-time chown is done.
           # One-time on server:
-          #   cd <DEPLOY_PATH> && sudo touch manifest.webmanifest sw.js icon.svg && sudo chown $USER manifest.webmanifest sw.js icon.svg index.html
+          #   cd <DEPLOY_PATH> && sudo touch manifest.webmanifest sw.js icon.svg && sudo chown $USER manifest.webmanifest sw.js icon.svg
           for f in manifest.webmanifest sw.js icon.svg; do
             rsync -vz --inplace --no-perms --no-owner --no-group \
               -e "$SSH" "./$f" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/$f" \
