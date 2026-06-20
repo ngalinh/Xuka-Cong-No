@@ -403,6 +403,39 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 </head>
 <body>
 <script>
+// ============================================================
+// REMOTE API SYNC — shared between mobile and desktop
+// ============================================================
+var API_URL = '/api/data';
+var _remoteFetched = false;
+
+function postToAPI(data) {
+  fetch(API_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(data)
+  }).catch(function(){});
+}
+
+function fetchRemoteData() {
+  if (_remoteFetched) return Promise.resolve();
+  _remoteFetched = true;
+  return fetch(API_URL, {signal: AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined})
+    .then(function(res) {
+      if (!res.ok) return;
+      return res.json().then(function(d) {
+        if (d && typeof d === 'object' && (d.sup || d.kh || d.partners)) {
+          try {
+            localStorage.setItem('xuka_cn_v1', JSON.stringify(d));
+            localStorage.setItem('xuka_ver', '8');
+          } catch(e) {}
+        }
+      });
+    })
+    .catch(function(){});
+}
+</script>
+<script>
 (function(){
   var isMobile = (window.innerWidth <= 768) ||
     (navigator.maxTouchPoints > 0 && window.innerWidth <= 900);
@@ -1174,9 +1207,9 @@ function loadData(){
 }
 function saveData(){
   try{
-    localStorage.setItem(LS_KEY,JSON.stringify({
-      sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars
-    }));
+    const payload={sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars};
+    localStorage.setItem(LS_KEY,JSON.stringify(payload));
+    postToAPI(payload);
   }catch(e){}
 }
 function loadUsers(){
@@ -1737,8 +1770,9 @@ function handleUpload(input){
 // ============================================================
 // INIT
 // ============================================================
-function init(){
+async function init(){
   try{ localStorage.setItem(LS_VER_KEY,LS_VER); }catch(e){}
+  await fetchRemoteData();
   loadData();
   CFG_USERS=loadUsers();
   KH_SUP_MAP=loadMapping();
@@ -5240,6 +5274,7 @@ function saveToStorage(){
   try {
     const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    postToAPI(payload);
   } catch(e){ /* quota exceeded or private mode */ }
 }
 
@@ -5272,9 +5307,12 @@ function loadFromStorage(){
 function autosave(){ saveToStorage(); }
 
 // Try auto-login from platform email injection
-tryAutoLogin();
-loadSample();
-applyRole();
+(async function(){
+  await fetchRemoteData();
+  tryAutoLogin();
+  loadSample();
+  applyRole();
+})();
 } // end if(!window.__mobile)
 </script>
 <script>
