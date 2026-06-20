@@ -27,6 +27,11 @@ rsync -vz --inplace mobile.html vmadmin@vps-pro3:/opt/dashboard-bot/data/bots/f4
 - **Main branch**: `main`
 - **Feature branch hiện tại**: `claude/cool-hamilton-h1denu` (PR #14)
 
+## Workflow
+
+- **Auto merge**: Sau khi push xong, tự merge PR vào `main` luôn, không cần hỏi
+- **Auto deploy**: Merge vào `main` → GitHub Actions tự rsync lên server (không cần làm gì thêm)
+
 ## App
 
 - Desktop: `index.html` — SPA quản lý công nợ CK 3 bên
