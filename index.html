@@ -407,6 +407,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
   var isMobile = (window.innerWidth <= 768) ||
     (navigator.maxTouchPoints > 0 && window.innerWidth <= 900);
   if(!isMobile) return;
+  window.__mobile = true;
 
   // ---- MOBILE MODE ----
   // Hide desktop UI immediately before it renders
@@ -2568,6 +2569,7 @@ init();
 <div class="toast" id="toast"></div>
 
 <script>
+if(!window.__mobile){
 /* ================================================
    DATA STORE
    ================================================ */
@@ -5259,6 +5261,7 @@ function autosave(){ saveToStorage(); }
 tryAutoLogin();
 loadSample();
 applyRole();
+} // end if(!window.__mobile)
 </script>
 <script>
 if('serviceWorker' in navigator){
