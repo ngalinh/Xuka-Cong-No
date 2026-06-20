@@ -1179,7 +1179,8 @@ function genId(prefix){
 }
 function initials(name){
   if(!name) return '?';
-  return name.trim().split(/\\s+/).map(w=>w[0]||'').slice(-2).join('').toUpperCase()||'?';
+  var words=name.trim().split(/\s+/).filter(function(w){return /\p{L}/u.test(w)});
+  return (words.slice(0,2).map(function(w){return w[0]||''}).join('')||name[0]||'?').toUpperCase();
 }
 function statusPill(status){
   const c=STATUS_COLOR[status]||{bg:'rgba(120,120,180,0.12)',fg:'#797f90'};
