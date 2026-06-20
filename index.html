@@ -5312,6 +5312,8 @@ function autosave(){ saveToStorage(); }
   tryAutoLogin();
   loadSample();
   applyRole();
+  // Push existing localStorage data to API on first load so mobile can read it
+  if(D.sup.length > 0 || D.kh.length > 0 || D.partners.length > 0) saveToStorage();
 })();
 } // end if(!window.__mobile)
 </script>
