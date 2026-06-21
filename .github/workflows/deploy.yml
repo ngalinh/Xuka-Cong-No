@@ -83,6 +83,9 @@ jobs:
                echo "ACTION REQUIRED: add location /api/ { proxy_pass http://127.0.0.1:3456; } to nginx ai.basso.vn server block, then reload nginx";
              fi' || echo "::warning::nginx step skipped"
 
+          # Reload xeko-image (bot1_platform) so it picks up new index.html from disk
+          $SSH "$SSH_USER@$SSH_HOST" "pm2 reload xeko-image 2>/dev/null && echo 'xeko-image reloaded OK' || echo '::warning::xeko-image reload failed'"
+
           # Optional: reload existing pm2 app if configured
           if [ -n "${PM2_APP_NAME:-}" ]; then
             $SSH "$SSH_USER@$SSH_HOST" "pm2 reload '$PM2_APP_NAME' 2>/dev/null || true"
