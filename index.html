@@ -1191,7 +1191,7 @@ function genId(prefix){
 }
 function initials(name){
   if(!name) return '?';
-  var words=name.trim().split(/\s+/).filter(function(w){return /\p{L}/u.test(w)});
+  var words=name.trim().split(/\s+/).filter(Boolean);
   return (words.slice(0,2).map(function(w){return w[0]||''}).join('')||name[0]||'?').toUpperCase();
 }
 function statusPill(status){
