@@ -403,18 +403,6 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 </head>
 <body>
 <script>
-window.onerror = function(msg, src, line, col, err) {
-  var el = document.getElementById('_gerr');
-  if (!el) { el = document.createElement('div'); el.id = '_gerr'; el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c00;color:#fff;padding:10px 14px;font-size:12px;z-index:99999;word-break:break-all;white-space:pre-wrap'; document.body && document.body.appendChild(el); }
-  el.textContent += 'JS ERROR: ' + msg + '\n' + src + ':' + line + ':' + col + '\n';
-};
-window.addEventListener('unhandledrejection', function(e) {
-  var el = document.getElementById('_gerr');
-  if (!el) { el = document.createElement('div'); el.id = '_gerr'; el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c00;color:#fff;padding:10px 14px;font-size:12px;z-index:99999;word-break:break-all;white-space:pre-wrap'; document.body && document.body.appendChild(el); }
-  el.textContent += 'UNHANDLED: ' + (e.reason && (e.reason.stack || e.reason.message || e.reason)) + '\n';
-});
-</script>
-<script>
 // ============================================================
 // REMOTE API SYNC — shared between mobile and desktop
 // ============================================================
@@ -1191,7 +1179,7 @@ function genId(prefix){
 }
 function initials(name){
   if(!name) return '?';
-  var words=name.trim().split(/\s+/).filter(function(w){return /\p{L}/u.test(w)});
+  var words=name.trim().split(/\s+/).filter(Boolean);
   return (words.slice(0,2).map(function(w){return w[0]||''}).join('')||name[0]||'?').toUpperCase();
 }
 function statusPill(status){
@@ -1784,28 +1772,18 @@ function handleUpload(input){
 // ============================================================
 // INIT
 // ============================================================
-function showInitError(msg){
-  var el=document.createElement('div');
-  el.style.cssText='position:fixed;top:60px;left:16px;right:16px;background:#ff4444;color:#fff;padding:14px 16px;border-radius:12px;font-size:13px;z-index:9999;word-break:break-all;white-space:pre-wrap';
-  el.textContent='INIT ERROR:\n'+msg;
-  document.body.appendChild(el);
-}
 async function init(){
-  try{
-    try{ localStorage.setItem(LS_VER_KEY,LS_VER); }catch(e){}
-    await fetchRemoteData();
-    loadData();
-    CFG_USERS=loadUsers();
-    KH_SUP_MAP=loadMapping();
-    navTo('overview');
-    document.addEventListener('click',e=>{
-      document.querySelectorAll('.autocomplete-list').forEach(ac=>{
-        if(!ac.closest('.ac-wrap').contains(e.target)) ac.style.display='none';
-      });
+  try{ localStorage.setItem(LS_VER_KEY,LS_VER); }catch(e){}
+  await fetchRemoteData();
+  loadData();
+  CFG_USERS=loadUsers();
+  KH_SUP_MAP=loadMapping();
+  navTo('overview');
+  document.addEventListener('click',e=>{
+    document.querySelectorAll('.autocomplete-list').forEach(ac=>{
+      if(!ac.closest('.ac-wrap').contains(e.target)) ac.style.display='none';
     });
-  } catch(err){
-    showInitError(err && (err.stack||err.message||String(err)));
-  }
+  });
 }
 
 init();
