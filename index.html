@@ -1997,7 +1997,7 @@ function savePartnerForm(){
 function renderSettings(){
   const el=document.getElementById('scr-settings');
   function settingsCard(icon,title,desc,screen){
-    return '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);margin-bottom:12px;cursor:pointer" onclick="navTo(\\''+screen+'\\')">'+
+    return '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);margin-bottom:12px;cursor:pointer" onclick="navTo(\\''+screen+'\\')">'
       +'<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;flex:none">'+icon+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;color:#2a2e3a">'+title+'</div><div style="font-size:12px;color:#9aa0b2;margin-top:2px">'+desc+'</div></div>'
       +'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b6c8" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>'
