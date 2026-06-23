@@ -1036,8 +1036,12 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
         </select>
       </div>
       <div class="form-section">
-        <label class="form-label">Thời gian TM (phút)</label>
-        <input type="number" class="form-input" id="khc-tm" placeholder="0">
+        <label class="form-label">Thời gian bank</label>
+        <select class="form-input" id="khc-tm"><option>Trong ngày</option><option>1-2 ngày</option><option>3-5 ngày</option><option>Giục nhiều lần</option></select>
+      </div>
+      <div class="form-section">
+        <label class="form-label">Số tiền bank</label>
+        <select class="form-input" id="khc-am"><option>&lt; 10 triệu</option><option>Min 10 triệu</option><option>20 - 30 triệu</option><option>30 - 50 triệu</option><option>Đúng công nợ</option></select>
       </div>
       <div class="form-section">
         <label class="form-label">Ghi chú</label>
@@ -1076,8 +1080,12 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
         <input type="text" class="form-input" id="pt-stk" placeholder="STK ngân hàng...">
       </div>
       <div class="form-section">
-        <label class="form-label">Thời gian TM (phút)</label>
-        <input type="number" class="form-input" id="pt-tm" placeholder="0">
+        <label class="form-label">Thời gian y/c bank</label>
+        <select class="form-input" id="pt-tm"><option>Trong ngày</option><option>Max 3 ngày</option><option>Không giục</option></select>
+      </div>
+      <div class="form-section">
+        <label class="form-label">Số tiền y/c bank</label>
+        <select class="form-input" id="pt-am"><option>Đúng công nợ</option><option>Min 20 triệu</option><option>Không y/c min</option></select>
       </div>
     </div>
     <div class="form-bottom">
@@ -1705,10 +1713,11 @@ function closeKhCharForm(){document.getElementById('khchar-form-overlay').classL
 function saveKhCharForm(){
   const name=document.getElementById('khc-name').value.trim();
   const ch=document.getElementById('khc-ch').value;
-  const tm=Number(document.getElementById('khc-tm').value)||0;
+  const tm=document.getElementById('khc-tm').value;
+  const am=document.getElementById('khc-am').value;
   const note=document.getElementById('khc-note').value.trim();
   if(!name){alert('Vui lòng nhập tên KH');return;}
-  D.khChars.push({ch,name,tm,am:0,note});
+  D.khChars.push({ch,name,tm,am,note});
   saveData();
   closeKhCharForm();
   renderKhList();
@@ -1967,9 +1976,10 @@ function savePartnerForm(){
   const type=document.getElementById('pt-type').value;
   const name=document.getElementById('pt-name').value.trim();
   const stk=document.getElementById('pt-stk').value.trim();
-  const tm=Number(document.getElementById('pt-tm').value)||0;
+  const tm=document.getElementById('pt-tm').value;
+  const am=document.getElementById('pt-am').value;
   if(!name){alert('Vui lòng nhập tên');return;}
-  D.partners.push({type,name,stk,tm,am:0});
+  D.partners.push({type,name,stk,tm,am});
   saveData();
   closePartnerForm();
   renderSupList();
