@@ -661,6 +661,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .form-input:focus{border-color:rgba(140,150,230,0.7)}
 textarea.form-input{resize:vertical;min-height:80px}
 select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23797f90' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-height:normal}
 .form-bottom{
   position:fixed;bottom:0;left:0;right:0;z-index:10;
   background:linear-gradient(0deg,rgba(255,255,255,0.85),rgba(255,255,255,0.5));
@@ -788,7 +789,6 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
   <div class="screen" id="scr-tracking"></div>
   <div class="screen" id="scr-supDebt"></div>
   <div class="screen" id="scr-supList"></div>
-  <div class="screen" id="scr-settings"></div>
   <div class="screen" id="scr-settingsUsers"></div>
   <div class="screen" id="scr-settingsMapping"></div>
   <div class="screen" id="scr-settingsUpload"></div>
@@ -854,15 +854,15 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
         <div>
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Cài đặt</div>
           <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settings');closeDrawer()">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsUsers');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Tài khoản</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settings');closeDrawer()">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsMapping');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Mapping KH ↔ Sup</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('settings');closeDrawer()">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('settingsUpload');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 17v-5"/><path d="m9.7 14 2.3-2.3L14.3 14"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Data Upload</span>
             </div>
@@ -1398,7 +1398,7 @@ let selectedKenh='Kênh CO';
 // ============================================================
 // NAVIGATION
 // ============================================================
-const SCREENS = ['overview','khDebt','khList','tracking','supDebt','supList','settings','settingsUsers','settingsMapping','settingsUpload'];
+const SCREENS = ['overview','khDebt','khList','tracking','supDebt','supList','settingsUsers','settingsMapping','settingsUpload'];
 
 function navTo(screen){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1419,7 +1419,6 @@ function renderScreen(screen){
     case 'tracking': renderTracking(); break;
     case 'supDebt': renderSupDebt(); break;
     case 'supList': renderSupList(); break;
-    case 'settings': renderSettings(); break;
     case 'settingsUsers': renderSettingsUsers(); break;
     case 'settingsMapping': renderSettingsMapping(); break;
     case 'settingsUpload': renderSettingsUpload(); break;
@@ -1994,26 +1993,6 @@ function savePartnerForm(){
 // ============================================================
 // SCREEN 9: CÀI ĐẶT
 // ============================================================
-function renderSettings(){
-  const el=document.getElementById('scr-settings');
-  function settingsCard(icon,title,desc,screen){
-    return '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);margin-bottom:12px;cursor:pointer" onclick="navTo(\\''+screen+'\\')">'
-      +'<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;flex:none">'+icon+'</div>'
-      +'<div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;color:#2a2e3a">'+title+'</div><div style="font-size:12px;color:#9aa0b2;margin-top:2px">'+desc+'</div></div>'
-      +'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b6c8" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>'
-      +'</div>';
-  }
-  const iconUsers='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg>';
-  const iconMapping='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg>';
-  const iconUpload='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>';
-  el.innerHTML=buildHdr({left:'menu',title:'Cài đặt'})
-    +'<div class="scr-body">'
-    +settingsCard(iconUsers,'Tài khoản đăng nhập','Quản lý tài khoản nhân viên','settingsUsers')
-    +settingsCard(iconMapping,'Mapping KH ↔ Sup','Cấu hình điều phối tự động','settingsMapping')
-    +settingsCard(iconUpload,'Data Upload','Tải file Excel / JSON','settingsUpload')
-    +'</div>';
-}
-
 function renderSettingsUsers(){
   const el=document.getElementById('scr-settingsUsers');
   const canAdmin=mRole==='admin';
@@ -2027,7 +2006,7 @@ function renderSettingsUsers(){
       +(canAdmin?'<div style="display:flex;gap:3px">'+mActBtn(SVG_PENCIL_SM,'openMUserForm('+i+')')+mActBtn(SVG_TRASH_SM,'mDelUser('+i+')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
       +'</div>';
   }).join('');
-  el.innerHTML=buildHdr({left:'back',title:'Tài khoản',closeAction:'navTo(\\'settings\\')'})
+  el.innerHTML=buildHdr({left:'menu',title:'Tài khoản'})
     +'<div class="scr-body">'
     +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
     +(canAdmin?'<button onclick="openMUserForm(-1)" style="padding:8px 16px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
@@ -2045,7 +2024,7 @@ function renderSettingsMapping(){
     +'<div style="flex:1;text-align:right"><div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">Sup</div><div style="font-size:13.5px;font-weight:600;color:#5b6bd6">'+sup+'</div></div>'
     +(canAdmin?'<div style="display:flex;gap:3px">'+mActBtn(SVG_PENCIL_SM,'openMappingForm(\\''+kh+'\\')')+mActBtn(SVG_TRASH_SM,'mDelMapping(\\''+kh+'\\')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
     +'</div>').join(''):emptyState('Chưa có mapping nào');
-  el.innerHTML=buildHdr({left:'back',title:'Mapping KH ↔ Sup',closeAction:'navTo(\\'settings\\')'})
+  el.innerHTML=buildHdr({left:'menu',title:'Mapping KH ↔ Sup'})
     +'<div class="scr-body">'
     +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
     +(canAdmin?'<button onclick="openMappingForm()" style="padding:8px 16px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
@@ -2056,7 +2035,7 @@ function renderSettingsMapping(){
 
 function renderSettingsUpload(){
   const el=document.getElementById('scr-settingsUpload');
-  el.innerHTML=buildHdr({left:'back',title:'Data Upload',closeAction:'navTo(\\'settings\\')'})
+  el.innerHTML=buildHdr({left:'menu',title:'Data Upload'})
     +'<div class="scr-body">'
     +'<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 20px;background:linear-gradient(160deg,rgba(255,255,255,0.60),rgba(255,255,255,0.34));border:2px dashed rgba(140,150,230,0.4);border-radius:22px;cursor:pointer" onclick="triggerUpload()">'
     +'<div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 20px rgba(150,140,230,0.35)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg></div>'
