@@ -649,11 +649,11 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .form-section{
   background:linear-gradient(160deg,rgba(255,255,255,0.72),rgba(255,255,255,0.46));
   border:1px solid rgba(255,255,255,0.72);border-radius:18px;
-  box-shadow:0 6px 18px rgba(120,120,180,0.1);padding:16px;margin-bottom:14px;
+  box-shadow:0 6px 18px rgba(120,120,180,0.1);padding:16px;margin-bottom:14px;overflow:hidden;
 }
 .form-label{font-size:12px;font-weight:600;color:#4a4f5e;margin-bottom:6px;display:block}
 .form-input{
-  width:100%;box-sizing:border-box;border:1px solid rgba(140,150,230,0.3);
+  width:100%;max-width:100%;box-sizing:border-box;border:1px solid rgba(140,150,230,0.3);
   background:rgba(255,255,255,0.78);border-radius:14px;
   padding:13px 14px;font-size:14px;color:#2a2e3a;font-family:inherit;
   outline:none;transition:border-color .15s;
@@ -789,6 +789,9 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
   <div class="screen" id="scr-supDebt"></div>
   <div class="screen" id="scr-supList"></div>
   <div class="screen" id="scr-settings"></div>
+  <div class="screen" id="scr-settingsUsers"></div>
+  <div class="screen" id="scr-settingsMapping"></div>
+  <div class="screen" id="scr-settingsUpload"></div>
 
   <!-- DRAWER -->
   <div id="drawer">
@@ -1395,7 +1398,7 @@ let selectedKenh='Kênh CO';
 // ============================================================
 // NAVIGATION
 // ============================================================
-const SCREENS = ['overview','khDebt','khList','tracking','supDebt','supList','settings'];
+const SCREENS = ['overview','khDebt','khList','tracking','supDebt','supList','settings','settingsUsers','settingsMapping','settingsUpload'];
 
 function navTo(screen){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1417,6 +1420,9 @@ function renderScreen(screen){
     case 'supDebt': renderSupDebt(); break;
     case 'supList': renderSupList(); break;
     case 'settings': renderSettings(); break;
+    case 'settingsUsers': renderSettingsUsers(); break;
+    case 'settingsMapping': renderSettingsMapping(); break;
+    case 'settingsUpload': renderSettingsUpload(); break;
   }
 }
 
@@ -1442,7 +1448,9 @@ const ICO_ARROW='<path d="M5 12h14M13 6l6 6-6 6"/>';
 function buildHdr(opts){
   const leftBtn = opts.left==='menu'
     ? '<button class="hdr-menu-btn" onclick="openDrawer()">'+icoSvg(ICO_MENU)+'</button>'
-    : '<button class="hdr-menu-btn" onclick="'+(opts.closeAction||'')+'">'+icoSvg('<path d="M18 6L6 18M6 6l12 12"/>')+'</button>';
+    : opts.left==='back'
+      ? '<button class="hdr-menu-btn" onclick="'+(opts.closeAction||'')+'">'+icoSvg(ICO_LEFT)+'</button>'
+      : '<button class="hdr-menu-btn" onclick="'+(opts.closeAction||'')+'">'+icoSvg('<path d="M18 6L6 18M6 6l12 12"/>')+'</button>';
 
   let rightEl='<div class="hdr-right"></div>';
   if(opts.right==='search'){
@@ -1988,9 +1996,28 @@ function savePartnerForm(){
 // ============================================================
 function renderSettings(){
   const el=document.getElementById('scr-settings');
+  function settingsCard(icon,title,desc,screen){
+    return '<div style="display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);margin-bottom:12px;cursor:pointer" onclick="navTo(\''+screen+'\')">'
+      +'<div style="width:44px;height:44px;border-radius:14px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;flex:none">'+icon+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:14.5px;font-weight:600;color:#2a2e3a">'+title+'</div><div style="font-size:12px;color:#9aa0b2;margin-top:2px">'+desc+'</div></div>'
+      +'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b6c8" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>'
+      +'</div>';
+  }
+  const iconUsers='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg>';
+  const iconMapping='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg>';
+  const iconUpload='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>';
+  el.innerHTML=buildHdr({left:'menu',title:'Cài đặt'})
+    +'<div class="scr-body">'
+    +settingsCard(iconUsers,'Tài khoản đăng nhập','Quản lý tài khoản nhân viên','settingsUsers')
+    +settingsCard(iconMapping,'Mapping KH ↔ Sup','Cấu hình điều phối tự động','settingsMapping')
+    +settingsCard(iconUpload,'Data Upload','Tải file Excel / JSON','settingsUpload')
+    +'</div>';
+}
+
+function renderSettingsUsers(){
+  const el=document.getElementById('scr-settingsUsers');
   const canAdmin=mRole==='admin';
   const userRows=CFG_USERS.map((u,i)=>{
-    const rc=ROLE_COLOR[u.role]||{bg:'rgba(120,120,180,0.12)',fg:'#797f90'};
     return '<div style="display:flex;align-items:center;gap:12px;padding:13px 15px;border-bottom:1px solid rgba(120,120,180,0.1)">'
       +'<div style="width:36px;height:36px;border-radius:11px;background:linear-gradient(150deg,#9fe5d8,#8a9bf2);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex:none">'+initials(u.name)+'</div>'
       +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;color:#2a2e3a">'+u.name+'</div>'
@@ -2000,26 +2027,44 @@ function renderSettings(){
       +(canAdmin?'<div style="display:flex;gap:3px">'+mActBtn(SVG_PENCIL_SM,'openMUserForm('+i+')')+mActBtn(SVG_TRASH_SM,'mDelUser('+i+')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
       +'</div>';
   }).join('');
+  el.innerHTML=buildHdr({left:'back',title:'Tài khoản',closeAction:'navTo(\\'settings\\')'})
+    +'<div class="scr-body">'
+    +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
+    +(canAdmin?'<button onclick="openMUserForm(-1)" style="padding:8px 16px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
+    +'</div>'
+    +'<div style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">'+(userRows||'<div style="color:#9aa0b2;font-size:13px;padding:15px">Chưa có tài khoản</div>')+'</div>'
+    +'</div>';
+}
+
+function renderSettingsMapping(){
+  const el=document.getElementById('scr-settingsMapping');
+  const canAdmin=mRole==='admin';
   const mapRows=Object.entries(KH_SUP_MAP).length?Object.entries(KH_SUP_MAP).map(([kh,sup])=>'<div style="display:flex;align-items:center;gap:10px;padding:13px 15px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:16px;box-shadow:0 5px 14px rgba(120,120,180,0.08);margin-bottom:10px">'
     +'<div style="flex:1"><div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">KH</div><div style="font-size:13.5px;font-weight:600">'+kh+'</div></div>'
     +'<div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;font-size:13px">→</div>'
     +'<div style="flex:1;text-align:right"><div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">Sup</div><div style="font-size:13.5px;font-weight:600;color:#5b6bd6">'+sup+'</div></div>'
     +(canAdmin?'<div style="display:flex;gap:3px">'+mActBtn(SVG_PENCIL_SM,'openMappingForm(\\''+kh+'\\')')+mActBtn(SVG_TRASH_SM,'mDelMapping(\\''+kh+'\\')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
     +'</div>').join(''):emptyState('Chưa có mapping nào');
-  el.innerHTML=buildHdr({left:'menu',title:'Cài đặt'})
+  el.innerHTML=buildHdr({left:'back',title:'Mapping KH ↔ Sup',closeAction:'navTo(\\'settings\\')'})
     +'<div class="scr-body">'
-    +'<div style="margin-bottom:20px">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;padding:0 6px 8px">'
-    +'<div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2">Tài khoản đăng nhập</div>'
-    +(canAdmin?'<button onclick="openMUserForm(-1)" style="padding:5px 12px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
+    +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
+    +(canAdmin?'<button onclick="openMappingForm()" style="padding:8px 16px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
     +'</div>'
-    +'<div style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">'+(userRows||'<div style="color:#9aa0b2;font-size:13px;padding:15px">Chưa có tài khoản</div>')+'</div></div>'
-    +'<div style="margin-bottom:20px">'
-    +'<div style="display:flex;align-items:center;justify-content:space-between;padding:0 6px 8px">'
-    +'<div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2">Mapping KH ↔ Sup</div>'
-    +(canAdmin?'<button onclick="openMappingForm()" style="padding:5px 12px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
-    +'</div>'+mapRows+'</div>'
-    +'<div style="margin-bottom:20px"><div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Data Upload</div><div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 20px;background:linear-gradient(160deg,rgba(255,255,255,0.60),rgba(255,255,255,0.34));border:2px dashed rgba(140,150,230,0.4);border-radius:22px;cursor:pointer" onclick="triggerUpload()"><div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 20px rgba(150,140,230,0.35)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg></div><div style="font-size:14px;font-weight:600;text-align:center">Tải file sao kê / Excel</div><div style="font-size:11.5px;color:#8a8fa3;text-align:center">.xlsx, .csv — tự động đối chiếu công nợ & bill CK</div><button style="border:none;cursor:pointer;font-family:inherit;margin-top:2px;padding:11px 24px;border-radius:999px;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 18px rgba(150,140,230,0.4)">Chọn file</button></div><input type="file" id="upload-input" accept=".xlsx,.json" style="display:none" onchange="handleUpload(this)"></div>'
+    +mapRows
+    +'</div>';
+}
+
+function renderSettingsUpload(){
+  const el=document.getElementById('scr-settingsUpload');
+  el.innerHTML=buildHdr({left:'back',title:'Data Upload',closeAction:'navTo(\\'settings\\')'})
+    +'<div class="scr-body">'
+    +'<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:32px 20px;background:linear-gradient(160deg,rgba(255,255,255,0.60),rgba(255,255,255,0.34));border:2px dashed rgba(140,150,230,0.4);border-radius:22px;cursor:pointer" onclick="triggerUpload()">'
+    +'<div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 8px 20px rgba(150,140,230,0.35)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg></div>'
+    +'<div style="font-size:14px;font-weight:600;text-align:center">Tải file sao kê / Excel</div>'
+    +'<div style="font-size:11.5px;color:#8a8fa3;text-align:center">.xlsx, .csv — tự động đối chiếu công nợ & bill CK</div>'
+    +'<button style="border:none;cursor:pointer;font-family:inherit;margin-top:2px;padding:11px 24px;border-radius:999px;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 18px rgba(150,140,230,0.4)">Chọn file</button>'
+    +'</div>'
+    +'<input type="file" id="upload-input" accept=".xlsx,.json" style="display:none" onchange="handleUpload(this)">'
     +'</div>';
 }
 
@@ -2089,12 +2134,12 @@ function mDelKhChar(idx){
 function mDelUser(idx){
   if(!confirm('Xoá tài khoản này?')) return;
   CFG_USERS.splice(idx,1);
-  saveUsers(); renderSettings();
+  saveUsers(); renderSettingsUsers();
 }
 function mDelMapping(kh){
   if(!confirm('Xoá mapping '+kh+'?')) return;
   delete KH_SUP_MAP[kh];
-  saveMapping(); renderSettings();
+  saveMapping(); renderSettingsMapping();
 }
 
 // Tracking CK action
@@ -2296,7 +2341,7 @@ function saveMUserForm(){
   } else {
     Object.assign(CFG_USERS[_mUserIdx],{name,user,email:user,role,active});
   }
-  saveUsers();closeMUserForm();renderSettings();
+  saveUsers();closeMUserForm();renderSettingsUsers();
 }
 
 // Settings - Mapping form overlay
@@ -2314,7 +2359,7 @@ function saveMappingForm(){
   const sup=document.getElementById('m-mf-sup').value;
   if(!kh||!sup){alert('Chọn đầy đủ KH và Sup/Checker');return;}
   KH_SUP_MAP[kh]=sup;
-  saveMapping();closeMappingForm();renderSettings();
+  saveMapping();closeMappingForm();renderSettingsMapping();
 }
 
 // ============================================================
