@@ -1235,8 +1235,21 @@ function loadUsers(){
     const raw=localStorage.getItem('xuka_users');
     if(raw){const a=JSON.parse(raw);if(Array.isArray(a)&&a.length) return a;}
   }catch(e){}
-  return [{name:'Linh Dương',user:'ld',email:'ld@xuka.vn',role:'admin',active:true},
-          {name:'Linh Thảo',user:'lt',email:'lt@xuka.vn',role:'sale',active:true}];
+  return [
+    {name:'Dzuong',     user:'dzuong.bol@gmail.com',      role:'admin', active:true},
+    {name:'Thùy Linh',  user:'thuylinhbui0209@gmail.com', role:'admin', active:true},
+    {name:'Nga Linh',   user:'ngalinh@gmail.com',         role:'admin', active:true},
+    {name:'Vinh',       user:'basso.sale@gmail.com',      role:'admin', active:true},
+    {name:'Trang',      user:'t.thuytrang164@gmail.com',  role:'admin', active:true},
+    {name:'Trâm',       user:'tram@gmail.com',            role:'admin', active:true},
+    {name:'Huệ',        user:'allsale.vn@gmail.com',      role:'mh',    active:true},
+    {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true},
+    {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true},
+    {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true},
+    {name:'Thuỳ',       user:'asale.vn@gmail.com',        role:'sale',  active:true},
+    {name:'ShipUS',     user:'shipus@basso.vn',           role:'sale',  active:true},
+    {name:'Tuyền',      user:'ketoan.basso@gmail.com',    role:'kt',    active:true},
+  ];
 }
 function loadMapping(){
   try{
