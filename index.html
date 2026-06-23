@@ -653,7 +653,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 }
 .form-label{font-size:12px;font-weight:600;color:#4a4f5e;margin-bottom:6px;display:block}
 .form-input{
-  width:100%;border:1px solid rgba(140,150,230,0.3);
+  width:100%;box-sizing:border-box;border:1px solid rgba(140,150,230,0.3);
   background:rgba(255,255,255,0.78);border-radius:14px;
   padding:13px 14px;font-size:14px;color:#2a2e3a;font-family:inherit;
   outline:none;transition:border-color .15s;
@@ -812,6 +812,21 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
           </div>
         </div>
 
+        <!-- Sup / Checker group -->
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Sup / Checker</div>
+          <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('supList');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(125,142,240,0.16);color:#5b6bd6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.2-4.5h15.6L21 9"/><path d="M4.5 9.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V9.5"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Danh sách Sup/Checker</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('supDebt');closeDrawer()">
+              <div style="width:32px;height:32px;border-radius:9px;background:rgba(243,200,90,0.28);color:#9a6a12;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/></svg></div>
+              <span style="flex:1;font-size:14.5px;font-weight:500">Công nợ Sup/Checker</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Khách hàng group -->
         <div>
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Khách hàng</div>
@@ -828,21 +843,6 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(177,151,230,0.22);color:#8a6fc4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Tracking CK</span>
               <span style="padding:2px 9px;border-radius:999px;background:linear-gradient(135deg,#f06565,#e85b8a);color:#fff;font-size:11px;font-weight:700" id="tracking-badge"></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sup / Checker group -->
-        <div>
-          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Sup / Checker</div>
-          <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('supList');closeDrawer()">
-              <div style="width:32px;height:32px;border-radius:9px;background:rgba(125,142,240,0.16);color:#5b6bd6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.2-4.5h15.6L21 9"/><path d="M4.5 9.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V9.5"/></svg></div>
-              <span style="flex:1;font-size:14.5px;font-weight:500">Danh sách Sup/Checker</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('supDebt');closeDrawer()">
-              <div style="width:32px;height:32px;border-radius:9px;background:rgba(243,200,90,0.28);color:#9a6a12;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/></svg></div>
-              <span style="flex:1;font-size:14.5px;font-weight:500">Công nợ Sup/Checker</span>
             </div>
           </div>
         </div>
@@ -1260,9 +1260,7 @@ let KH_SUP_MAP = {};
 function fmtVND(n){
   n = Number(n)||0;
   if(!n) return '0đ';
-  if(n>=1e9) return (n/1e9).toFixed(2).replace(/\\.?0+$/,'')+ ' tỷ';
-  if(n>=1e6) return Math.round(n/1e6)+' tr';
-  return n.toLocaleString('vi-VN')+'đ';
+  return Math.round(n).toLocaleString('vi-VN')+'đ';
 }
 function fmtDate(iso){
   if(!iso) return '';
@@ -2006,7 +2004,7 @@ function renderSettings(){
     +'<div style="flex:1"><div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">KH</div><div style="font-size:13.5px;font-weight:600">'+kh+'</div></div>'
     +'<div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;font-size:13px">→</div>'
     +'<div style="flex:1;text-align:right"><div style="font-size:10px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#9aa0b2">Sup</div><div style="font-size:13.5px;font-weight:600;color:#5b6bd6">'+sup+'</div></div>'
-    +(canAdmin?mActBtn(SVG_TRASH_SM,'mDelMapping(\\''+kh+'\\')','#e05656','rgba(240,101,101,0.13)'):'')
+    +(canAdmin?'<div style="display:flex;gap:3px">'+mActBtn(SVG_PENCIL_SM,'openMappingForm(\\''+kh+'\\')')+mActBtn(SVG_TRASH_SM,'mDelMapping(\\''+kh+'\\')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
     +'</div>').join(''):emptyState('Chưa có mapping nào');
   el.innerHTML=buildHdr({left:'menu',title:'Cài đặt'})
     +'<div class="scr-body">'
@@ -2302,14 +2300,15 @@ function saveMUserForm(){
 }
 
 // Settings - Mapping form overlay
-function openMappingForm(){
+function openMappingForm(khName){
   const khSel=document.getElementById('m-mf-kh');
   const supSel=document.getElementById('m-mf-sup');
-  khSel.innerHTML='<option value="">-- Chọn KH --</option>'+D.khChars.map(c=>'<option value="'+c.name+'">'+c.name+'</option>').join('');
-  supSel.innerHTML='<option value="">-- Chọn Sup/Checker --</option>'+D.partners.map(p=>'<option value="'+p.name+'">'+p.name+' ('+p.type+')</option>').join('');
+  khSel.innerHTML='<option value="">-- Chọn KH --</option>'+D.khChars.map(c=>'<option value="'+c.name+'"'+(c.name===khName?' selected':'')+'>'+c.name+'</option>').join('');
+  supSel.innerHTML='<option value="">-- Chọn Sup/Checker --</option>'+D.partners.map(p=>'<option value="'+p.name+'"'+(p.name===KH_SUP_MAP[khName]?' selected':'')+'>'+p.name+' ('+p.type+')</option>').join('');
+  khSel.disabled=!!khName;
   document.getElementById('m-mapping-form-overlay').classList.add('open');
 }
-function closeMappingForm(){document.getElementById('m-mapping-form-overlay').classList.remove('open')}
+function closeMappingForm(){document.getElementById('m-mapping-form-overlay').classList.remove('open');document.getElementById('m-mf-kh').disabled=false;}
 function saveMappingForm(){
   const kh=document.getElementById('m-mf-kh').value;
   const sup=document.getElementById('m-mf-sup').value;
