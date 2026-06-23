@@ -1157,8 +1157,8 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
       <div class="form-section"><label class="form-label">Tên</label><input class="form-input" id="m-ep-name" placeholder="Tên Sup/Checker..."></div>
       <div class="form-section"><label class="form-label">Loại</label><select class="form-input" id="m-ep-type"><option value="Sup">Sup</option><option value="Checker">Checker</option></select></div>
       <div class="form-section"><label class="form-label">STK nhận</label><input class="form-input" id="m-ep-stk" placeholder="Số tài khoản..."></div>
-      <div class="form-section"><label class="form-label">Thời gian y/c bank (phút)</label><input type="number" class="form-input" id="m-ep-tm" placeholder="0"></div>
-      <div class="form-section"><label class="form-label">Số tiền y/c bank (VNĐ)</label><input type="number" class="form-input" id="m-ep-am" placeholder="0"></div>
+      <div class="form-section"><label class="form-label">Thời gian y/c bank</label><select class="form-input" id="m-ep-tm"><option>Trong ngày</option><option>Max 3 ngày</option><option>Không giục</option></select></div>
+      <div class="form-section"><label class="form-label">Số tiền y/c bank</label><select class="form-input" id="m-ep-am"><option>Đúng công nợ</option><option>Min 20 triệu</option><option>Không y/c min</option></select></div>
     </div>
     <div class="form-bottom"><button class="form-btn-cancel" onclick="closeMEditPartner()">Hủy</button><button class="form-btn-save" onclick="saveMEditPartner()">Lưu</button></div>
   </div>
@@ -1169,8 +1169,8 @@ select.form-input{cursor:pointer;-webkit-appearance:none;appearance:none;backgro
     <div class="form-body">
       <div class="form-section"><label class="form-label">Tên KH</label><input class="form-input" id="m-ekc-name" placeholder="Tên KH..."></div>
       <div class="form-section"><label class="form-label">Kênh</label><select class="form-input" id="m-ekc-ch"><option value="Kênh CO">Kênh CO</option><option value="Linh Dương">Linh Dương</option><option value="Linh Thảo">Linh Thảo</option></select></div>
-      <div class="form-section"><label class="form-label">Thời gian bank (phút)</label><input type="number" class="form-input" id="m-ekc-tm" placeholder="0"></div>
-      <div class="form-section"><label class="form-label">Số tiền bank (VNĐ)</label><input type="number" class="form-input" id="m-ekc-am" placeholder="0"></div>
+      <div class="form-section"><label class="form-label">Thời gian bank</label><select class="form-input" id="m-ekc-tm"><option>Trong ngày</option><option>1-2 ngày</option><option>3-5 ngày</option><option>Giục nhiều lần</option></select></div>
+      <div class="form-section"><label class="form-label">Số tiền bank</label><select class="form-input" id="m-ekc-am"><option>&lt; 10 triệu</option><option>Min 10 triệu</option><option>20 - 30 triệu</option><option>30 - 50 triệu</option><option>Đúng công nợ</option></select></div>
       <div class="form-section"><label class="form-label">Ghi chú</label><textarea class="form-input" id="m-ekc-note" placeholder="Ghi chú..."></textarea></div>
     </div>
     <div class="form-bottom"><button class="form-btn-cancel" onclick="closeMEditKhChar()">Hủy</button><button class="form-btn-save" onclick="saveMEditKhChar()">Lưu</button></div>
@@ -1535,7 +1535,7 @@ function khDebtListHtml(){
     const chColor=ch==='Linh Dương'?'rgba(125,142,240,0.15)':ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.4)';
     const chFg=ch==='Linh Dương'?'#5b6bd6':ch==='Linh Thảo'?'#8a6fc4':'#1f8a7a';
     const char=D.khChars.find(c=>c.name===k.name);
-    const charInfo=char&&(char.tm||char.am)?'<span style="font-size:10.5px;color:#797f90">'+SVG_CLOCK+char.tm+(char.am?' · '+SVG_COIN+fmtVND(char.am):'')+'</span>':'';
+    const charInfo=char&&(char.tm||char.am)?'<span style="font-size:10.5px;color:#797f90">'+SVG_CLOCK+char.tm+(char.am?' · '+SVG_COIN+char.am:'')+'</span>':'';
     const sup=k.idCK?D.sup.find(s=>s.idCK===k.idCK):null;
     const supStk=k.stk||(sup?sup.stk:'');
     let billBtn='';
@@ -1665,7 +1665,7 @@ function khListListHtml(){
       +'<div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(150deg,#9fe5d8,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:none">'+initials(c.name)+'</div>'
       +'<div style="flex:1;min-width:0">'
       +'<div style="font-size:14px;font-weight:600">'+c.name+'</div>'
-      +((c.tm||c.am)?'<div style="font-size:11.5px;color:#9aa0b2;margin-top:1px">'+(c.tm?SVG_CLOCK+c.tm:'')+( c.am?' · '+SVG_COIN+fmtVND(c.am):'')+'</div>':'')
+      +((c.tm||c.am)?'<div style="font-size:11.5px;color:#9aa0b2;margin-top:1px">'+(c.tm?SVG_CLOCK+c.tm:'')+( c.am?' · '+SVG_COIN+c.am:'')+'</div>':'')
       +(fixedSup?'<div style="font-size:11px;color:#5b6bd6;margin-top:1px">→ '+fixedSup+'</div>':'')
       +'</div>'
       +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">'
@@ -1872,7 +1872,7 @@ function renderSupDebt(){
       +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:14px;font-weight:600">'+(s.name||'—')+'</span>'+typePill(s.type)+'</div>'
       +statusPill(s.status||'Chờ điều phối')+'</div>'
       +(s.nv?'<div style="font-size:11px;color:#9aa0b2;margin-bottom:5px">NV: '+s.nv+'</div>':'')
-      +(pchar&&(pchar.tm||pchar.am)?'<div style="font-size:11px;color:#797f90;margin-bottom:5px">'+SVG_CLOCK+pchar.tm+(pchar.am?' · '+SVG_COIN+fmtVND(pchar.am):'')+'</div>':'')
+      +(pchar&&(pchar.tm||pchar.am)?'<div style="font-size:11px;color:#797f90;margin-bottom:5px">'+SVG_CLOCK+pchar.tm+(pchar.am?' · '+SVG_COIN+pchar.am:'')+'</div>':'')
       +'<div style="display:flex;align-items:flex-end;justify-content:space-between;padding-top:6px;border-top:1px solid rgba(120,120,180,0.1)">'
       +'<div style="display:flex;flex-direction:column;gap:4px;font-size:11px;color:#797f90">'
       +'<span>'+SVG_CAL+fmtDate(s.date)+'</span>'
@@ -1944,7 +1944,7 @@ function renderSupList(){
     +'<div style="flex:1;min-width:0">'
     +'<div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><span style="font-size:13.5px;font-weight:600">'+p.name+'</span>'+typePill(p.type)+'</div>'
     +(p.stk?'<div class="mono" style="font-size:11.5px">'+p.stk+'</div>':'')
-    +((p.tm||p.am)?'<div style="font-size:11px;color:#9aa0b2;margin-top:2px">'+(p.tm?SVG_CLOCK+p.tm:'')+(p.am?' · '+SVG_COIN+fmtVND(p.am):'')+'</div>':'')
+    +((p.tm||p.am)?'<div style="font-size:11px;color:#9aa0b2;margin-top:2px">'+(p.tm?SVG_CLOCK+p.tm:'')+(p.am?' · '+SVG_COIN+p.am:'')+'</div>':'')
     +'</div>'
     +(canEdit?'<div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">'+mActBtn(SVG_PENCIL_SM,'openMEditPartner('+i+')')+mActBtn(SVG_TRASH_SM,'mDelPartner('+i+')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
     +'</div>').join(''):emptyState('Chưa có Sup/Checker nào');
@@ -2228,8 +2228,8 @@ function saveMEditPartner(){
   p.name=document.getElementById('m-ep-name').value.trim()||p.name;
   p.type=document.getElementById('m-ep-type').value;
   p.stk=document.getElementById('m-ep-stk').value.trim();
-  p.tm=Number(document.getElementById('m-ep-tm').value)||0;
-  p.am=Number(document.getElementById('m-ep-am').value)||0;
+  p.tm=document.getElementById('m-ep-tm').value;
+  p.am=document.getElementById('m-ep-am').value;
   saveData();closeMEditPartner();renderSupList();
 }
 
@@ -2250,8 +2250,8 @@ function saveMEditKhChar(){
   const c=D.khChars[_mEditKhCharIdx];if(!c)return;
   c.name=document.getElementById('m-ekc-name').value.trim()||c.name;
   c.ch=document.getElementById('m-ekc-ch').value;
-  c.tm=Number(document.getElementById('m-ekc-tm').value)||0;
-  c.am=Number(document.getElementById('m-ekc-am').value)||0;
+  c.tm=document.getElementById('m-ekc-tm').value;
+  c.am=document.getElementById('m-ekc-am').value;
   c.note=document.getElementById('m-ekc-note').value.trim();
   saveData();closeMEditKhChar();renderKhList();
 }
