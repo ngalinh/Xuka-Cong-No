@@ -1411,26 +1411,27 @@ function changeMonth(delta){
 // ============================================================
 // SCREEN 2: CÔNG NỢ KH
 // ============================================================
-function renderKhDebt(){
-  const el=document.getElementById('scr-khDebt');
-  const FILTERS=['all','Linh Dương','Linh Thảo','Kênh CO'];
-  const FLABELS={'all':'Tất cả','Linh Dương':'Linh Dương','Linh Thảo':'Linh Thảo','Kênh CO':'Kênh CO'};
-
+function khDebtListHtml(){
   let rows=[...D.kh].reverse();
   if(khFilter!=='all') rows=rows.filter(k=>khChannel(k)===khFilter);
   if(khSearch) rows=rows.filter(k=>(k.name||'').toLowerCase().includes(khSearch.toLowerCase()));
-
-  const chips=FILTERS.map(f=>'<button class="chip '+(khFilter===f?'active':'inactive')+'" onclick="setKhFilter(\\''+f+'\\')">'+FLABELS[f]+'</button>').join('');
-
-  const list=rows.length?rows.map(k=>{
+  return rows.length?rows.map(k=>{
     const ch=khChannel(k);
     const chColor=ch==='Linh Dương'?'rgba(125,142,240,0.15)':ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.4)';
     const chFg=ch==='Linh Dương'?'#5b6bd6':ch==='Linh Thảo'?'#8a6fc4':'#1f8a7a';
     return '<div class="list-row"><div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><div style="flex:1"><div style="font-size:14.5px;font-weight:600;">'+(k.name||'—')+'</div><div style="font-size:11.5px;color:#9aa0b2;margin-top:1px">'+(k.nv||'')+'</div></div>'+statusPill(k.status||'Mới nhập')+'</div><div style="display:flex;align-items:flex-end;justify-content:space-between"><div style="display:flex;flex-direction:column;gap:4px">'+(ch?'<span class="pill" style="background:'+chColor+';color:'+chFg+';font-size:10.5px;padding:3px 9px;width:max-content">'+ch+'</span>':'')+'<span style="font-size:11px;color:#797f90">'+fmtDate(k.date)+(k.note?' · '+k.note:'')+'</span></div><div style="text-align:right"><div style="font-size:17px;font-weight:700;letter-spacing:-0.01em">'+fmtVND(k.amount)+'</div>'+(k.idCK?'<div class="mono">'+k.idCK+'</div>':'')+'</div></div></div>';
   }).join(''):emptyState('Chưa có dữ liệu công nợ KH');
+}
+
+function renderKhDebt(){
+  const el=document.getElementById('scr-khDebt');
+  const FILTERS=['all','Linh Dương','Linh Thảo','Kênh CO'];
+  const FLABELS={'all':'Tất cả','Linh Dương':'Linh Dương','Linh Thảo':'Linh Thảo','Kênh CO':'Kênh CO'};
+
+  const chips=FILTERS.map(f=>'<button class="chip '+(khFilter===f?'active':'inactive')+'" onclick="setKhFilter(\\''+f+'\\')">'+FLABELS[f]+'</button>').join('');
 
   el.innerHTML=buildHdr({left:'menu',title:'Công nợ KH',right:'search',rightAction:'toggleKhSearch()'})
-    +'<div class="scr-body"><div id="kh-search-bar" style="'+(searchVisible.khDebt?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm khách hàng..." value="'+khSearch+'" oninput="khSearchInput(this)"></div></div><div class="chips" style="margin-bottom:12px">'+chips+'</div>'+list+'</div>'
+    +'<div class="scr-body"><div id="kh-search-bar" style="'+(searchVisible.khDebt?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm khách hàng..." value="'+khSearch+'" oninput="khSearchInput(this)"></div></div><div class="chips" style="margin-bottom:12px">'+chips+'</div><div id="kh-debt-list">'+khDebtListHtml()+'</div></div>'
     +'<button class="fab" onclick="openKhForm()">'+icoSvg(ICO_PLUS,24)+'</button>';
 }
 
@@ -1440,7 +1441,7 @@ function toggleKhSearch(){
   renderKhDebt();
   if(searchVisible.khDebt) setTimeout(()=>document.querySelector('#kh-search-bar input')?.focus(),50);
 }
-function khSearchInput(el){khSearch=el.value;renderKhDebt()}
+function khSearchInput(el){khSearch=el.value;const c=document.getElementById('kh-debt-list');if(c)c.innerHTML=khDebtListHtml();}
 
 // ============================================================
 // SCREEN 3: KH FORM
@@ -1498,19 +1499,20 @@ function saveKhForm(){
 // ============================================================
 // SCREEN 4: DANH SÁCH KH
 // ============================================================
-function renderKhList(){
-  const el=document.getElementById('scr-khList');
+function khListListHtml(){
   let rows=[...D.khChars];
   if(khListSearch) rows=rows.filter(c=>c.name.toLowerCase().includes(khListSearch.toLowerCase()));
-
-  const list=rows.length?rows.map(c=>{
+  return rows.length?rows.map(c=>{
     const chColor=c.ch==='Linh Dương'?'rgba(125,142,240,0.15)':c.ch==='Linh Thảo'?'rgba(177,151,230,0.2)':'rgba(159,229,216,0.4)';
     const chFg=c.ch==='Linh Dương'?'#5b6bd6':c.ch==='Linh Thảo'?'#8a6fc4':'#1f8a7a';
     return '<div style="display:flex;align-items:center;gap:13px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.72);border-radius:16px;box-shadow:0 5px 14px rgba(120,120,180,0.08);padding:13px 15px;margin-bottom:10px"><div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(150deg,#9fe5d8,#b39bea);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;flex:none">'+initials(c.name)+'</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">'+c.name+'</div><div style="font-size:11.5px;color:#9aa0b2;margin-top:1px">'+(c.tm?'TM: '+c.tm+' phút':'')+'</div></div><div style="text-align:right"><span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;background:'+chColor+';color:'+chFg+'">'+(c.ch||'')+'</span></div></div>';
   }).join(''):emptyState('Chưa có danh sách KH');
+}
 
+function renderKhList(){
+  const el=document.getElementById('scr-khList');
   el.innerHTML=buildHdr({left:'menu',title:'Danh sách KH',right:'search',rightAction:'toggleKhListSearch()'})
-    +'<div class="scr-body"><div id="khlist-search-bar" style="'+(searchVisible.khList?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm KH..." value="'+khListSearch+'" oninput="khListSearchInput(this)"></div></div>'+list+'</div>'
+    +'<div class="scr-body"><div id="khlist-search-bar" style="'+(searchVisible.khList?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm KH..." value="'+khListSearch+'" oninput="khListSearchInput(this)"></div></div><div id="khlist-list">'+khListListHtml()+'</div></div>'
     +'<button class="fab" onclick="openKhCharForm()">'+icoSvg(ICO_PLUS,24)+'</button>';
 }
 
@@ -1519,7 +1521,7 @@ function toggleKhListSearch(){
   renderKhList();
   if(searchVisible.khList) setTimeout(()=>document.querySelector('#khlist-search-bar input')?.focus(),50);
 }
-function khListSearchInput(el){khListSearch=el.value;renderKhList()}
+function khListSearchInput(el){khListSearch=el.value;const c=document.getElementById('khlist-list');if(c)c.innerHTML=khListListHtml();}
 
 // ============================================================
 // KH CHAR FORM
