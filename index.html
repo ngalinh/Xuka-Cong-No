@@ -1088,7 +1088,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
       </div>
       <div class="form-section">
         <label class="form-label">Số tiền y/c bank</label>
-        <select class="form-input" id="pt-am"><option>Đúng công nợ</option><option>Min 20 triệu</option><option>Không y/c min</option></select>
+        <select class="form-input" id="pt-am"><option>Đúng công nợ</option><option>Min 10 triệu</option><option>Min 20 triệu</option><option>Không y/c min</option></select>
       </div>
     </div>
     <div class="form-bottom">
@@ -1169,7 +1169,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
       <div class="form-section"><label class="form-label">Loại</label><select class="form-input" id="m-ep-type"><option value="Sup">Sup</option><option value="Checker">Checker</option></select></div>
       <div class="form-section"><label class="form-label">STK nhận</label><input class="form-input" id="m-ep-stk" placeholder="Số tài khoản..."></div>
       <div class="form-section"><label class="form-label">Thời gian y/c bank</label><select class="form-input" id="m-ep-tm"><option>Trong ngày</option><option>Max 3 ngày</option><option>Không giục</option></select></div>
-      <div class="form-section"><label class="form-label">Số tiền y/c bank</label><select class="form-input" id="m-ep-am"><option>Đúng công nợ</option><option>Min 20 triệu</option><option>Không y/c min</option></select></div>
+      <div class="form-section"><label class="form-label">Số tiền y/c bank</label><select class="form-input" id="m-ep-am"><option>Đúng công nợ</option><option>Min 10 triệu</option><option>Min 20 triệu</option><option>Không y/c min</option></select></div>
     </div>
     <div class="form-bottom"><button class="form-btn-cancel" onclick="closeMEditPartner()">Hủy</button><button class="form-btn-save" onclick="saveMEditPartner()">Lưu</button></div>
   </div>
@@ -2855,6 +2855,7 @@ init();
         <select id="i_s_am">
           <option value="">-- Chọn --</option>
           <option value="Đúng công nợ">Đúng công nợ</option>
+          <option value="Min 10 triệu">Min 10 triệu</option>
           <option value="Min 20 triệu">Min 20 triệu</option>
           <option value="Không y/c min">Không y/c min</option>
         </select>
@@ -3124,7 +3125,7 @@ init();
       <select id="ep_tm"><option>Trong ngày</option><option>Max 3 ngày</option><option>Không giục</option></select>
     </div>
     <div class="fr"><label>Số tiền y/c</label>
-      <select id="ep_am"><option>Đúng công nợ</option><option>Min 20 triệu</option><option>Không y/c min</option></select>
+      <select id="ep_am"><option>Đúng công nợ</option><option>Min 10 triệu</option><option>Min 20 triệu</option><option>Không y/c min</option></select>
     </div>
   </div>
   <div class="mact">
