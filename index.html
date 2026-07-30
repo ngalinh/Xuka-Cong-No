@@ -2429,6 +2429,9 @@ init();
       <div class="tab" data-tab="cfg3" onclick="go('cfg3')"><span class="tab-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 17v-5"/><path d="m9.7 14 2.3-2.3L14.3 14"/></svg></span><span class="tab-lbl">Data Upload</span></div>
     </div>
   </div>
+  <div style="padding:12px 10px;border-top:1px solid var(--brd);margin-top:auto">
+    <button onclick="openGuide()" style="width:100%;background:var(--bg);border:1px solid var(--brd2);border-radius:8px;padding:7px 12px;font-size:12px;color:var(--txt2);cursor:pointer;text-align:left;transition:background .15s,color .15s" onmouseover="this.style.background='var(--pur2)';this.style.color='var(--pur3)'" onmouseout="this.style.background='var(--bg)';this.style.color='var(--txt2)'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3c.3-1 1.3-1.7 2.4-1.6 1.2.1 2.1.9 2.1 1.9 0 1.5-2.3 1.6-2.3 3.3"/><path d="M12 17h.01"/></svg>Hướng dẫn sử dụng</button>
+  </div>
 </nav>
 
 <!-- MAIN CONTENT -->
@@ -3090,6 +3093,21 @@ init();
 </div>
 </div>
 
+<!-- ===== MODAL: HƯỚNG DẪN SỬ DỤNG ===== -->
+<div class="modbg" id="m-guide">
+<div class="mod" style="width:720px;max-width:97vw;padding:0;overflow:hidden">
+  <div style="display:flex;align-items:flex-start;gap:14px;padding:24px 26px 18px;border-bottom:1px solid rgba(120,120,180,0.12)">
+    <div style="width:42px;height:42px;flex:none;border-radius:13px;background:linear-gradient(135deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(150,140,230,0.35)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.3c.3-1 1.3-1.7 2.4-1.6 1.2.1 2.1.9 2.1 1.9 0 1.5-2.3 1.6-2.3 3.3"/><path d="M12 17h.01"/></svg></div>
+    <div style="flex:1">
+      <div style="font-size:17px;font-weight:700;letter-spacing:-0.01em">Hướng dẫn sử dụng — <span id="guide-role-label"></span></div>
+      <div style="font-size:12.5px;color:#797f90;line-height:1.55;margin-top:4px">Các bước thao tác chính dành cho vai trò hiện tại của bạn.</div>
+    </div>
+    <button onclick="closeM('m-guide')" style="border:none;cursor:pointer;width:34px;height:34px;flex:none;border-radius:50%;background:rgba(120,120,180,0.1);color:#797f90;font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+  </div>
+  <div id="guide-content" style="max-height:66vh;overflow:auto;padding:20px 26px 26px"></div>
+</div>
+</div>
+
 <!-- ===== MODAL: EDIT PARTNER ===== -->
 <div class="modbg" id="m-edit-partner">
 <div class="mod">
@@ -3444,6 +3462,85 @@ function applyRole() {
   if(btnSuggest) btnSuggest.style.display = currentRole === 'admin' ? '' : 'none';
   updateNoti(); showNotiPopup();
   rt1(); rt2(); rt4(); rt5a(); rt5b();
+}
+
+/* ================================================
+   HƯỚNG DẪN SỬ DỤNG (theo vai trò)
+   ================================================ */
+const GUIDE_CONTENT = {
+  admin: [
+    { title: '📊 Tổng quan', steps: [
+      'Xem nhanh tổng công nợ Sup/Checker, công nợ KH và biểu đồ theo ngày.'
+    ]},
+    { title: '📦 Sup / Checker', steps: [
+      '<b>Danh sách</b>: thêm/sửa/xoá đối tác Sup/Checker, cập nhật STK nhận tiền mặc định.',
+      '<b>Công nợ</b>: bấm "+ Nhập công nợ" khi phát sinh khoản cần chuyển cho đối tác; theo dõi trạng thái Chờ điều phối → Đã điều phối → Done.'
+    ]},
+    { title: '👥 Khách hàng', steps: [
+      '<b>Danh sách KH</b>: thêm/sửa đặc điểm bank (thời gian, số tiền) của từng khách hàng.',
+      '<b>Công nợ KH</b>: nhập công nợ KH mới, điều phối gán tài khoản Sup/Checker nhận tiền cho từng khoản.',
+      '<b>Tracking CK</b>: nhập bill CK, xác nhận Sup/Checker đã nhận và duyệt — toàn quyền thực hiện cả 3 bước.'
+    ]},
+    { title: '⚙️ Cài đặt', steps: [
+      '<b>Tài khoản</b>: quản lý user, gán vai trò (Admin/Sale-CSKH/Mua hàng/Kế toán).',
+      '<b>Mapping KH - Sup</b>: gán Sup/Checker mặc định cho từng khách hàng.',
+      '<b>Data Upload</b>: nhập dữ liệu hàng loạt từ file.'
+    ]},
+    { title: '🛠 Công cụ khác', steps: [
+      '<b>Match CK</b>: xem gợi ý tự động ghép khách hàng với đối tác Sup/Checker theo phiên.',
+      '<b>Chốt phiên</b>: chốt số liệu công nợ theo phiên làm việc.'
+    ]}
+  ],
+  sale: [
+    { title: '👥 Công nợ KH', steps: [
+      'Bấm "+ Nhập công nợ KH" để ghi nhận khoản nợ mới của khách hàng.',
+      'Với khoản ở trạng thái <b>Mới nhập</b>, bấm nút sửa để điều phối: chọn tài khoản Sup/Checker nhận tiền và số tiền chỉ định khách CK → trạng thái chuyển <b>Chờ khách CK</b>.',
+      'Khi khách đã chuyển khoản, bấm icon 📎 ở cột "Bill CK" để nhập ngày CK, link ảnh bill và số tiền đã CK.'
+    ]},
+    { title: '📇 Danh sách KH', steps: [
+      'Thêm khách hàng mới, cập nhật đặc điểm bank (thời gian và số tiền khách hay CK).'
+    ]},
+    { title: '📋 Tracking CK', steps: [
+      'Theo dõi các bill đã nhập, chờ Mua hàng xác nhận Sup/Checker đã nhận và Kế toán duyệt.'
+    ]}
+  ],
+  mh: [
+    { title: '📦 Công nợ Sup/Checker', steps: [
+      'Bấm "+ Nhập công nợ" để ghi nhận khoản cần chuyển cho đối tác Sup/Checker.',
+      'Theo dõi trạng thái từ Chờ điều phối đến khi được Sale/CSKH gán khách hàng CK vào.'
+    ]},
+    { title: '📇 Danh sách Sup/Checker', steps: [
+      'Thêm đối tác Sup/Checker mới, cập nhật STK nhận tiền mặc định, thời gian và số tiền yêu cầu bank.'
+    ]},
+    { title: '📋 Tracking CK', steps: [
+      'Khi đối tác Sup/Checker đã nhận được tiền vào tài khoản, bấm "Sup/Checker XN" để xác nhận → trạng thái chuyển <b>Đã XN & Nhập file Sup/Checker</b>, chờ Kế toán duyệt.'
+    ]}
+  ],
+  kt: [
+    { title: '📋 Tracking CK', steps: [
+      'Đây là màn hình duy nhất của vai trò Kế toán — dùng để đối chiếu và duyệt các khoản chuyển khoản.',
+      'Với khoản ở trạng thái <b>Đã XN & Nhập file Sup/Checker</b> (đã được Mua hàng xác nhận Sup/Checker nhận tiền), bấm "Duyệt" sau khi đối chiếu xong để ghi nhận thu chi → trạng thái chuyển <b>Done & Nhập Thu Chi</b>.'
+    ]}
+  ]
+};
+
+function renderGuide(){
+  const role = currentRole;
+  el('guide-role-label').textContent = ROLE_LABELS[role] || role || '—';
+  const sections = GUIDE_CONTENT[role] || [];
+  el('guide-content').innerHTML = sections.map(s => `
+    <div style="margin-bottom:18px">
+      <div style="font-size:13.5px;font-weight:700;color:var(--pur3);margin-bottom:8px">${s.title}</div>
+      <ol style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px">
+        ${s.steps.map(st=>`<li style="font-size:13px;line-height:1.65;color:var(--txt)">${st}</li>`).join('')}
+      </ol>
+    </div>
+  `).join('') || '<div class="empty">Chưa có hướng dẫn cho vai trò này</div>';
+}
+
+function openGuide(){
+  renderGuide();
+  openM('m-guide');
 }
 
 /* ================================================
