@@ -5095,7 +5095,7 @@ function uploadPartnerFile(input){
       });
       D.partners = partners;
       D.khChars  = khChars;
-      autosave(); refreshDataLists(); rt5();
+      autosave(); refreshDataLists(); rt5a(); rt5b();
       status.textContent = `✅ Đã import ${partners.length} Sup/Checker và ${khChars.length} KH`;
       status.style.color = 'var(--grn)';
       toast(`✅ Upload thành công: ${partners.length} Sup/Checker, ${khChars.length} KH`);
@@ -5141,7 +5141,7 @@ function saveEditPartner(){
       D.kh.forEach(k=>{ if(k.idCK===s.idCK) k.stk = newStk; });
     }
   });
-  closeM('m-edit-partner'); rt5(); rt1(); rt2(); autosave(); toast('✅ Đã cập nhật đặc điểm Sup/Checker');
+  closeM('m-edit-partner'); rt5a(); rt1(); rt2(); autosave(); toast('✅ Đã cập nhật đặc điểm Sup/Checker');
 }
 function openEditKhChar(i){
   const k = D.khChars[i]; if(!k) return;
@@ -5153,10 +5153,10 @@ function saveEditKhChar(){
   const i=parseInt(el('ek_idx').value);
   D.khChars[i]={ch:el('ek_ch').value, name:el('ek_name').value.trim(),
     tm:el('ek_tm').value, am:el('ek_am').value};
-  closeM('m-edit-kh-char'); rt5(); autosave(); toast('✅ Đã cập nhật đặc điểm KH');
+  closeM('m-edit-kh-char'); rt5b(); autosave(); toast('✅ Đã cập nhật đặc điểm KH');
 }
-function delPartner(i){ if(!confirm('Xoá đối tác này?')) return; D.partners.splice(i,1); rt5(); refreshDataLists(); autosave(); }
-function delKhChar(i){ if(!confirm('Xoá KH này?')) return; D.khChars.splice(i,1); rt5(); refreshDataLists(); autosave(); }
+function delPartner(i){ if(!confirm('Xoá đối tác này?')) return; D.partners.splice(i,1); rt5a(); refreshDataLists(); autosave(); }
+function delKhChar(i){ if(!confirm('Xoá KH này?')) return; D.khChars.splice(i,1); rt5b(); refreshDataLists(); autosave(); }
 
 /* ================================================
    SAVE FORMS
@@ -5712,7 +5712,7 @@ function savePartner(){
   D.partners.push({type:el('ap_type').value, name:n, stk:el('ap_stk').value, tm:el('ap_tm').value, am:el('ap_am').value});
   closeM('m-add-partner');
   ['ap_name','ap_stk'].forEach(x=>el(x).value='');
-  rt5(); toast('✅ Đã thêm đối tác');
+  autosave(); rt5a(); toast('✅ Đã thêm đối tác');
 }
 
 function saveKhChar(){
@@ -5721,7 +5721,7 @@ function saveKhChar(){
   D.khChars.push({ch:el('ac_ch').value, name:n, tm:el('ac_tm').value, am:el('ac_am').value});
   closeM('m-add-kh-char');
   ['ac_name','ac_tm','ac_am'].forEach(x=>el(x).value='');
-  rt5(); toast('✅ Đã thêm khách hàng');
+  autosave(); rt5b(); toast('✅ Đã thêm khách hàng');
 }
 
 /* ================================================
