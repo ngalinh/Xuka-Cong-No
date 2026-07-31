@@ -5073,6 +5073,7 @@ function getMapping(){
 
 function saveMapping(){
   try { localStorage.setItem('xuka_mapping', JSON.stringify(CFG_MAPPING)); } catch(e){}
+  postToAPI({ sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars, charOptions: D.charOptions });
 }
 
 function renderCfgMapping(){
