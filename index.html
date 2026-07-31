@@ -5896,13 +5896,17 @@ function renderSuggest(){
 
 function acceptKH(si, ki){
   const sug = _suggestions[si]; const k = sug.khs[ki];
-  if(!sug.sup.idCK) sug.sup.idCK = gid(sug.sup.type==='Sup'?'Sup':'MH');
-  sug.sup.status = 'Đã điều phối';
+  // sug.sup is a shallow copy made in buildSuggestions() — mutate the real D.sup record instead,
+  // otherwise idCK/status changes are lost and never appear in Công nợ Sup/Checker.
+  const realSup = D.sup.find(x=>x.id===sug.sup.id);
+  if(!realSup) return;
+  if(!realSup.idCK) realSup.idCK = gid(realSup.type==='Sup'?'Sup':'MH');
+  realSup.status = 'Đã điều phối';
   const existing = D.kh.find(x=>x._id===k._id||x.name===k.name);
-  if(existing){ existing.idCK=sug.sup.idCK; existing.stk=sug.sup.stk; existing.cdAm=k.amount; existing.status='Chờ khách CK'; }
+  if(existing){ existing.idCK=realSup.idCK; existing.stk=realSup.stk; existing.cdAm=k.amount; existing.status='Chờ khách CK'; }
   k._sug_accepted = true;
   renderSuggest(); rt2(); rt1(); rd0(); autosave();
-  toast('✅ Đã ghép '+k.name+' → '+sug.sup.name+' (ID: '+sug.sup.idCK+')');
+  toast('✅ Đã ghép '+k.name+' → '+realSup.name+' (ID: '+realSup.idCK+')');
 }
 function skipKH(si, ki){ _suggestions[si].khs[ki]._sug_accepted=false; renderSuggest(); }
 function acceptSuggestion(i){ _suggestions[i].khs.forEach((_,ki)=>{ if(_suggestions[i].khs[ki]._sug_accepted===undefined) acceptKH(i,ki); }); }
