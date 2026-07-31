@@ -2647,7 +2647,7 @@ init();
   </div>
   <div class="tw"><table>
     <thead><tr>
-    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/Checker)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th>Điều phối</th><th></th>
+    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/Checker)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th id="th2-dp">Điều phối</th><th id="th2-act"></th>
   </tr></thead><tbody id="tb2"></tbody></table></div>
   <div id="pg2" class="pgbar"></div>
   </div>
@@ -4140,6 +4140,10 @@ function rt2(){
   const st = el('f2s').value, q = el('f2q').value.toLowerCase();
   const ch = el('f2ch')?.value || '';
   const canDp  = ['admin'].includes(currentRole); // legacy, kept for billCell
+  const isAdmin2 = currentRole === 'admin';
+  const th2dp = el('th2-dp'), th2act = el('th2-act');
+  if(th2dp)  th2dp.style.display  = isAdmin2 ? '' : 'none';
+  if(th2act) th2act.style.display = isAdmin2 ? 'none' : '';
   let list = D.kh.filter(k=>{
     if(st && k.status!==st) return false;
     if(q  && !k.name.toLowerCase().includes(q)) return false;
@@ -4209,13 +4213,13 @@ function rt2(){
       <td class="num" style="color:var(--grn);font-weight:500">${k.cdAm?fmt(k.cdAm):'—'}</td>
       <td>${sb(k.status)}</td>
       ${billCell}
-      <td style="white-space:nowrap">
+      <td style="white-space:nowrap;display:${isAdmin2?'':'none'}">
         <div style="display:flex;gap:4px;align-items:center">
           ${dpBtn}
           ${canDpAdmin && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" title="Huỷ điều phối" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
-      <td style="white-space:nowrap">
+      <td style="white-space:nowrap;display:${isAdmin2?'none':''}">
         <div style="display:flex;gap:4px;align-items:center">
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
