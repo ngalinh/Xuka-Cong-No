@@ -2647,7 +2647,7 @@ init();
   </div>
   <div class="tw"><table>
     <thead><tr>
-    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/Checker)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th>Điều phối</th>
+    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/Checker)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th>Điều phối</th><th></th>
   </tr></thead><tbody id="tb2"></tbody></table></div>
   <div id="pg2" class="pgbar"></div>
   </div>
@@ -3554,6 +3554,7 @@ function doLogout(){ /* handled by platform */ }
 /* SVG Icons */
 const SVG_PENCIL = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 const SVG_TRASH  = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+const SVG_LINK   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 const SVG_PIN    = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>';
 
 /* ================================================
@@ -4157,15 +4158,15 @@ function rt2(){
     const supName = k.stk ? stkCell(k.stk) : (sup ? stkCell(sup.stk) : '—');
 
     const canDpMoiNhap = ['admin','sale'].includes(currentRole);
-    const canDpChoKhach = ['admin','mh'].includes(currentRole);
+    const canDpAdmin = currentRole === 'admin';
 
     let dpBtn = '';
     const khLocked = !['Mới nhập','Chờ khách CK'].includes(k.status);
-    if(!khLocked){
-      if(k.status === 'Mới nhập' && canDpMoiNhap){
-        dpBtn = `<button class="pill pill-edit" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>`;
-      } else if(k.status === 'Chờ khách CK' && canDpChoKhach){
-        dpBtn = `<button class="pill pill-edit" onclick="openEditKHStk('${k._id}')">${SVG_PENCIL}</button>`;
+    if(!khLocked && canDpAdmin){
+      if(k.status === 'Mới nhập'){
+        dpBtn = `<button class="pill pill-attach" title="Gán ID CK" onclick="showDpFromKH('${k._id}')">${SVG_LINK}</button>`;
+      } else if(k.status === 'Chờ khách CK'){
+        dpBtn = `<button class="pill pill-edit" title="Sửa điều phối" onclick="openEditKHStk('${k._id}')">${SVG_PENCIL}</button>`;
       }
     }
 
@@ -4211,13 +4212,18 @@ function rt2(){
       <td style="white-space:nowrap">
         <div style="display:flex;gap:4px;align-items:center">
           ${dpBtn}
-          ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
-          ${canDpChoKhach && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
+          ${canDpAdmin && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" title="Huỷ điều phối" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
+        </div>
+      </td>
+      <td style="white-space:nowrap">
+        <div style="display:flex;gap:4px;align-items:center">
+          ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
+          ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
     </tr>
     <tr id="bill-row-${k._id}" style="display:none;background:var(--grn2)">
-      <td colspan="11" style="padding:10px 14px">
+      <td colspan="12" style="padding:10px 14px">
         <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap">
           <div>
             <div style="font-size:11px;color:var(--grn3);font-weight:700;margin-bottom:4px">NGÀY CK</div>
@@ -4244,7 +4250,7 @@ function rt2(){
         </div>
       </td>
     </tr>`;
-  }).join('') : '<tr><td colspan="11" class="empty">Chưa có dữ liệu</td></tr>';
+  }).join('') : '<tr><td colspan="12" class="empty">Chưa có dữ liệu</td></tr>';
 
   renderPg('pg2','pg2',pages,cur,'rt2');
 }
