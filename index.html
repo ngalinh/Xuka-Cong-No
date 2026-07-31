@@ -5653,6 +5653,15 @@ function supTimeLevel(tm){
   if(l.includes('2-3') || l.includes('max 3') || l.includes('2-3 ngày')) return 2;
   return 3; // Không giục, Không dí, thoải mái, etc.
 }
+
+// Ưu tiên 2 — Số tiền tối thiểu/lần CK: rút số từ đặc điểm "Số tiền y/c" của Sup/Checker
+// (vd "Min 40 triệu" -> 40 000 000). Nhãn không có số (Đúng công nợ, Không y/c min, hoặc
+// bất kỳ nhãn mới nào sau này không chứa số) mặc định = 0 (không có ngưỡng, chấp nhận mọi KH).
+function supMinAmount(am){
+  if(!am) return 0;
+  const m = am.match(/(\d+)\s*tri[eệ]u/i);
+  return m ? parseInt(m[1],10) * 1000000 : 0;
+}
 function khTimeLevel(tm){
   if(!tm) return 3;
   const l = tm.toLowerCase();
@@ -5708,7 +5717,7 @@ function buildSuggestions(){
     const effectiveAmount = s.status === 'CK 1 phần'
       ? Math.max(s.amount - cs.total, 0)
       : s.amount;
-    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: effectiveAmount};
+    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: effectiveAmount, _minAmount: supMinAmount(c?c.am:'')};
   });
 
   // Sort sup by urgency (level 1 first)
@@ -5719,13 +5728,16 @@ function buildSuggestions(){
 
   for(const sup of supEnriched){
     const targetAmount = sup._effectiveAmount;
+    const minAmount = sup._minAmount;
 
-    // First pass: try KH at exact level or faster
-    let pool = khEnriched.filter(k => !usedKhIds.has(k._id||k.name) && k._level <= sup._level);
+    // First pass: try KH at exact level or faster, and meeting Sup's minimum số tiền/lần CK
+    let pool = khEnriched.filter(k => !usedKhIds.has(k._id||k.name) && k._level <= sup._level && k.amount >= minAmount);
 
-    // If no pool found for this sup level, try using remaining KH at any level (cascade up)
+    // If no pool found for this sup level, cascade the TIME level up — but the minimum số tiền
+    // requirement is a hard business constraint from Sup/Checker, not a soft preference, so it
+    // still applies during cascade.
     if(!pool.length){
-      pool = khEnriched.filter(k => !usedKhIds.has(k._id||k.name));
+      pool = khEnriched.filter(k => !usedKhIds.has(k._id||k.name) && k.amount >= minAmount);
     }
 
     if(!pool.length){
@@ -5733,7 +5745,8 @@ function buildSuggestions(){
         sup, khs: [], total: 0, remaining: targetAmount,
         supLevel: sup._level, khMaxLevel: 0, tf: 0, as: 0, score: 0,
         accepted: null,
-        note: (sup.status === 'CK 1 phần' ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Còn thiếu: ${fmt(targetAmount)} (đã CK ${fmt(sup.amount - targetAmount)}). ` : '') + '⚠ Chưa có KH nào phù hợp để ghép.'
+        note: (sup.status === 'CK 1 phần' ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Còn thiếu: ${fmt(targetAmount)} (đã CK ${fmt(sup.amount - targetAmount)}). ` : '')
+          + (minAmount > 0 ? `⚠ Sup/Checker y/c tối thiểu ${fmt(minAmount)}/lần CK, không có KH nào đủ điều kiện.` : '⚠ Chưa có KH nào phù hợp để ghép.')
       });
       continue;
     }
