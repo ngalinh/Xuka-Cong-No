@@ -2762,6 +2762,7 @@ init();
     <div class="cfg-desc">Các cặp KH—Sup/Checker cố định. Khi nhập công nợ KH có trong danh sách này sẽ tự động điều phối.</div>
     <div class="toolbar" style="margin-bottom:10px">
       <button class="btn btn-p" onclick="toggleAddMappingForm()">+ Thêm cặp</button>
+      <button class="btn btn-danger" onclick="clearAllMapping()">Xoá tất cả</button>
     </div>
     <div id="add-mapping-form" style="display:none;background:var(--bg2);border:1px solid var(--brd2);border-radius:var(--rl);padding:16px;margin-bottom:14px">
       <div class="fg">
@@ -3462,48 +3463,7 @@ const ROLE_LABELS = {admin:'Admin',mh:'Mua hàng',sale:'Sale/CSKH',kt:'Kế toá
 /* ================================================
    KH → Sup/Checker MAPPING CỐ ĐỊNH
    ================================================ */
-const KH_SUP_MAP = {
-  "Cjp Nguyen - 0919098428":         "Nguyễn Công Phước MH",
-  "Nguyen My Trang - 0903282468":     "Nguyễn Công Phước MH",
-  "Tú Vũ - 0328872654":              "Hoàng Lâm",
-  "Yen Tran CTV - 0978662285":        "Hoàng Lâm",
-  "Linh Bi - 0896313888":             "Hoàng Lâm",
-  "Van Us - 0945665558":              "Nguyễn Công Phước MH",
-  "Tra Truong - 0908633163":          "Hoàng Lâm",
-  "Thùy Duyên - 00904024169":         "Nguyễn Công Phước MH",
-  "Dương Thùy Linh - 0904239192":     "Nguyễn Công Phước MH",
-  "Hằng Thị Phạm - 0936929339":      "Nguyễn Công Phước MH",
-  "Thanh Trúc - 0787315293":          "Nguyễn Công Phước MH",
-  "Kim Duong Nguyen - 0972956666":    "Nguyễn Công Phước MH",
-  "Mỹ Duyên Ngọc Bích - 0982893428": "Nguyễn Công Phước MH",
-  "Dung Thuy Nguyen - 0385688565":    "Nguyễn Công Phước MH",
-  "Hien Duong - 0983136636":          "Hieu Le",
-  "Hiệp Nguyễn - 5038889978":        "Hieu Le",
-  "Hương Nguyễn - 0982898920":       "Nguyễn Công Phước MH",
-  "Chị Huong Nguyenn - 0988092545":   "Nguyễn Công Phước MH",
-  "Tống Khánh Ly - 0945645210":      "Phạm Nam",
-  "Thuỳ Đặng - 0975684877":          "Phạm Nam",
-  "Vivian Nguyen - 0909057476":       "Hieu Le",
-  "La My - 0766565899":               "Nguyễn Công Phước MH",
-  "La My – 0766565899":               "Nguyễn Công Phước MH",
-  "Dâu Tây Nhỏ - 0943465688":        "Hoàng Lâm",
-  "HAHS Nguyen Chi - 0932602185":     "Phạm Nam",
-  "HAKH Chi Đỗ - 0972512043":        "Phạm Nam",
-  "Nguyễn Thị Lê Thu - 0907979622":  "Hoàng Lâm",
-  "Trang Nguyễn - 0904901212":       "Hoàng Lâm",
-  "Dung Nguyễn - 0981543095":        "Hoàng Lâm",
-  "Thoa Pham - 0971201521":           "Hieu Le",
-  "Trung Nguyen - 9713251765":        "Hoàng Lâm",
-  "Ha Li - 0979909937":               "Hoàng Lâm",
-  "Đồng Hằng - 0389906526":          "Hoàng Lâm",
-  "Đặng Kim Anh - 0915382382":       "Hieu Le",
-  "Nga Nguyễn - 0366966025":         "Hieu Le",
-  "Phạm Thi Thu Hoài - 00975647321": "Hieu Le",
-  "Nguyễn Anh - 0982899221":         "Hieu Le",
-  "Do Hoai Thu - 0977384542":        "Hieu Le",
-  "Hanh Moon - 0977865225":           "Hieu Le",
-  "Dao Thuy Dung - 0906204366":       "Hieu Le"
-};
+const KH_SUP_MAP = {};
 
 
 let currentUser = null;
@@ -5232,6 +5192,20 @@ function delMapping(kh){
   delete KH_SUP_MAP[kh];
   saveMapping();
   renderCfgMapping(); toast('Đã xoá mapping');
+}
+
+function clearAllMapping(){
+  const m = getMapping();
+  const count = Object.keys(m).length;
+  if(!count){ toast('Không có mapping nào để xoá', true); return; }
+  if(!confirm(`Xoá toàn bộ ${count} mapping KH ↔ Sup/Checker? Không thể hoàn tác.`)) return;
+  Object.keys(m).forEach(k=>delete m[k]);
+  Object.keys(KH_SUP_MAP).forEach(k=>delete KH_SUP_MAP[k]);
+  saveMapping();
+  const supSel = el('map-filter-sup');
+  if(supSel){ while(supSel.options.length>1) supSel.remove(1); }
+  renderCfgMapping();
+  toast(`✅ Đã xoá toàn bộ ${count} mapping`);
 }
 
 function uploadMappingFile(input){
