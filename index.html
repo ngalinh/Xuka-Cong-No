@@ -152,8 +152,8 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 /* TABLES */
 .tw{overflow-x:auto;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-brd);border-radius:24px;box-shadow:var(--glass-sh);padding:8px 8px 4px}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{padding:12px 16px;text-align:left;font-weight:600;font-size:11px;color:#9aa0b2;background:transparent;border-bottom:none;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
-td{padding:14px 16px;border-top:1px solid rgba(120,120,180,0.1);border-bottom:none;color:var(--txt);vertical-align:middle}
+th{padding:10px 10px;text-align:left;font-weight:600;font-size:11px;color:#9aa0b2;background:transparent;border-bottom:none;white-space:normal;text-transform:uppercase;letter-spacing:.05em}
+td{padding:11px 10px;border-top:1px solid rgba(120,120,180,0.1);border-bottom:none;color:var(--txt);vertical-align:middle}
 td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 td.nowrap{white-space:nowrap}
 tr:hover td{background:rgba(255,255,255,0.4)}
@@ -162,7 +162,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 .idb:hover{background:var(--acc-soft);border-color:var(--acc)}
 
 /* BADGES */
-.badge{display:inline-block;font-size:11.5px;padding:4px 11px;border-radius:999px;font-weight:600;white-space:nowrap}
+.badge{display:inline-block;font-size:11.5px;padding:4px 7px;border-radius:999px;font-weight:600;white-space:nowrap}
 .b-wait{background:rgba(243,200,90,0.22);color:#9a6a12}
 .b-done{background:rgba(53,196,122,0.16);color:#2a9d63}
 .b-part{background:rgba(159,229,216,0.45);color:#1f8a7a}
@@ -2647,7 +2647,7 @@ init();
   </div>
   <div class="tw"><table>
     <thead><tr>
-    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận (Sup/Checker)</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th id="th2-dp">Điều phối</th><th id="th2-act"></th>
+    <th>Ngày</th><th>NV</th><th>Tên KH + SĐT</th><th>Đặc điểm bank</th><th>Công nợ gốc</th><th>ID CK</th><th>Tài khoản nhận</th><th>Chỉ định</th><th>Tình trạng</th><th>Bill CK</th><th id="th2-dp">Điều phối</th><th id="th2-act"></th>
   </tr></thead><tbody id="tb2"></tbody></table></div>
   <div id="pg2" class="pgbar"></div>
   </div>
@@ -4119,7 +4119,7 @@ function rt1(){
       <td class="nowrap">${s.date}</td>
       <td class="nowrap">${s.nv||'—'}</td>
       <td><span class="badge ${s.type==='Sup'?'b-sup':'b-mh'}">${s.type}</span></td>
-      <td style="font-weight:600;white-space:nowrap">${s.name}</td>
+      <td style="font-weight:600">${s.name}</td>
       <td>${pcharHtml}</td>
       <td class="num">${fmt(s.amount)}</td>
       <td>${stkCell(s.stk)}</td>
