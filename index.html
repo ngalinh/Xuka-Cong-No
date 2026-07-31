@@ -4124,7 +4124,7 @@ function rt1(){
       <td class="num">${fmt(s.amount)}</td>
       <td>${stkCell(s.stk)}</td>
       <td>${idbBadge(s.idCK)}</td>
-      <td class="num" style="color:${cs.total>0?'var(--grn)':'var(--txt2)'};font-weight:500">${cs.total>0?fmt(cs.total):'—'}</td>
+      <td class="num" style="color:${cs.total>0?'var(--grn)':'var(--txt2)'};font-weight:500">${cs.total>0?fmt(cs.total):'—'}${cs.total>0&&s.amount>0?`<div style="font-size:11px;font-weight:600;color:${cs.total>=s.amount?'var(--grn3)':'var(--amb3)'}">${Math.round(cs.total/s.amount*100)}%</div>`:''}</td>
       <td>${sb(s.status)}</td>
       <td style="white-space:nowrap">
         <div style="display:flex;gap:4px;align-items:center">
