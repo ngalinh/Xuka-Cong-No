@@ -1412,9 +1412,9 @@ function loadUsers(){
     {name:'Trang',      user:'t.thuytrang164@gmail.com',  role:'admin', active:true},
     {name:'Trâm',       user:'tram@gmail.com',            role:'admin', active:true},
     {name:'Huệ',        user:'allsale.vn@gmail.com',      role:'mh',    active:true},
-    {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true, ch:'Linh Dương'},
-    {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true, ch:'Linh Thảo'},
-    {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true, ch:'ShipUS'},
+    {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true},
+    {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true},
+    {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true},
     {name:'Thuỳ',       user:'asale.vn@gmail.com',        role:'sale',  active:true},
     {name:'ShipUS',     user:'shipus@basso.vn',           role:'sale',  active:true},
     {name:'Tuyền',      user:'ketoan.basso@gmail.com',    role:'kt',    active:true},
@@ -2751,14 +2751,6 @@ init();
             <option value="0">Inactive</option>
           </select>
         </div>
-        <div class="fr"><label>Kênh (Sale/CSKH)</label>
-          <select id="nu-ch" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
-            <option value="">-- Không --</option>
-            <option value="Linh Dương">Linh Dương</option>
-            <option value="Linh Thảo">Linh Thảo</option>
-            <option value="ShipUS">ShipUS</option>
-          </select>
-        </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn btn-p" onclick="saveAddUser()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Lưu</button>
@@ -2766,7 +2758,7 @@ init();
       </div>
     </div>
     <div class="tw"><table style="text-align:center"><thead><tr>
-      <th>Tên</th><th>Email</th><th>Vai trò</th><th>Kênh</th><th>Trạng thái</th><th></th>
+      <th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th>
     </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
   </div>
 </div>
@@ -3430,9 +3422,9 @@ const DEFAULT_USERS = [
   {name:'Trang',      user:'t.thuytrang164@gmail.com',  role:'admin', active:true},
   {name:'Trâm',       user:'tram@gmail.com',            role:'admin', active:true},
   {name:'Huệ',        user:'allsale.vn@gmail.com',      role:'mh',    active:true},
-  {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true, ch:'Linh Dương'},
-  {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true, ch:'Linh Thảo'},
-  {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true, ch:'ShipUS'},
+  {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true},
+  {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true},
+  {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true},
   {name:'Thuỳ',       user:'asale.vn@gmail.com',        role:'sale',  active:true},
   {name:'ShipUS',     user:'shipus@basso.vn',           role:'sale',  active:true},
   {name:'Tuyền',      user:'ketoan.basso@gmail.com',    role:'kt',    active:true},
@@ -4989,14 +4981,13 @@ function renderCfgUsers(){
         <td style="font-weight:600">${u.name}</td>
         <td style="color:var(--txt2);font-size:13px">${u.user}${u.email?` / ${u.email}`:''}</td>
         <td><span class="badge ${u.role==='admin'?'b-sup':u.role==='mh'?'b-mh':u.role==='kt'?'b-ckd':'b-new'}">${ROLE_LABELS[u.role]||u.role}</span></td>
-        <td>${u.ch?`<span class="badge b-part">${u.ch}</span>`:'<span style="color:var(--txt3)">—</span>'}</td>
         <td><span class="badge ${u.active===false?'b-cancel':'b-done'}">${u.active===false?'Inactive':'Active'}</span></td>
         <td style="white-space:nowrap">
           <button class="pill pill-edit" onclick="editUser(${i})">${SVG_PENCIL}</button>
           <button class="pill pill-del" onclick="delUser(${i})">${SVG_TRASH}</button>
         </td>
       </tr>`).join('')
-    : '<tr><td colspan="6" class="empty">Chưa có tài khoản nào</td></tr>';
+    : '<tr><td colspan="5" class="empty">Chưa có tài khoản nào</td></tr>';
 }
 
 function toggleAddUserForm(){
@@ -5007,7 +4998,7 @@ function toggleAddUserForm(){
   if(!showing){
     el('nu-name').value=''; el('nu-user').value='';
     el('nu-pass').value=''; el('nu-role').value='sale';
-    el('nu-active').value='1'; el('nu-ch').value='';
+    el('nu-active').value='1';
     el('nu-name').focus();
   }
 }
@@ -5034,7 +5025,6 @@ function editUser(i){
   el('nu-pass').value   = u.pass||'';
   el('nu-role').value   = u.role||'sale';
   el('nu-active').value = u.active===false ? '0' : '1';
-  el('nu-ch').value     = u.ch||'';
   el('add-user-form').style.display = '';
   // Change save button to update mode
   el('add-user-form').dataset.editIdx = i;
@@ -5047,14 +5037,13 @@ function saveAddUser(){
   const pass = el('nu-pass').value.trim();
   const role = el('nu-role').value;
   const active = el('nu-active').value === '1';
-  const ch = el('nu-ch').value;
   if(!name || !user){ toast('Nhập đủ Tên và Username/Email', true); return; }
   const editIdx = el('add-user-form').dataset.editIdx;
   if(editIdx !== undefined && editIdx !== ''){
-    CFG_USERS[parseInt(editIdx)] = {name, user, pass, role, active, ch};
+    CFG_USERS[parseInt(editIdx)] = {name, user, pass, role, active};
     delete el('add-user-form').dataset.editIdx;
   } else {
-    CFG_USERS.push({name, user, pass, role, active, ch});
+    CFG_USERS.push({name, user, pass, role, active});
   }
   USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u));
   saveUsers();
@@ -6149,19 +6138,12 @@ el('m-edit-kh-char').addEventListener('click',function(e){if(e.target===this)clo
 el('m-edit-ck').addEventListener('click',function(e){if(e.target===this)closeM('m-edit-ck');});
 el('m-add-kh-char').addEventListener('click',function(e){if(e.target===this)closeM('m-add-kh-char');});
 
-// Kênh mặc định khi thêm KH mới, dựa theo tài khoản đang đăng nhập (cấu hình ở Cài đặt > Tài khoản)
-function getCurrentUserChannel(){
-  if(!currentUser) return '';
-  const u = CFG_USERS.find(x=>x.name===currentUser.name);
-  return (u && u.ch) ? u.ch : '';
-}
-
 // Override openM for mck to populate IDs
 const origOpenM = openM;
 function openM(id){
   el(id).classList.add('on');
   if(id==='msup'){ el('i_sd').value=today(); el('sup_char_info').style.display='none'; el('sup_new_fields').style.display='none'; }
-  if(id==='mkh'){  el('i_kd').value=today(); el('kh_char_info').style.display='none'; el('kh_new_fields').style.display='none'; el('i_k_ch').value=getCurrentUserChannel(); }
+  if(id==='mkh'){  el('i_kd').value=today(); el('kh_char_info').style.display='none'; el('kh_new_fields').style.display='none'; }
   if(id==='mck'){
     el('i_cd').value=today();
     const sel=el('i_cid');
