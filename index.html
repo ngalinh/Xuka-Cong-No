@@ -925,7 +925,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
       <div class="form-section">
         <label class="form-label" style="margin-bottom:10px">Kênh</label>
         <div style="display:flex;gap:8px;flex-wrap:wrap" id="kh-kenh-chips">
-          <button class="chip active" data-val="Kênh CO" onclick="selectKenh(this)">Kênh CO</button>
+          <button class="chip active" data-val="ShipUS" onclick="selectKenh(this)">ShipUS</button>
           <button class="chip inactive" data-val="Linh Dương" onclick="selectKenh(this)">Linh Dương</button>
           <button class="chip inactive" data-val="Linh Thảo" onclick="selectKenh(this)">Linh Thảo</button>
         </div>
@@ -1056,7 +1056,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
       <div class="form-section">
         <label class="form-label">Kênh (channel)</label>
         <select class="form-input" id="khc-ch">
-          <option value="Kênh CO">Kênh CO</option>
+          <option value="ShipUS">ShipUS</option>
           <option value="Linh Dương">Linh Dương</option>
           <option value="Linh Thảo">Linh Thảo</option>
         </select>
@@ -1202,7 +1202,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
     <div class="hdr"><button class="hdr-menu-btn" onclick="closeMEditKhChar()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button><div class="hdr-center"><div class="hdr-title">Sửa KH</div></div><div class="hdr-right"></div></div>
     <div class="form-body">
       <div class="form-section"><label class="form-label">Tên KH</label><input class="form-input" id="m-ekc-name" placeholder="Tên KH..."></div>
-      <div class="form-section"><label class="form-label">Kênh</label><select class="form-input" id="m-ekc-ch"><option value="Kênh CO">Kênh CO</option><option value="Linh Dương">Linh Dương</option><option value="Linh Thảo">Linh Thảo</option></select></div>
+      <div class="form-section"><label class="form-label">Kênh</label><select class="form-input" id="m-ekc-ch"><option value="ShipUS">ShipUS</option><option value="Linh Dương">Linh Dương</option><option value="Linh Thảo">Linh Thảo</option></select></div>
       <div class="form-section"><label class="form-label">Thời gian bank</label><select class="form-input" id="m-ekc-tm"></select></div>
       <div class="form-section"><label class="form-label">Số tiền bank</label><select class="form-input" id="m-ekc-am"></select></div>
       <div class="form-section"><label class="form-label">Ghi chú</label><textarea class="form-input" id="m-ekc-note" placeholder="Ghi chú..."></textarea></div>
@@ -1412,9 +1412,9 @@ function loadUsers(){
     {name:'Trang',      user:'t.thuytrang164@gmail.com',  role:'admin', active:true},
     {name:'Trâm',       user:'tram@gmail.com',            role:'admin', active:true},
     {name:'Huệ',        user:'allsale.vn@gmail.com',      role:'mh',    active:true},
-    {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true},
-    {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true},
-    {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true},
+    {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true, ch:'Linh Dương'},
+    {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true, ch:'Linh Thảo'},
+    {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true, ch:'ShipUS'},
     {name:'Thuỳ',       user:'asale.vn@gmail.com',        role:'sale',  active:true},
     {name:'ShipUS',     user:'shipus@basso.vn',           role:'sale',  active:true},
     {name:'Tuyền',      user:'ketoan.basso@gmail.com',    role:'kt',    active:true},
@@ -1449,7 +1449,7 @@ let khListSearch='';
 let mRole='admin';
 let ckSearch='';
 let khListFilter='all';
-let selectedKenh='Kênh CO';
+let selectedKenh='ShipUS';
 
 // ============================================================
 // NAVIGATION
@@ -1648,8 +1648,8 @@ function khDebtListHtml(){
 
 function renderKhDebt(){
   const el=document.getElementById('scr-khDebt');
-  const FILTERS=['all','Kênh CO','Linh Dương','Linh Thảo'];
-  const FLABELS={'all':'Tất cả','Kênh CO':'Kênh CO','Linh Dương':'Linh Dương','Linh Thảo':'Linh Thảo'};
+  const FILTERS=['all','ShipUS','Linh Dương','Linh Thảo'];
+  const FLABELS={'all':'Tất cả','ShipUS':'ShipUS','Linh Dương':'Linh Dương','Linh Thảo':'Linh Thảo'};
   const chips=FILTERS.map(f=>'<button class="chip '+(khFilter===f?'active':'inactive')+'" onclick="setKhFilter(\\''+f+'\\')">'+FLABELS[f]+'</button>').join('');
 
   el.innerHTML=buildHdr({left:'menu',title:'Công nợ KH',right:'search',rightAction:'toggleKhSearch()'})
@@ -1678,7 +1678,7 @@ function openKhForm(){
   document.getElementById('kh-name').value='';
   document.getElementById('kh-amount').value='';
   document.getElementById('kh-note').value='';
-  selectedKenh='Kênh CO';
+  selectedKenh='ShipUS';
   document.querySelectorAll('#kh-kenh-chips .chip').forEach(c=>{
     c.className='chip '+(c.dataset.val===selectedKenh?'active':'inactive');
   });
@@ -1747,7 +1747,7 @@ function khListListHtml(){
 
 function renderKhList(){
   const el=document.getElementById('scr-khList');
-  const CHFILTERS=['all','Kênh CO','Linh Dương','Linh Thảo'];
+  const CHFILTERS=['all','ShipUS','Linh Dương','Linh Thảo'];
   const chips=CHFILTERS.map(f=>'<button class="chip '+(khListFilter===f?'active':'inactive')+'" onclick="setKhListFilter(\\''+f+'\\')">'+( f==='all'?'Tất cả':f)+'</button>').join('');
   el.innerHTML=buildHdr({left:'menu',title:'Danh sách KH',right:'search',rightAction:'toggleKhListSearch()'})
     +'<div class="scr-body"><div id="khlist-search-bar" style="'+(searchVisible.khList?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm KH..." value="'+khListSearch+'" oninput="khListSearchInput(this)"></div></div><div class="chips" style="margin-bottom:12px">'+chips+'</div><div id="khlist-list">'+khListListHtml()+'</div></div>'
@@ -2390,7 +2390,7 @@ function openMEditKhChar(idx){
   const c=D.khChars[idx];if(!c)return;
   _mEditKhCharIdx=idx;
   document.getElementById('m-ekc-name').value=c.name||'';
-  document.getElementById('m-ekc-ch').value=c.ch||'Kênh CO';
+  document.getElementById('m-ekc-ch').value=c.ch||'ShipUS';
   fillSelect('m-ekc-tm', D.charOptions.khTime, c.tm||'');
   fillSelect('m-ekc-am', D.charOptions.khAmount, c.am||'');
   document.getElementById('m-ekc-note').value=c.note||'';
@@ -2655,7 +2655,7 @@ init();
       <button id="f2ch-all" class="btn on" onclick="setKhChFilter2('')"           style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
       <button id="f2ch-ld"  class="btn"    onclick="setKhChFilter2('Linh Dương')" style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Dương</button>
       <button id="f2ch-lt"  class="btn"    onclick="setKhChFilter2('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
-      <button id="f2ch-co"  class="btn"    onclick="setKhChFilter2('Kênh CO')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Kênh CO</button>
+      <button id="f2ch-co"  class="btn"    onclick="setKhChFilter2('ShipUS')"    style="font-size:13px;padding:5px 14px;border-radius:8px">ShipUS</button>
     </div>
     <select id="f2s" onchange="rt2()"><option value="">Tất cả tình trạng</option><option>Mới nhập</option><option>Chờ khách CK</option><option>Khách đã CK</option><option>Done</option><option>CK 1 phần</option><option>Cancelled</option></select>
     <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers"></div>
@@ -2711,7 +2711,7 @@ init();
       <button id="f5ch-all" class="btn on" onclick="setKhChFilter('')"           style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
       <button id="f5ch-ld"  class="btn"    onclick="setKhChFilter('Linh Dương')" style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Dương</button>
       <button id="f5ch-lt"  class="btn"    onclick="setKhChFilter('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
-      <button id="f5ch-co"  class="btn"    onclick="setKhChFilter('Kênh CO')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Kênh CO</button>
+      <button id="f5ch-co"  class="btn"    onclick="setKhChFilter('ShipUS')"    style="font-size:13px;padding:5px 14px;border-radius:8px">ShipUS</button>
     </div>
     <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qb" placeholder="Tìm tên KH…" oninput="rt5b()"></div>
     <input type="hidden" id="f5ch" value="">
@@ -2751,6 +2751,14 @@ init();
             <option value="0">Inactive</option>
           </select>
         </div>
+        <div class="fr"><label>Kênh (Sale/CSKH)</label>
+          <select id="nu-ch" style="font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--brd2);background:var(--bg);color:var(--txt);outline:none">
+            <option value="">-- Không --</option>
+            <option value="Linh Dương">Linh Dương</option>
+            <option value="Linh Thảo">Linh Thảo</option>
+            <option value="ShipUS">ShipUS</option>
+          </select>
+        </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:8px">
         <button class="btn btn-p" onclick="saveAddUser()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Lưu</button>
@@ -2758,7 +2766,7 @@ init();
       </div>
     </div>
     <div class="tw"><table style="text-align:center"><thead><tr>
-      <th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th>
+      <th>Tên</th><th>Email</th><th>Vai trò</th><th>Kênh</th><th>Trạng thái</th><th></th>
     </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
   </div>
 </div>
@@ -3078,8 +3086,8 @@ init();
         <label>Kênh</label>
         <select id="i_k_ch">
           <option value="">-- Chọn --</option>
-          <option value="Kênh CO">Checkout</option>
-          <option value="Linh Dương">Linh Duong</option>
+          <option value="ShipUS">ShipUS</option>
+          <option value="Linh Dương">Linh Dương</option>
           <option value="Linh Thảo">Linh Thảo</option>
           <option value="Khác">Khác</option>
         </select>
@@ -3205,7 +3213,7 @@ init();
   <button class="xbtn" onclick="closeM('m-add-kh-char')">×</button>
   <h2>Thêm khách hàng</h2>
   <div class="fg">
-    <div class="fr"><label>Kênh</label><select id="ac_ch"><option>Checkout</option><option>Linh Duong</option><option>Linh Thảo</option><option>Khác</option></select></div>
+    <div class="fr"><label>Kênh</label><select id="ac_ch"><option value="ShipUS">ShipUS</option><option value="Linh Dương">Linh Dương</option><option value="Linh Thảo">Linh Thảo</option><option value="Khác">Khác</option></select></div>
     <div class="fr"><label>Tên KH + SĐT</label><input id="ac_name" placeholder="VD: Kim Hân - 0949667724"/></div>
   </div>
   <div class="fg">
@@ -3293,7 +3301,7 @@ init();
   <h2>Sửa đặc điểm khách hàng</h2>
   <input type="hidden" id="ek_idx">
   <div class="fg">
-    <div class="fr"><label>Kênh</label><select id="ek_ch"><option>Checkout</option><option>Linh Duong</option><option>Linh Thảo</option><option>Khác</option></select></div>
+    <div class="fr"><label>Kênh</label><select id="ek_ch"><option value="ShipUS">ShipUS</option><option value="Linh Dương">Linh Dương</option><option value="Linh Thảo">Linh Thảo</option><option value="Khác">Khác</option></select></div>
     <div class="fr"><label>Tên KH + SĐT</label><input id="ek_name"/></div>
   </div>
   <div class="fg">
@@ -3422,9 +3430,9 @@ const DEFAULT_USERS = [
   {name:'Trang',      user:'t.thuytrang164@gmail.com',  role:'admin', active:true},
   {name:'Trâm',       user:'tram@gmail.com',            role:'admin', active:true},
   {name:'Huệ',        user:'allsale.vn@gmail.com',      role:'mh',    active:true},
-  {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true},
-  {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true},
-  {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true},
+  {name:'Linh Dương', user:'linhduong@basso.vn',        role:'sale',  active:true, ch:'Linh Dương'},
+  {name:'Linh Thảo',  user:'linhthao@basso.vn',        role:'sale',  active:true, ch:'Linh Thảo'},
+  {name:'Kênh CO',    user:'checkout@basso.vn',         role:'sale',  active:true, ch:'ShipUS'},
   {name:'Thuỳ',       user:'asale.vn@gmail.com',        role:'sale',  active:true},
   {name:'ShipUS',     user:'shipus@basso.vn',           role:'sale',  active:true},
   {name:'Tuyền',      user:'ketoan.basso@gmail.com',    role:'kt',    active:true},
@@ -3455,7 +3463,7 @@ function autoLoginByEmail(email){
   if(roleSel){ roleSel.value = found.role; roleSel.closest('.role-pill').style.display='none'; }
   const nameDisp = el('user-name-disp');
   if(nameDisp){ nameDisp.textContent = `👤 ${found.name}`; nameDisp.style.display=''; }
-  applyRole();
+  applyRole(true);
   return true;
 }
 
@@ -3563,9 +3571,11 @@ const ROLE_TRACK_ACTIONS = {
   kt:    ['duyet']
 };
 
-function applyRole() {
+function applyRole(preserveUser) {
   currentRole = document.getElementById('role-sel').value;
-  currentUser = {name: document.getElementById('role-sel').options[document.getElementById('role-sel').selectedIndex].text, role: currentRole};
+  if(!preserveUser){
+    currentUser = {name: document.getElementById('role-sel').options[document.getElementById('role-sel').selectedIndex].text, role: currentRole};
+  }
 
   const allowed = ROLE_TABS[currentRole] || [];
   // Show/hide each sidebar item based on role permissions
@@ -4874,7 +4884,7 @@ function setKhChFilter(val){
   el('f5ch-all').classList.toggle('on', val==='');
   el('f5ch-ld').classList.toggle('on',  val==='Linh Dương');
   el('f5ch-lt').classList.toggle('on',  val==='Linh Thảo');
-  el('f5ch-co').classList.toggle('on',  val==='Kênh CO');
+  el('f5ch-co').classList.toggle('on',  val==='ShipUS');
   rt5b();
 }
 
@@ -4883,7 +4893,7 @@ function setKhChFilter2(val){
   el('f2ch-all').classList.toggle('on', val==='');
   el('f2ch-ld').classList.toggle('on',  val==='Linh Dương');
   el('f2ch-lt').classList.toggle('on',  val==='Linh Thảo');
-  el('f2ch-co').classList.toggle('on',  val==='Kênh CO');
+  el('f2ch-co').classList.toggle('on',  val==='ShipUS');
   rt2();
 }
 
@@ -4979,13 +4989,14 @@ function renderCfgUsers(){
         <td style="font-weight:600">${u.name}</td>
         <td style="color:var(--txt2);font-size:13px">${u.user}${u.email?` / ${u.email}`:''}</td>
         <td><span class="badge ${u.role==='admin'?'b-sup':u.role==='mh'?'b-mh':u.role==='kt'?'b-ckd':'b-new'}">${ROLE_LABELS[u.role]||u.role}</span></td>
+        <td>${u.ch?`<span class="badge b-part">${u.ch}</span>`:'<span style="color:var(--txt3)">—</span>'}</td>
         <td><span class="badge ${u.active===false?'b-cancel':'b-done'}">${u.active===false?'Inactive':'Active'}</span></td>
         <td style="white-space:nowrap">
           <button class="pill pill-edit" onclick="editUser(${i})">${SVG_PENCIL}</button>
           <button class="pill pill-del" onclick="delUser(${i})">${SVG_TRASH}</button>
         </td>
       </tr>`).join('')
-    : '<tr><td colspan="5" class="empty">Chưa có tài khoản nào</td></tr>';
+    : '<tr><td colspan="6" class="empty">Chưa có tài khoản nào</td></tr>';
 }
 
 function toggleAddUserForm(){
@@ -4996,7 +5007,7 @@ function toggleAddUserForm(){
   if(!showing){
     el('nu-name').value=''; el('nu-user').value='';
     el('nu-pass').value=''; el('nu-role').value='sale';
-    el('nu-active').value='1';
+    el('nu-active').value='1'; el('nu-ch').value='';
     el('nu-name').focus();
   }
 }
@@ -5023,6 +5034,7 @@ function editUser(i){
   el('nu-pass').value   = u.pass||'';
   el('nu-role').value   = u.role||'sale';
   el('nu-active').value = u.active===false ? '0' : '1';
+  el('nu-ch').value     = u.ch||'';
   el('add-user-form').style.display = '';
   // Change save button to update mode
   el('add-user-form').dataset.editIdx = i;
@@ -5035,13 +5047,14 @@ function saveAddUser(){
   const pass = el('nu-pass').value.trim();
   const role = el('nu-role').value;
   const active = el('nu-active').value === '1';
+  const ch = el('nu-ch').value;
   if(!name || !user){ toast('Nhập đủ Tên và Username/Email', true); return; }
   const editIdx = el('add-user-form').dataset.editIdx;
   if(editIdx !== undefined && editIdx !== ''){
-    CFG_USERS[parseInt(editIdx)] = {name, user, pass, role, active};
+    CFG_USERS[parseInt(editIdx)] = {name, user, pass, role, active, ch};
     delete el('add-user-form').dataset.editIdx;
   } else {
-    CFG_USERS.push({name, user, pass, role, active});
+    CFG_USERS.push({name, user, pass, role, active, ch});
   }
   USERS.length=0; CFG_USERS.forEach(u=>USERS.push(u));
   saveUsers();
@@ -5510,7 +5523,7 @@ function saveKH(){
       toast('Vui lòng chọn đầy đủ Kênh, Thời gian và Số tiền cho KH mới', true); return;
     }
     D.khChars.push({
-      ch:  isNew ? el('i_k_ch').value  : 'Kênh CO',
+      ch:  isNew ? el('i_k_ch').value  : 'ShipUS',
       name: n,
       tm:  isNew ? el('i_k_tm').value  : '1-2 ngày',
       am:  isNew ? el('i_k_am').value  : 'Đúng số CN'
@@ -6136,12 +6149,19 @@ el('m-edit-kh-char').addEventListener('click',function(e){if(e.target===this)clo
 el('m-edit-ck').addEventListener('click',function(e){if(e.target===this)closeM('m-edit-ck');});
 el('m-add-kh-char').addEventListener('click',function(e){if(e.target===this)closeM('m-add-kh-char');});
 
+// Kênh mặc định khi thêm KH mới, dựa theo tài khoản đang đăng nhập (cấu hình ở Cài đặt > Tài khoản)
+function getCurrentUserChannel(){
+  if(!currentUser) return '';
+  const u = CFG_USERS.find(x=>x.name===currentUser.name);
+  return (u && u.ch) ? u.ch : '';
+}
+
 // Override openM for mck to populate IDs
 const origOpenM = openM;
 function openM(id){
   el(id).classList.add('on');
   if(id==='msup'){ el('i_sd').value=today(); el('sup_char_info').style.display='none'; el('sup_new_fields').style.display='none'; }
-  if(id==='mkh'){  el('i_kd').value=today(); el('kh_char_info').style.display='none'; el('kh_new_fields').style.display='none'; }
+  if(id==='mkh'){  el('i_kd').value=today(); el('kh_char_info').style.display='none'; el('kh_new_fields').style.display='none'; el('i_k_ch').value=getCurrentUserChannel(); }
   if(id==='mck'){
     el('i_cd').value=today();
     const sel=el('i_cid');
@@ -6162,7 +6182,7 @@ function openM(id){
    ================================================ */
 function loadSample(){
   D.partners  = [{"type": "Checker", "name": "Nguyễn Công Phước MH", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888888879  Nguyen Cong Phuoc"}, {"type": "Checker", "name": "Phạm Nam", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VPBank 0775655566 Pham Thanh Nam"}, {"type": "Checker", "name": "Trancy", "tm": "Max 3 ngày", "am": "Min 20tr", "stk": "VIB 916260599 Nguyen Giang Ai Tran"}, {"type": "Checker", "name": "Hao Trieu", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 19032890539017  Trieu Quang Hao"}, {"type": "Sup", "name": "Nguyễn Công Phước GC", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 19038310248019  Nguyen Cong Phuoc"}, {"type": "Sup", "name": "Khắc Lệ", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 19032782875019 Pham Khac Le"}, {"type": "Sup", "name": "Nguyễn Phong", "tm": "Không giục", "am": "Không y/c min", "stk": "Vietcombank 1035376951  Nguyen Van Phong"}, {"type": "Sup", "name": "Dương Đông", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VIB 988126364 Ly Duong Ky"}, {"type": "Sup", "name": "Hieu Le", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank  7979790564 Le Minh Hieu"}, {"type": "Sup", "name": "Dương Minh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 8686867979  Pham Yen Vy"}, {"type": "Sup", "name": "Nguyen Duc Duy", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "Techcombank 2266799799 Nguyen Duc Duy"}, {"type": "Sup", "name": "Lan Hương Anh", "tm": "Không giục", "am": "USDT", "stk": "0x57ba425873cbddf582802acabdbe86ee189d54e2 Bep20"}, {"type": "Sup", "name": "Đặng Quang Đông", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietinbank 107875007358 Dang Quang Nam"}, {"type": "Sup", "name": "Binh Thanh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 337125387   Vo Vu Thu Tam"}, {"type": "Sup", "name": "Ngàn Nhật Đinh", "tm": "Trong ngày", "am": "Không y/c min", "stk": "MBBank Dinh Ngan Nhat 0702499996"}, {"type": "Sup", "name": "Hoàng Lâm", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 2888999996  Dang Hoang Lam"}, {"type": "Sup", "name": "Nguyên Nguyễn", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VPBank 266917139 Nguyen Ngoc Mai"}, {"type": "Sup", "name": "Kiên Nguyễn", "tm": "Không giục", "am": "Không y/c min", "stk": "Techcombank 888789 Nguyen Trung Kien"}, {"type": "Sup", "name": "Anh Linh", "tm": "Không giục", "am": "Không y/c min", "stk": "VIB 854128128 Cao Thi Trang"}, {"type": "Sup", "name": "Nguyễn Hoàng Ngọc Quang", "tm": "Trong ngày", "am": "Không y/c min", "stk": "VIB 582149249  Nguyen Hoang Ngoc Quang"}, {"type": "Sup", "name": "Tiêu Văn Quyền", "tm": "Không giục", "am": "Không y/c min", "stk": "BIDV 2202868030 Tieu Van Quyen"}, {"type": "Sup", "name": "Đỗ Hậu", "tm": "Max 3 ngày", "am": "Không y/c min", "stk": "VPBank 145551315 Do Van Hau"}, {"type": "Sup", "name": "Đặng Quang Lý", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Techcombank 2456789 Dang Quang Ly"}, {"type": "Sup", "name": "Dung Anh Tran", "tm": "Trong ngày", "am": "Không y/c min", "stk": "Vietcombank 0051000563887 Tran Kim Trong"}];
-  D.khChars   = [{"ch": "Linh Thảo", "name": "Phạm Minh - 0796466689", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Cjp Nguyen - 0919098428", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Trangtrang Quynh - 0829850596", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Thảo", "name": "Lan Anh Nguyen - 0942528883", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Uyen - 0786541443", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thuy Linh Bui - 0834194397", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Phương - 0983842809", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Tú Võ -  0398110019", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thùy Dươngg - 0983791530", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Xa Thanh Huyền - 0984483900", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Mẹ Tin Bắp - 0909026200", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Huyen Tran - 0917763020", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyen My Trang - 0903282468", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tú Vũ - 0328872654", "tm": "3-5 ngày", "am": "30 - 50tr"}, {"ch": "Linh Dương", "name": "Thảo Vân Lê - 0329113755", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Nguyễn Anh Tú (Libianca) - 0978040653", "tm": "Trong ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Hoàng Giang - 0942349899", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Khánh Linh - 0837162005", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Sáng Kim - 0919219529", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Trang - 0357903939", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Yen Tran CTV - 0978662285", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Linh Bi - 0896313888", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Minh Hương - 0842689186", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Van Us - 0945665558", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tra Truong - 0908633163", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thùy Duyên - 00904024169", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Huy - 0862520733", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Dương Thùy Linh - 0904239192", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Hằng Thị Phạm - 0936929339", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nhung Tran - 0968327619", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thanh Trúc - 0787315293", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Kim Duong Nguyen - 0972956666", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Mỹ Duyên Ngọc Bích - 0982893428", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Huyền Phan - 0971815398", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Dung Thuy Nguyen - 0385688565", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "Trịnh Bá Quyền - 0901223333", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thy Ba - 0935987879", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Kênh CO", "name": "Bách Checkout - 0916179999", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Kênh CO", "name": "Kim Hân - 0949667724", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "HA Thu Huyền - 0983812318", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thảo Nguyên Nguyên - 0918288102", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Uyên Đàm - 0989802497", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ly - 0474946393", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trịnh Hiền - 0966628989", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dương Trà SỈ - 0922311996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phí Đăng Luận - 0985034830", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hằng Nguyễn - 0904289890", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hien Duong - 0983136636", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hiệp Nguyễn - 5038889978", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hương Nguyễn - 0982898920", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "HATT Thu Nguyễn - 0948385557", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "Chị Huong Nguyenn - 0988092545", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Tống Khánh Ly - 0945645210", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Thơ Phan - 0964450900", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Nhung - 0907060691", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thuỳ Đặng - 0975684877", "tm": "Giục nhiều lần", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Trần Quang Huy - 0932211279", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Vivian Nguyen - 0909057476", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Kênh CO", "name": "La My - 0766565899", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Kênh CO", "name": "Chung Anh - 0916014061", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Joo - 0908556131", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dâu Tây Nhỏ - 0943465688", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Thanh Nga (Pu) - 0379237959", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAHS Nguyen Chi - 0932602185", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAKH Chi Đỗ - 0972512043", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Hồng Nhung Trần -  0968327619", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Thị Lê Thu - 0907979622", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Hân Nguyễn - 0986953599", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đình Lâm - 0982629656", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nhu Quynh - 0945102255", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nx Phuong - 0385576666", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Caroline XuXi - 0899956899", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Huong Tra Phan - 0961001486", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Mỹ Duyên - 0366078978", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trang Nguyễn - 0904901212", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Amy Ngo - 0932174074", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAMT Phương Nhi - 0914005731", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thảo Tây - 0772793193", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ngô Thị Thu Hoài - 0979915855", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hong Thanh - 0909822205", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Xuân Bách - 0942391352", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Anh Tâm Cigars- 0911246789", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thanh Thảo - 0774912219", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Nhi - 0703537174", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dung Nguyễn - 0981543095", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HA Bao Han - 0989399104", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thoa Pham - 0971201521", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đỗ Ngọc Thúy - 0376941841", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Selena Nguyen - 0939244082", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Anh Duy Bùi - 0356221310", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Quỳnh Anh Phạm - 0969044554", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HAKH Thanh Nhàn - 0902951995", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Trung Nguyen - 9713251765", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "HATT Quyên Dương - 0967718911", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ha Li - 0979909937", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Thanh Hà Nguyễn - 0912536888", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đồng Hằng - 0389906526", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Tran Ngoc Thao - 0902445547", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hải Yến - 0965255155", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Vy Phượng - 0916616778", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phan Thi Hong Ha - 0982488760", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dinh Thang - 0947574515", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phạm Bích Thúy - 0989129520", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Đặng Kim Anh - 0915382382", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Nguyễn Đặng Thơ Thơ - 0979580511", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "Kênh CO", "name": "Bành Hoàng Nhi - 0975462142", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Mai Việt - 0898606003", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Kim Thi - 0963578996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nga Nguyễn - 0366966025", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Phạm Thi Thu Hoài - 00975647321", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Ly Mailinh - 0907018009", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Anh - 0982899221", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Do Hoai Thu - 0977384542", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Kênh CO", "name": "Lyna Mhm - 0938525789", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hanh Moon - 0977865225", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Dao Thuy Dung - 0906204366", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Nguyễn Thu Thảo - 0906982184", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Duyen Nguyen - 0975476898", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Kênh CO", "name": "Hieu Linh - 0969898466", "tm": "1-2 ngày", "am": "Đúng công nợ"}];
+  D.khChars   = [{"ch": "Linh Thảo", "name": "Phạm Minh - 0796466689", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Cjp Nguyen - 0919098428", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Trangtrang Quynh - 0829850596", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Thảo", "name": "Lan Anh Nguyen - 0942528883", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Uyen - 0786541443", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thuy Linh Bui - 0834194397", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Phương - 0983842809", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Tú Võ -  0398110019", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Thùy Dươngg - 0983791530", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Xa Thanh Huyền - 0984483900", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Mẹ Tin Bắp - 0909026200", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Thảo", "name": "Huyen Tran - 0917763020", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyen My Trang - 0903282468", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tú Vũ - 0328872654", "tm": "3-5 ngày", "am": "30 - 50tr"}, {"ch": "Linh Dương", "name": "Thảo Vân Lê - 0329113755", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Nguyễn Anh Tú (Libianca) - 0978040653", "tm": "Trong ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Hoàng Giang - 0942349899", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Khánh Linh - 0837162005", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Sáng Kim - 0919219529", "tm": "1-2 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Trang - 0357903939", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Yen Tran CTV - 0978662285", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Linh Bi - 0896313888", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Minh Hương - 0842689186", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Van Us - 0945665558", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Tra Truong - 0908633163", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thùy Duyên - 00904024169", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nguyễn Vân Huy - 0862520733", "tm": "Trong ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Dương Thùy Linh - 0904239192", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Hằng Thị Phạm - 0936929339", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Nhung Tran - 0968327619", "tm": "Trong ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Thanh Trúc - 0787315293", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Kim Duong Nguyen - 0972956666", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "Linh Dương", "name": "Mỹ Duyên Ngọc Bích - 0982893428", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "Linh Dương", "name": "Huyền Phan - 0971815398", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "Linh Dương", "name": "Dung Thuy Nguyen - 0385688565", "tm": "3-5 ngày", "am": "< 10tr"}, {"ch": "ShipUS", "name": "Trịnh Bá Quyền - 0901223333", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thy Ba - 0935987879", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "ShipUS", "name": "Bách Checkout - 0916179999", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "ShipUS", "name": "Kim Hân - 0949667724", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "ShipUS", "name": "HA Thu Huyền - 0983812318", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thảo Nguyên Nguyên - 0918288102", "tm": "1-2 ngày", "am": "20 - 30tr"}, {"ch": "ShipUS", "name": "Uyên Đàm - 0989802497", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Ly - 0474946393", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Trịnh Hiền - 0966628989", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Dương Trà SỈ - 0922311996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Phí Đăng Luận - 0985034830", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hằng Nguyễn - 0904289890", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hien Duong - 0983136636", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hiệp Nguyễn - 5038889978", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hương Nguyễn - 0982898920", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "ShipUS", "name": "HATT Thu Nguyễn - 0948385557", "tm": "1-2 ngày", "am": "< 10tr"}, {"ch": "ShipUS", "name": "Chị Huong Nguyenn - 0988092545", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Tống Khánh Ly - 0945645210", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "ShipUS", "name": "Thơ Phan - 0964450900", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HATT Nhung - 0907060691", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thuỳ Đặng - 0975684877", "tm": "Giục nhiều lần", "am": "20 - 30tr"}, {"ch": "ShipUS", "name": "Trần Quang Huy - 0932211279", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Vivian Nguyen - 0909057476", "tm": "Giục nhiều lần", "am": "< 10tr"}, {"ch": "ShipUS", "name": "La My - 0766565899", "tm": "3-5 ngày", "am": "Min 10tr"}, {"ch": "ShipUS", "name": "Chung Anh - 0916014061", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Joo - 0908556131", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Dâu Tây Nhỏ - 0943465688", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Phan Thanh Nga (Pu) - 0379237959", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HAHS Nguyen Chi - 0932602185", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HAKH Chi Đỗ - 0972512043", "tm": "Giục nhiều lần", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Hồng Nhung Trần -  0968327619", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Nguyễn Thị Lê Thu - 0907979622", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HATT Hân Nguyễn - 0986953599", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Đình Lâm - 0982629656", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Nhu Quynh - 0945102255", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Nx Phuong - 0385576666", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Caroline XuXi - 0899956899", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Huong Tra Phan - 0961001486", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Mỹ Duyên - 0366078978", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Trang Nguyễn - 0904901212", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Amy Ngo - 0932174074", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HAMT Phương Nhi - 0914005731", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thảo Tây - 0772793193", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Ngô Thị Thu Hoài - 0979915855", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hong Thanh - 0909822205", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Nguyễn Xuân Bách - 0942391352", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Anh Tâm Cigars- 0911246789", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thanh Thảo - 0774912219", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Phan Nhi - 0703537174", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Dung Nguyễn - 0981543095", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HA Bao Han - 0989399104", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thoa Pham - 0971201521", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Đỗ Ngọc Thúy - 0376941841", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Dương", "name": "Selena Nguyen - 0939244082", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Anh Duy Bùi - 0356221310", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Quỳnh Anh Phạm - 0969044554", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HAKH Thanh Nhàn - 0902951995", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Trung Nguyen - 9713251765", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "HATT Quyên Dương - 0967718911", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Ha Li - 0979909937", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Thanh Hà Nguyễn - 0912536888", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Đồng Hằng - 0389906526", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Tran Ngoc Thao - 0902445547", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hải Yến - 0965255155", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Vy Phượng - 0916616778", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Phan Thi Hong Ha - 0982488760", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Dinh Thang - 0947574515", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Phạm Bích Thúy - 0989129520", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Đặng Kim Anh - 0915382382", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Nguyễn Đặng Thơ Thơ - 0979580511", "tm": "Trong ngày", "am": "30 - 50tr"}, {"ch": "ShipUS", "name": "Bành Hoàng Nhi - 0975462142", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Mai Việt - 0898606003", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Kim Thi - 0963578996", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Nga Nguyễn - 0366966025", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Phạm Thi Thu Hoài - 00975647321", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Ly Mailinh - 0907018009", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Nguyễn Anh - 0982899221", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Do Hoai Thu - 0977384542", "tm": "3-5 ngày", "am": "20 - 30tr"}, {"ch": "ShipUS", "name": "Lyna Mhm - 0938525789", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hanh Moon - 0977865225", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Dao Thuy Dung - 0906204366", "tm": "3-5 ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Nguyễn Thu Thảo - 0906982184", "tm": "1-2 ngày", "am": "Đúng công nợ"}, {"ch": "Linh Thảo", "name": "Duyen Nguyen - 0975476898", "tm": "Trong ngày", "am": "Đúng công nợ"}, {"ch": "ShipUS", "name": "Hieu Linh - 0969898466", "tm": "1-2 ngày", "am": "Đúng công nợ"}];
   if(loadFromStorage()){
     refreshDataLists(); ensureKhIds(); recalcAllSupStatuses(); rd0(); return;
   }
@@ -6212,6 +6232,11 @@ function loadFromStorage(){
     // Migrate legacy labels to new naming
     const _mig = a => { try { return JSON.parse(JSON.stringify(a).replaceAll('Mua hộ','Checker').replaceAll('Sup/MH','Sup/Checker')); } catch(e){ return a; } };
     D.sup=_mig(D.sup); D.kh=_mig(D.kh); D.ck=_mig(D.ck); D.partners=_mig(D.partners); D.khChars=_mig(D.khChars);
+    // Migrate kênh "Kênh CO"/"Checkout" -> "ShipUS", and fix missing-diacritic "Linh Duong" -> "Linh Dương"
+    D.khChars.forEach(k => {
+      if(k.ch === 'Kênh CO' || k.ch === 'Checkout') k.ch = 'ShipUS';
+      else if(k.ch === 'Linh Duong') k.ch = 'Linh Dương';
+    });
     // Enrich STK from partners
     D.sup.forEach(s => {
       if(!s.stk){
@@ -6229,9 +6254,9 @@ function autosave(){ saveToStorage(); }
 // Try auto-login from platform email injection
 (async function(){
   await fetchRemoteData();
-  tryAutoLogin();
+  const loggedIn = tryAutoLogin();
   loadSample();
-  applyRole();
+  applyRole(loggedIn);
   // Push existing localStorage data to API on first load so mobile can read it
   if(D.sup.length > 0 || D.kh.length > 0 || D.partners.length > 0) saveToStorage();
 })();
