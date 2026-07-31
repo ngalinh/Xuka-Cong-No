@@ -4501,12 +4501,12 @@ function rt4(){
     const sup = D.sup.find(s=>s.idCK===c.idCK);
     let partnerName = '—';
     if(sup){
-      partnerName = `<span class="badge ${sup.type==='Sup'?'b-sup':'b-mh'}">${sup.type}</span> ${sup.name}`;
+      partnerName = `<span class="badge ${sup.type==='Sup'?'b-sup':'b-mh'}">${sup.type}</span> ${sup.name}<div style="margin-top:4px">${stkCell(sup.stk)}</div>`;
     } else {
       const khEntry = D.kh.find(k=>k.idCK===c.idCK && k.name===c.kh);
       const supName = khEntry ? getFixedSup(khEntry.name) : null;
       const partner = supName ? D.partners.find(p=>p.name===supName) : null;
-      if(partner) partnerName = `<span class="badge ${partner.type==='Sup'?'b-sup':'b-mh'}">${partner.type}</span> ${partner.name}`;
+      if(partner) partnerName = `<span class="badge ${partner.type==='Sup'?'b-sup':'b-mh'}">${partner.type}</span> ${partner.name}<div style="margin-top:4px">${stkCell(partner.stk)}</div>`;
     }
     const billLink = c.link
       ? `<div style="display:flex;gap:6px;align-items:center">
