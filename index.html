@@ -2730,7 +2730,7 @@ init();
     <div class="cfg-title" style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg>Tài khoản đăng nhập</div>
     <div class="cfg-desc">Quản lý tài khoản nhân viên. Tài khoản được tự động điền bởi platform ai.basso.</div>
     <div class="toolbar" style="margin-bottom:10px">
-      <button class="btn btn-p" onclick="toggleAddUserForm()">+ Thêm tài khoản</button>
+      <button class="btn btn-p" onclick="toggleAddUserForm()" style="margin-left:auto">+ Thêm tài khoản</button>
     </div>
     <div id="add-user-form" style="display:none;background:var(--bg2);border:1px solid var(--brd2);border-radius:var(--rl);padding:16px;margin-bottom:14px">
       <div class="fg">
@@ -2757,8 +2757,8 @@ init();
         <button class="btn" onclick="toggleAddUserForm()">Huỷ</button>
       </div>
     </div>
-    <div class="tw"><table><thead><tr>
-      <th style="width:20%">Tên</th><th>Email</th><th style="width:130px">Vai trò</th><th style="width:130px">Trạng thái</th><th style="width:90px"></th>
+    <div class="tw"><table style="width:auto;min-width:0"><thead><tr>
+      <th style="width:180px">Tên</th><th style="width:260px">Email</th><th style="width:130px">Vai trò</th><th style="width:130px">Trạng thái</th><th style="width:90px"></th>
     </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
   </div>
 </div>
