@@ -1429,9 +1429,11 @@ function loadMapping(){
 }
 function saveUsers(){
   try{localStorage.setItem('xuka_users',JSON.stringify(CFG_USERS));}catch(e){}
+  postToAPI({sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions});
 }
 function saveMapping(){
   try{localStorage.setItem('xuka_mapping',JSON.stringify(KH_SUP_MAP));}catch(e){}
+  postToAPI({sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions});
 }
 
 // ============================================================
@@ -3441,6 +3443,7 @@ function loadUsers(){
 
 function saveUsers(){
   try { localStorage.setItem('xuka_users', JSON.stringify(CFG_USERS)); } catch(e){}
+  postToAPI({ sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars, charOptions: D.charOptions });
 }
 
 // Gọi hàm này khi platform inject email vào app
