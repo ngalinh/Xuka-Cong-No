@@ -3472,7 +3472,12 @@ function autoLoginByEmail(email){
   const emailNorm = email.toLowerCase().trim();
   // Ưu tiên tên/quyền đã cấu hình trong Cài đặt > Tài khoản (có thể đã đổi tên so với mặc định)
   const cfgIdx = CFG_USERS.findIndex(u => (u.user||'').toLowerCase().trim() === emailNorm);
-  if(cfgIdx >= 0) return loginAsUser(cfgIdx);
+  if(cfgIdx >= 0){
+    const ok = loginAsUser(cfgIdx);
+    // Danh tính đến từ platform (đã xác thực) — không cho "Đổi tài khoản" sang người khác trên máy này
+    if(ok){ const switchLink = el('switch-account-link'); if(switchLink) switchLink.style.display = 'none'; }
+    return ok;
+  }
   const found = EMAIL_ROLE_MAP[emailNorm];
   if(!found) return false;
   currentUser = found;
