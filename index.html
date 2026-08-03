@@ -3469,7 +3469,11 @@ function saveUsers(){
 // VD: autoLoginByEmail(window.AI_BASSO_USER?.email)
 function autoLoginByEmail(email){
   if(!email) return false;
-  const found = EMAIL_ROLE_MAP[email.toLowerCase().trim()];
+  const emailNorm = email.toLowerCase().trim();
+  // Ưu tiên tên/quyền đã cấu hình trong Cài đặt > Tài khoản (có thể đã đổi tên so với mặc định)
+  const cfgIdx = CFG_USERS.findIndex(u => (u.user||'').toLowerCase().trim() === emailNorm);
+  if(cfgIdx >= 0) return loginAsUser(cfgIdx);
+  const found = EMAIL_ROLE_MAP[emailNorm];
   if(!found) return false;
   currentUser = found;
   currentRole = found.role;
