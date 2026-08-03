@@ -2494,6 +2494,14 @@ init();
 </script>
 <div class="app">
 
+<div id="auth-lock-screen" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#d3ece8 0%,#dadbf3 52%,#d7d1f3 100%)">
+  <div style="max-width:420px;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));border:1px solid rgba(255,255,255,0.9);border-radius:24px;box-shadow:0 20px 50px rgba(120,120,180,0.2);padding:36px 32px">
+    <div style="font-size:40px;margin-bottom:14px">🔒</div>
+    <div style="font-size:17px;font-weight:700;color:#2a2e3a;margin-bottom:8px">Không nhận diện được tài khoản</div>
+    <div style="font-size:13.5px;color:#797f90;line-height:1.6">Không thể xác định tài khoản đăng nhập của bạn. Vui lòng liên hệ quản trị viên để được cấp quyền truy cập.</div>
+  </div>
+</div>
+
 <div class="nav-backdrop" onclick="toggleNav()"></div>
 
 <!-- HEADER -->
@@ -2508,7 +2516,7 @@ init();
   </div>
   <div class="hdr-r">
     <span id="user-name-disp" style="font-size:13px;font-weight:600;color:var(--txt2);padding:4px 10px;background:var(--bg2);border-radius:20px;display:none"></span>
-    <div class="role-pill">
+    <div class="role-pill" style="display:none">
       <label>Vai trò:</label>
       <select id="role-sel" onchange="applyRole()">
         <option value="admin">Admin</option>
@@ -6240,6 +6248,11 @@ function autosave(){ saveToStorage(); }
 (async function(){
   await fetchRemoteData();
   const loggedIn = tryAutoLogin();
+  if(!loggedIn){
+    const lock = el('auth-lock-screen');
+    if(lock) lock.style.display = 'flex';
+    return;
+  }
   loadSample();
   applyRole(loggedIn);
   // Push existing localStorage data to API on first load so mobile can read it
