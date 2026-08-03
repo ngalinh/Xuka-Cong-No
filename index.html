@@ -2495,10 +2495,11 @@ init();
 <div class="app">
 
 <div id="auth-lock-screen" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#d3ece8 0%,#dadbf3 52%,#d7d1f3 100%)">
-  <div style="max-width:420px;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,0.85),rgba(255,255,255,0.6));border:1px solid rgba(255,255,255,0.9);border-radius:24px;box-shadow:0 20px 50px rgba(120,120,180,0.2);padding:36px 32px">
-    <div style="font-size:40px;margin-bottom:14px">🔒</div>
-    <div style="font-size:17px;font-weight:700;color:#2a2e3a;margin-bottom:8px">Không nhận diện được tài khoản</div>
-    <div style="font-size:13.5px;color:#797f90;line-height:1.6">Không thể xác định tài khoản đăng nhập của bạn. Vui lòng liên hệ quản trị viên để được cấp quyền truy cập.</div>
+  <div style="max-width:420px;width:100%;text-align:center;background:linear-gradient(160deg,rgba(255,255,255,0.9),rgba(255,255,255,0.7));border:1px solid rgba(255,255,255,0.9);border-radius:24px;box-shadow:0 20px 50px rgba(120,120,180,0.2);padding:32px 28px">
+    <div style="font-size:36px;margin-bottom:10px">👋</div>
+    <div style="font-size:17px;font-weight:700;color:#2a2e3a;margin-bottom:6px">Chọn tài khoản của bạn</div>
+    <div style="font-size:13px;color:#797f90;line-height:1.6;margin-bottom:18px">Hệ thống không tự nhận diện được tài khoản đăng nhập. Vui lòng chọn tên bạn để tiếp tục — lần sau mở app sẽ tự nhớ trên máy này.</div>
+    <div id="auth-lock-picker" style="text-align:left;max-height:360px;overflow-y:auto"></div>
   </div>
 </div>
 
@@ -2516,6 +2517,7 @@ init();
   </div>
   <div class="hdr-r">
     <span id="user-name-disp" style="font-size:13px;font-weight:600;color:var(--txt2);padding:4px 10px;background:var(--bg2);border-radius:20px;display:none"></span>
+    <span id="switch-account-link" onclick="switchAccount()" style="font-size:12px;color:var(--txt2);opacity:0.6;cursor:pointer;text-decoration:underline;display:none">Đổi tài khoản</span>
     <div class="role-pill" style="display:none">
       <label>Vai trò:</label>
       <select id="role-sel" onchange="applyRole()">
@@ -3482,6 +3484,63 @@ function tryAutoLogin(){
     if(email && autoLoginByEmail(email)) return true;
   }
   return false;
+}
+
+const LOGIN_EMAIL_KEY = 'xuka_logged_in_email';
+
+// Đăng nhập theo tài khoản đã chọn từ danh sách Cài đặt > Tài khoản
+function loginAsUser(idx){
+  const u = CFG_USERS[idx];
+  if(!u || u.active===false) return false;
+  currentUser = {name: u.name, role: u.role};
+  currentRole = u.role;
+  try{ localStorage.setItem(LOGIN_EMAIL_KEY, (u.user||'').toLowerCase().trim()); }catch(e){}
+  const nameDisp = el('user-name-disp');
+  if(nameDisp){ nameDisp.textContent = `👤 ${u.name}`; nameDisp.style.display=''; }
+  const switchLink = el('switch-account-link');
+  if(switchLink) switchLink.style.display = '';
+  const roleSel = el('role-sel');
+  if(roleSel){ roleSel.value = u.role; if(roleSel.closest('.role-pill')) roleSel.closest('.role-pill').style.display='none'; }
+  return true;
+}
+
+// Thử đăng nhập lại theo email đã lưu trên máy này (từ lần chọn tài khoản trước)
+function loginFromSavedEmail(){
+  let saved = '';
+  try{ saved = (localStorage.getItem(LOGIN_EMAIL_KEY)||'').toLowerCase().trim(); }catch(e){}
+  if(!saved) return false;
+  const idx = CFG_USERS.findIndex(u => (u.user||'').toLowerCase().trim() === saved);
+  return idx >= 0 ? loginAsUser(idx) : false;
+}
+
+function showLoginPicker(){
+  const lock = el('auth-lock-screen');
+  const picker = el('auth-lock-picker');
+  if(!lock || !picker) return;
+  const active = CFG_USERS.map((u,i)=>({u,i})).filter(x=>x.u.active!==false);
+  picker.innerHTML = active.length
+    ? active.map(({u,i})=>`<button onclick="selectLoginUser(${i})" style="display:block;width:100%;text-align:left;padding:12px 16px;margin-bottom:8px;border:1px solid rgba(120,120,180,0.25);border-radius:12px;background:rgba(255,255,255,0.75);cursor:pointer;font-size:14px;font-weight:600;color:#2a2e3a">${escapeHtml(u.name)} <span style="font-weight:400;color:#797f90;font-size:12px">(${ROLE_LABELS[u.role]||u.role})</span></button>`).join('')
+    : '<div style="font-size:13px;color:#797f90;text-align:center">Chưa có tài khoản nào được cấu hình. Liên hệ quản trị viên.</div>';
+  lock.style.display = 'flex';
+}
+
+function selectLoginUser(idx){
+  if(!loginAsUser(idx)) return;
+  const lock = el('auth-lock-screen');
+  if(lock) lock.style.display = 'none';
+  finishLogin();
+}
+
+function switchAccount(){
+  if(!confirm('Đổi sang tài khoản khác trên máy này?')) return;
+  try{ localStorage.removeItem(LOGIN_EMAIL_KEY); }catch(e){}
+  location.reload();
+}
+
+function finishLogin(){
+  loadSample();
+  applyRole(true);
+  if(D.sup.length > 0 || D.kh.length > 0 || D.partners.length > 0) saveToStorage();
 }
 // User accounts — injected by ai.basso platform
 const USERS = [];
@@ -6247,16 +6306,13 @@ function autosave(){ saveToStorage(); }
 // Try auto-login from platform email injection
 (async function(){
   await fetchRemoteData();
-  const loggedIn = tryAutoLogin();
+  CFG_USERS = loadUsers();
+  const loggedIn = tryAutoLogin() || loginFromSavedEmail();
   if(!loggedIn){
-    const lock = el('auth-lock-screen');
-    if(lock) lock.style.display = 'flex';
+    showLoginPicker();
     return;
   }
-  loadSample();
-  applyRole(loggedIn);
-  // Push existing localStorage data to API on first load so mobile can read it
-  if(D.sup.length > 0 || D.kh.length > 0 || D.partners.length > 0) saveToStorage();
+  finishLogin();
 })();
 } // end if(!window.__mobile)
 </script>
