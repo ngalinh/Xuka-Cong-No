@@ -3482,7 +3482,14 @@ function autoLoginByEmail(email){
 }
 
 // Thử auto-login từ các nguồn platform phổ biến
-function tryAutoLogin(){
+async function tryAutoLogin(){
+  try{
+    const r = await fetch('/platform/api/auth/session', {credentials:'include'});
+    if(r.ok){
+      const d = await r.json();
+      if(d && d.username && autoLoginByEmail(d.username)) return true;
+    }
+  }catch(e){}
   const sources = [
     window.AI_BASSO_USER?.email,
     window.BASSO_USER?.email,
@@ -6316,7 +6323,7 @@ function autosave(){ saveToStorage(); }
 (async function(){
   await fetchRemoteData();
   CFG_USERS = loadUsers();
-  const loggedIn = tryAutoLogin() || loginFromSavedEmail();
+  const loggedIn = (await tryAutoLogin()) || loginFromSavedEmail();
   if(!loggedIn){
     showLoginPicker();
     return;
