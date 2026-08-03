@@ -10,6 +10,7 @@ on:
       - 'sw.js'
       - 'icon.svg'
       - 'api.js'
+      - 'scripts/backup-data.sh'
   workflow_dispatch:
 
 concurrency:
@@ -85,6 +86,16 @@ jobs:
 
           # Reload xeko-image (bot1_platform) so it picks up new index.html from disk
           $SSH "$SSH_USER@$SSH_HOST" "pm2 reload xeko-image 2>/dev/null && echo 'xeko-image reloaded OK' || echo '::warning::xeko-image reload failed'"
+
+          # Data backup: deploy the hourly snapshot script and (re)install its cron entry
+          rsync -vz --inplace --no-perms --no-owner --no-group \
+            -e "$SSH" "./scripts/backup-data.sh" "$SSH_USER@$SSH_HOST:$DEPLOY_PATH/backup-data.sh" \
+            || echo "::warning::Skipped backup-data.sh"
+          $SSH "$SSH_USER@$SSH_HOST" "
+            cd '$DEPLOY_PATH'
+            chmod +x backup-data.sh
+            (crontab -l 2>/dev/null | grep -v 'backup-data.sh'; echo \"0 * * * * $DEPLOY_PATH/backup-data.sh >> $DEPLOY_PATH/backup.log 2>&1\") | crontab -
+          " || echo "::warning::Failed to install backup cron — run scripts/backup-data.sh manually via cron"
 
           # Optional: reload existing pm2 app if configured
           if [ -n "${PM2_APP_NAME:-}" ]; then
