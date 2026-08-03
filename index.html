@@ -432,6 +432,7 @@ function postToAPI(data) {
   var payload = { xuka_cn_v1: data };
   try { var u = localStorage.getItem('xuka_users'); if (u) payload.xuka_users = JSON.parse(u); } catch(e){}
   try { var m = localStorage.getItem('xuka_mapping'); if (m) payload.xuka_mapping = JSON.parse(m); } catch(e){}
+  try { var r = localStorage.getItem('xuka_debt_reset'); if (r) payload.xuka_debt_reset = r; } catch(e){}
   fetch(API_URL, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -450,7 +451,15 @@ function fetchRemoteData() {
         try {
           // Restore main data
           var main = d.xuka_cn_v1 || d;
+          // Restore debt-reset marker (server-side, so it gates every device, not just this browser)
+          if (d.xuka_debt_reset) { try { localStorage.setItem('xuka_debt_reset', d.xuka_debt_reset); } catch(e){} }
           if (main && (main.sup || main.kh || main.partners)) {
+            // One-time reset: xoá sạch Công nợ KH / Sup-Checker / Tracking CK để nhập lại từ đầu.
+            if (localStorage.getItem('xuka_debt_reset') !== 'v1') {
+              try { localStorage.setItem('xuka_debt_reset', 'v1'); } catch(e){}
+              main = Object.assign({}, main, {sup: [], kh: [], ck: [], ctr: 1});
+              postToAPI(main);
+            }
             localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
             localStorage.setItem('xuka_ver', '8');
           }
