@@ -3487,7 +3487,7 @@ async function tryAutoLogin(){
     const r = await fetch('/platform/api/auth/session', {credentials:'include'});
     if(r.ok){
       const d = await r.json();
-      if(d && d.username && autoLoginByEmail(d.username)) return true;
+      if(d?.user?.username && autoLoginByEmail(d.user.username)) return true;
     }
   }catch(e){}
   const sources = [
