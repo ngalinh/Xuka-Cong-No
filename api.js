@@ -33,7 +33,12 @@ http.createServer((req, res) => {
       try {
         const d = JSON.parse(body);
         if (!d || typeof d !== 'object') throw new Error();
-        fs.writeFileSync(DATA_FILE, JSON.stringify(d), 'utf8');
+        // Keep last-known-good copy, then write atomically (tmp + rename) so a
+        // crash mid-write can't corrupt xuka_data.json.
+        if (fs.existsSync(DATA_FILE)) fs.copyFileSync(DATA_FILE, DATA_FILE + '.prev');
+        const tmpFile = DATA_FILE + '.tmp';
+        fs.writeFileSync(tmpFile, JSON.stringify(d), 'utf8');
+        fs.renameSync(tmpFile, DATA_FILE);
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end('{"ok":true}');
       } catch(e) { res.writeHead(400); res.end('{"error":"invalid"}'); }
