@@ -33,11 +33,19 @@ http.createServer((req, res) => {
       try {
         const d = JSON.parse(body);
         if (!d || typeof d !== 'object') throw new Error();
+        // Merge over existing top-level keys instead of blind overwrite: a client
+        // that hasn't synced xuka_users/xuka_mapping/xuka_debt_reset locally yet
+        // would otherwise silently wipe them (and resurrect old data) on save.
+        let existing = {};
+        if (fs.existsSync(DATA_FILE)) {
+          try { existing = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')) || {}; } catch(e) { existing = {}; }
+          fs.copyFileSync(DATA_FILE, DATA_FILE + '.prev');
+        }
+        const merged = Object.assign({}, existing, d);
         // Keep last-known-good copy, then write atomically (tmp + rename) so a
         // crash mid-write can't corrupt xuka_data.json.
-        if (fs.existsSync(DATA_FILE)) fs.copyFileSync(DATA_FILE, DATA_FILE + '.prev');
         const tmpFile = DATA_FILE + '.tmp';
-        fs.writeFileSync(tmpFile, JSON.stringify(d), 'utf8');
+        fs.writeFileSync(tmpFile, JSON.stringify(merged), 'utf8');
         fs.renameSync(tmpFile, DATA_FILE);
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end('{"ok":true}');
