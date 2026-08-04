@@ -2525,6 +2525,42 @@ async function init(){
       if(!ac.closest('.ac-wrap').contains(e.target)) ac.style.display='none';
     });
   });
+  startPolling();
+}
+
+/* ================================================
+   REAL-TIME SYNC (poll server định kỳ)
+   ================================================ */
+let _pollSig = null;
+let _pollTimer = null;
+async function pollRefresh(){
+  if(document.hidden) return;
+  const ae = document.activeElement;
+  if(ae && ['INPUT','TEXTAREA','SELECT'].includes(ae.tagName)) return; // đang gõ dở — không ghi đè
+  try{
+    const res = await fetch(API_URL, {cache:'no-store'});
+    if(!res.ok) return;
+    const d = await res.json();
+    if(!d || typeof d !== 'object') return;
+    const main = d.xuka_cn_v1 || d;
+    if(!main || !(main.sup || main.kh || main.partners)) return;
+    const sig = JSON.stringify(main);
+    if(sig === _pollSig) return;
+    _pollSig = sig;
+    D.sup = main.sup || [];
+    D.kh  = main.kh  || [];
+    D.ck  = main.ck  || [];
+    D.ctr = main.ctr || 1;
+    if(main.partners && main.partners.length) D.partners = main.partners;
+    if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
+    D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(main)); }catch(e){}
+    renderScreen(currentScreen);
+  }catch(e){}
+}
+function startPolling(){
+  if(_pollTimer) return;
+  _pollTimer = setInterval(pollRefresh, 8000);
 }
 
 init();
@@ -3605,6 +3641,41 @@ function finishLogin(){
   loadSample();
   applyRole(true);
   if(D.sup.length > 0 || D.kh.length > 0 || D.partners.length > 0) saveToStorage();
+  startPolling();
+}
+
+/* ================================================
+   REAL-TIME SYNC (poll server định kỳ)
+   ================================================ */
+let _pollSig = null;
+let _pollTimer = null;
+async function pollRefresh(){
+  if(document.hidden) return;
+  if(document.querySelector('.modbg.on')) return; // đang mở modal nhập liệu — không ghi đè
+  try{
+    const res = await fetch(API_URL, {cache:'no-store'});
+    if(!res.ok) return;
+    const d = await res.json();
+    if(!d || typeof d !== 'object') return;
+    const main = d.xuka_cn_v1 || d;
+    if(!main || !(main.sup || main.kh || main.partners)) return;
+    const sig = JSON.stringify(main);
+    if(sig === _pollSig) return; // không có gì thay đổi
+    _pollSig = sig;
+    D.sup = main.sup || [];
+    D.kh  = main.kh  || [];
+    D.ck  = main.ck  || [];
+    D.ctr = main.ctr || 1;
+    if(main.partners && main.partners.length) D.partners = main.partners;
+    if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
+    D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
+    try{ localStorage.setItem('xuka_cn_v1', JSON.stringify(main)); }catch(e){}
+    rd0(); rt1(); rt2(); rt4(); rt5a(); rt5b(); refreshDataLists();
+  }catch(e){}
+}
+function startPolling(){
+  if(_pollTimer) return;
+  _pollTimer = setInterval(pollRefresh, 8000);
 }
 // User accounts — injected by ai.basso platform
 const USERS = [];
