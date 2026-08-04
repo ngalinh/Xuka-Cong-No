@@ -2534,7 +2534,6 @@ async function init(){
 let _pollSig = null;
 let _pollTimer = null;
 async function pollRefresh(){
-  if(document.hidden) return;
   const ae = document.activeElement;
   if(ae && ['INPUT','TEXTAREA','SELECT'].includes(ae.tagName)) return; // đang gõ dở — không ghi đè
   try{
@@ -2560,6 +2559,7 @@ async function pollRefresh(){
 }
 function startPolling(){
   if(_pollTimer) return;
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) pollRefresh(); });
   _pollTimer = setInterval(pollRefresh, 8000);
 }
 
@@ -3650,7 +3650,6 @@ function finishLogin(){
 let _pollSig = null;
 let _pollTimer = null;
 async function pollRefresh(){
-  if(document.hidden) return;
   if(document.querySelector('.modbg.on')) return; // đang mở modal nhập liệu — không ghi đè
   try{
     const res = await fetch(API_URL, {cache:'no-store'});
@@ -3676,6 +3675,9 @@ async function pollRefresh(){
 function startPolling(){
   if(_pollTimer) return;
   _pollTimer = setInterval(pollRefresh, 8000);
+  // Tab bị trình duyệt "ghìm" timer khi chạy nền — làm mới ngay khi tab được xem lại,
+  // không chờ tick tiếp theo (có thể trễ tới cả phút do throttle).
+  document.addEventListener('visibilitychange', () => { if(!document.hidden) pollRefresh(); });
 }
 // User accounts — injected by ai.basso platform
 const USERS = [];
