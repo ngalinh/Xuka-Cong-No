@@ -186,7 +186,7 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 .b-part{background:rgba(159,229,216,0.45);color:#1f8a7a}
 .b-over{background:rgba(177,151,230,0.2);color:#8a6fc4}
 .b-cancel{background:rgba(120,120,180,0.12);color:#797f90}
-.b-new{background:rgba(120,120,180,0.12);color:#797f90}
+.b-new{background:rgba(59,130,246,0.16);color:#1d6fd6}
 .b-sup{background:rgba(125,142,240,0.15);color:#5b6bd6}
 .b-mh{background:rgba(177,151,230,0.2);color:#8a6fc4}
 .b-ckd{background:rgba(125,142,240,0.15);color:#5b6bd6}
@@ -1269,7 +1269,7 @@ const STATUS_COLOR = {
   'Done':           {bg:'rgba(53,196,122,0.16)',  fg:'#2a9d63'},
   'CK dư':          {bg:'rgba(177,151,230,0.2)',  fg:'#8a6fc4'},
   'Cancelled':      {bg:'rgba(120,120,180,0.12)', fg:'#797f90'},
-  'Mới nhập':       {bg:'rgba(120,120,180,0.12)', fg:'#797f90'},
+  'Mới nhập':       {bg:'rgba(59,130,246,0.16)',  fg:'#1d6fd6'},
   'Chờ khách CK':   {bg:'rgba(243,200,90,0.22)',  fg:'#9a6a12'},
   'Khách đã CK':    {bg:'rgba(125,142,240,0.15)', fg:'#5b6bd6'},
   'Chờ XN & Đã tham chiếu HT': {bg:'rgba(243,200,90,0.22)', fg:'#9a6a12'},
@@ -4305,6 +4305,7 @@ function rt2(){
         <div style="display:flex;gap:4px;align-items:center">
           ${dpBtn}
           ${canDpAdmin && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" title="Huỷ điều phối" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
+          ${canDpAdmin && ['Chờ khách CK','Cancelled'].includes(k.status) ? `<button class="pill pill-del" title="Xoá khoản công nợ" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
       <td style="white-space:nowrap;display:${isAdmin2?'none':''}">
@@ -6239,10 +6240,11 @@ el('m-add-kh-char').addEventListener('click',function(e){if(e.target===this)clos
 const origOpenM = openM;
 function openM(id){
   el(id).classList.add('on');
-  if(id==='msup'){ el('i_sd').value=today(); el('sup_char_info').style.display='none'; el('sup_new_fields').style.display='none'; }
-  if(id==='mkh'){  el('i_kd').value=today(); el('kh_char_info').style.display='none'; el('kh_new_fields').style.display='none'; }
+  if(id==='msup'){ el('i_sd').value=today(); el('i_snv').value=currentUser?.name||''; el('sup_char_info').style.display='none'; el('sup_new_fields').style.display='none'; }
+  if(id==='mkh'){  el('i_kd').value=today(); el('i_knv').value=currentUser?.name||''; el('kh_char_info').style.display='none'; el('kh_new_fields').style.display='none'; }
   if(id==='mck'){
     el('i_cd').value=today();
+    el('i_cnv').value=currentUser?.name||'';
     const sel=el('i_cid');
     sel.innerHTML='<option value="">-- Chọn ID CK --</option>';
     // All sup entries that have an idCK, sorted newest first
