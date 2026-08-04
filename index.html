@@ -3954,11 +3954,14 @@ function onSupNameInput(){
   const info = el('sup_char_info');
   const newFields = el('sup_new_fields');
   if(!val){ info.style.display='none'; newFields.style.display='none'; return; }
-  const pchar = D.partners.find(p=>
-    p.name.toLowerCase()===val.toLowerCase() ||
-    p.name.toLowerCase().includes(val.toLowerCase()) ||
-    val.toLowerCase().includes(p.name.toLowerCase())
-  );
+  const valLower = val.toLowerCase();
+  // Ưu tiên khớp đúng tên tuyệt đối trước — tránh trường hợp 1 tên trùng/gần giống
+  // đối tác khác đứng trước trong mảng bị fuzzy-match nhầm (vd 2 Sup cùng họ tên).
+  const pchar = D.partners.find(p=>p.name.toLowerCase()===valLower) ||
+    D.partners.find(p=>
+      p.name.toLowerCase().includes(valLower) ||
+      valLower.includes(p.name.toLowerCase())
+    );
   if(pchar){
     el('sc_tm').textContent = pchar.tm || '—';
     el('sc_am').textContent = pchar.am || '—';
@@ -3978,11 +3981,14 @@ function onKhNameInput(){
   const info = el('kh_char_info');
   const newFields = el('kh_new_fields');
   if(!val){ info.style.display='none'; newFields.style.display='none'; return; }
-  const char = D.khChars.find(c=>
-    c.name.toLowerCase()===val.toLowerCase() ||
-    c.name.toLowerCase().includes(val.toLowerCase()) ||
-    val.toLowerCase().includes(c.name.split('-')[0].trim().toLowerCase())
-  );
+  const valLower = val.toLowerCase();
+  // Ưu tiên khớp đúng "Tên - SĐT" tuyệt đối trước — tránh trường hợp 2 KH trùng tên
+  // khác SĐT/kênh, KH đứng trước trong mảng bị fuzzy-match nhầm vào KH khác.
+  const char = D.khChars.find(c=>c.name.toLowerCase()===valLower) ||
+    D.khChars.find(c=>
+      c.name.toLowerCase().includes(valLower) ||
+      valLower.includes(c.name.split('-')[0].trim().toLowerCase())
+    );
   if(char){
     el('kc_ch').textContent = char.ch || '—';
     el('kc_tm').textContent = char.tm || '—';
@@ -4018,11 +4024,14 @@ function getFixedSup(name){
 
 function getKhChar(name){
   if(!name) return null;
-  return D.khChars.find(c=>
-    c.name.toLowerCase()===name.toLowerCase() ||
-    c.name.toLowerCase().includes(name.split('-')[0].trim().toLowerCase()) ||
-    name.toLowerCase().includes(c.name.split('-')[0].trim().toLowerCase())
-  ) || null;
+  const nameLower = name.toLowerCase();
+  // Ưu tiên khớp đúng "Tên - SĐT" tuyệt đối trước — tránh trường hợp 2 KH trùng tên
+  // khác SĐT/kênh, KH đứng trước trong mảng bị fuzzy-match nhầm vào KH khác.
+  return D.khChars.find(c=>c.name.toLowerCase()===nameLower) ||
+    D.khChars.find(c=>
+      c.name.toLowerCase().includes(name.split('-')[0].trim().toLowerCase()) ||
+      nameLower.includes(c.name.split('-')[0].trim().toLowerCase())
+    ) || null;
 }
 
 function charPill(label, value, highlight=false){
