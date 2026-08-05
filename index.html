@@ -877,7 +877,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
       <div style="padding:16px;display:flex;flex-direction:column;gap:18px;padding-bottom:40px">
 
         <!-- Tổng quan standalone -->
-        <div style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.12);overflow:hidden;cursor:pointer" onclick="navTo('overview');closeDrawer()">
+        <div id="di-overview" style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.12);overflow:hidden;cursor:pointer" onclick="navTo('overview');closeDrawer()">
           <div style="display:flex;align-items:center;gap:13px;padding:15px 16px">
             <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(150deg,#8a9bf2,#b39bea);display:flex;align-items:center;justify-content:center;color:#fff;flex:none"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></div>
             <span style="flex:1;font-size:15px;font-weight:600">Tổng quan</span>
@@ -886,14 +886,14 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
         </div>
 
         <!-- Sup / Checker group -->
-        <div>
+        <div id="mnavgrp-sup">
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Sup / Checker</div>
           <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('supList');closeDrawer()">
+            <div id="di-supList" style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('supList');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(125,142,240,0.16);color:#5b6bd6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.2-4.5h15.6L21 9"/><path d="M4.5 9.5V19a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V9.5"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Danh sách Sup/Checker</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('supDebt');closeDrawer()">
+            <div id="di-supDebt" style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('supDebt');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(243,200,90,0.28);color:#9a6a12;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2.5"/><path d="M2.5 10h19"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Công nợ Sup/Checker</span>
             </div>
@@ -901,18 +901,18 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
         </div>
 
         <!-- Khách hàng group -->
-        <div>
+        <div id="mnavgrp-kh">
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Khách hàng</div>
           <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('khList');closeDrawer()">
+            <div id="di-khList" style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('khList');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(159,229,216,0.5);color:#1f8a7a;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.3 2.9-5.2 6.5-5.2s6.5 1.9 6.5 5.2"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Danh sách KH</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('khDebt');closeDrawer()">
+            <div id="di-khDebt" style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('khDebt');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(125,142,240,0.16);color:#5b6bd6;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11"/><path d="M14.8 9.3c-.6-1-1.8-1.4-3-1.3-1.3.1-2.3.9-2.3 2s.9 1.7 2.6 2 2.7.9 2.7 2.1-1.1 1.9-2.5 1.9c-1.3 0-2.5-.5-3-1.5"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Công nợ KH</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('tracking');closeDrawer()">
+            <div id="di-tracking" style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('tracking');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(177,151,230,0.22);color:#8a6fc4;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Tracking CK</span>
               <span style="padding:2px 9px;border-radius:999px;background:linear-gradient(135deg,#f06565,#e85b8a);color:#fff;font-size:11px;font-weight:700" id="tracking-badge"></span>
@@ -921,22 +921,22 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
         </div>
 
         <!-- Cài đặt group -->
-        <div>
+        <div id="mnavgrp-cfg">
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#9aa0b2;padding:0 6px 8px">Cài đặt</div>
           <div style="background:linear-gradient(160deg,rgba(255,255,255,0.66),rgba(255,255,255,0.40));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsUsers');closeDrawer()">
+            <div id="di-settingsUsers" style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsUsers');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.5 3.1-5.5 7-5.5s7 2 7 5.5"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Tài khoản</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsMapping');closeDrawer()">
+            <div id="di-settingsMapping" style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsMapping');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 13.5a3.5 3.5 0 0 0 5 .3l2.5-2.5a3.5 3.5 0 0 0-5-5l-1 .9"/><path d="M14.5 10.5a3.5 3.5 0 0 0-5-.3L7 12.7a3.5 3.5 0 0 0 5 5l1-.9"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Mapping KH ↔ Sup</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsUpload');closeDrawer()">
+            <div id="di-settingsUpload" style="display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid rgba(120,120,180,0.1);cursor:pointer" onclick="navTo('settingsUpload');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 17v-5"/><path d="m9.7 14 2.3-2.3L14.3 14"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Data Upload</span>
             </div>
-            <div style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('settingsChar');closeDrawer()">
+            <div id="di-settingsChar" style="display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer" onclick="navTo('settingsChar');closeDrawer()">
               <div style="width:32px;height:32px;border-radius:9px;background:rgba(120,120,180,0.14);color:#5b6072;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h13"/><circle cx="19" cy="12" r="1.6"/></svg></div>
               <span style="flex:1;font-size:14.5px;font-weight:500">Đặc điểm</span>
             </div>
@@ -2525,6 +2525,32 @@ function applyMRoleBadge(){
   badge.textContent = ROLE_LABELS[mRole] || mRole;
   badge.style.background = c.bg;
   badge.style.color = c.fg;
+  applyMobileRoleNav();
+}
+
+// Màn hình cho phép truy cập theo vai trò — khớp với ROLE_TABS bên desktop
+const MOBILE_ROLE_SCREENS = {
+  admin: ['overview','supList','supDebt','khList','khDebt','tracking','settingsUsers','settingsMapping','settingsUpload','settingsChar'],
+  mh:    ['overview','supList','supDebt','tracking'],
+  sale:  ['overview','khList','khDebt','tracking'],
+  kt:    ['overview','tracking'],
+};
+function applyMobileRoleNav(){
+  const allowed = MOBILE_ROLE_SCREENS[mRole] || MOBILE_ROLE_SCREENS.sale;
+  const allScreens = ['overview','supList','supDebt','khList','khDebt','tracking','settingsUsers','settingsMapping','settingsUpload','settingsChar'];
+  allScreens.forEach(function(scr){
+    const el = document.getElementById('di-'+scr);
+    if(el) el.style.display = allowed.includes(scr) ? '' : 'none';
+  });
+  [
+    ['mnavgrp-sup', ['supList','supDebt']],
+    ['mnavgrp-kh',  ['khList','khDebt','tracking']],
+    ['mnavgrp-cfg', ['settingsUsers','settingsMapping','settingsUpload','settingsChar']],
+  ].forEach(function(pair){
+    const grp = document.getElementById(pair[0]);
+    if(grp) grp.style.display = pair[1].some(function(s){ return allowed.includes(s); }) ? '' : 'none';
+  });
+  if(typeof currentScreen !== 'undefined' && !allowed.includes(currentScreen)) navTo('overview');
 }
 
 async function resolveMobileIdentity(){
