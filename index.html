@@ -484,7 +484,7 @@ function postToAPI(data) {
 function fetchRemoteData() {
   if (_remoteFetched) return Promise.resolve();
   _remoteFetched = true;
-  return fetch(API_URL, {signal: AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined})
+  return fetch(API_URL, {cache: 'no-store', signal: AbortSignal.timeout ? AbortSignal.timeout(4000) : undefined})
     .then(function(res) {
       if (!res.ok) return;
       return res.json().then(function(d) {
