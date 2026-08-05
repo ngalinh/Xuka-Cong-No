@@ -443,6 +443,18 @@ function canonicalSig(obj) {
   try { return JSON.stringify(sortKeys(obj)); } catch(e) { return null; }
 }
 
+// Chỉ so sánh đúng 4 field dữ liệu giao dịch cốt lõi (sup/kh/ck/ctr) — loại dữ liệu
+// thực sự cần bảo vệ khỏi bị ghi đè mất. Cố tình bỏ qua partners/khChars/charOptions:
+// các field này có kiểu xử lý "chỉ ghi đè nếu server có dữ liệu, không thì giữ nguyên
+// giá trị mặc định/đang có sẵn phía client" (xem loadFromStorage/loadData) — nên dữ
+// liệu thô lấy thẳng từ server và giá trị D phía client dễ lệch cấu trúc dù nội dung
+// giao dịch thực chất không đổi, khiến 2 chữ ký không bao giờ khớp lại được nữa (chặn
+// mọi lần lưu sau đó vĩnh viễn).
+function normalizeForSig(main) {
+  main = main || {};
+  return { sup: main.sup || [], kh: main.kh || [], ck: main.ck || [], ctr: main.ctr || 1 };
+}
+
 function postToAPI(data) {
   // Bundle all localStorage keys into one API call
   var payload = { xuka_cn_v1: data };
@@ -456,7 +468,7 @@ function postToAPI(data) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(payload)
     }).then(function(){
-      try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(data)); } catch(e){}
+      try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(normalizeForSig(data))); } catch(e){}
     }).catch(function(){});
   };
 
@@ -471,7 +483,7 @@ function postToAPI(data) {
     return res.ok ? res.json() : null;
   }).then(function(d){
     var serverMain = d && (d.xuka_cn_v1 || d);
-    var serverSig = serverMain ? canonicalSig(serverMain) : null;
+    var serverSig = serverMain ? canonicalSig(normalizeForSig(serverMain)) : null;
     if (serverSig && serverSig !== lastKnownSig) {
       alert('Dữ liệu vừa được cập nhật ở thiết bị khác. Trang sẽ tự tải lại để tránh ghi đè mất dữ liệu — bạn thao tác lại giúp mình sau khi tải xong nhé.');
       location.reload();
@@ -503,7 +515,7 @@ function fetchRemoteData() {
             }
             localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
             localStorage.setItem('xuka_ver', '8');
-            try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(main)); } catch(e){}
+            try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(normalizeForSig(main))); } catch(e){}
           }
           // Restore users
           if (d.xuka_users && Array.isArray(d.xuka_users) && d.xuka_users.length) {
@@ -2268,6 +2280,8 @@ function mDelCK(idx){
   const c=D.ck[idx];if(!c)return;
   if(!confirm('Xoá bill CK của '+c.kh+'?')) return;
   D.ck.splice(idx,1);
+  const khEntry=D.kh.find(k=>k.name===c.kh&&k.idCK===c.idCK);
+  if(khEntry&&khEntry.status==='Khách đã CK') khEntry.status='Chờ khách CK';
   saveData(); renderTracking();
 }
 function mDelPartner(idx){
@@ -2611,7 +2625,7 @@ async function pollRefresh(){
     if(!d || typeof d !== 'object') return;
     const main = d.xuka_cn_v1 || d;
     if(!main || !(main.sup || main.kh || main.partners)) return;
-    const sig = canonicalSig(main);
+    const sig = canonicalSig(normalizeForSig(main));
     if(sig === _pollSig) return;
     _pollSig = sig;
     D.sup = main.sup || [];
@@ -3729,7 +3743,7 @@ async function pollRefresh(){
     if(!d || typeof d !== 'object') return;
     const main = d.xuka_cn_v1 || d;
     if(!main || !(main.sup || main.kh || main.partners)) return;
-    const sig = canonicalSig(main);
+    const sig = canonicalSig(normalizeForSig(main));
     if(sig === _pollSig) return; // không có gì thay đổi
     _pollSig = sig;
     D.sup = main.sup || [];
@@ -5095,7 +5109,13 @@ function saveEditCK(){
 }
 function delCK(i){
   if(!confirm('Xoá bill CK này?')) return;
-  D.ck.splice(i,1); rt4(); rd0(); rt1(); autosave();
+  const c = D.ck[i];
+  D.ck.splice(i,1);
+  if(c){
+    const khEntry = D.kh.find(k=>k.name===c.kh && k.idCK===c.idCK);
+    if(khEntry && khEntry.status==='Khách đã CK') khEntry.status='Chờ khách CK';
+  }
+  rt4(); rd0(); rt1(); rt2(); autosave();
   toast('Đã xoá bill CK');
 }
 
