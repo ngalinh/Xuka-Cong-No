@@ -44,6 +44,11 @@ jobs:
           PORT="${SSH_PORT:-22}"
           SSH="ssh -i $HOME/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=accept-new"
 
+          # Ensure deploy files are owned by SSH_USER — the dashboard-bot
+          # platform sometimes (re)creates them as root, which blocks rsync
+          $SSH "$SSH_USER@$SSH_HOST" \
+            "sudo chown \"$SSH_USER:$SSH_USER\" \"$DEPLOY_PATH\"/{index.html,mobile.html,manifest.webmanifest,sw.js,icon.svg,api.js} 2>/dev/null || true"
+
           # Main app files
           for f in index.html mobile.html; do
             rsync -vz --inplace --no-perms --no-owner --no-group \
