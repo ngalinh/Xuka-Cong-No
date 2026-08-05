@@ -426,6 +426,22 @@ tr:hover td{background:rgba(255,255,255,0.4)}
 // ============================================================
 var API_URL = '/api/data';
 var _remoteFetched = false;
+var LAST_SERVER_SIG_KEY = 'xuka_last_server_sig';
+
+// Chữ ký ổn định bất kể thứ tự key trong object — dùng để so sánh 2 bản data
+// có thực sự khác nhau không, không bị dính lỗi do JSON.stringify nhạy thứ tự key.
+function canonicalSig(obj) {
+  function sortKeys(o) {
+    if (Array.isArray(o)) return o.map(sortKeys);
+    if (o && typeof o === 'object') {
+      var out = {};
+      Object.keys(o).sort().forEach(function(k){ out[k] = sortKeys(o[k]); });
+      return out;
+    }
+    return o;
+  }
+  try { return JSON.stringify(sortKeys(obj)); } catch(e) { return null; }
+}
 
 function postToAPI(data) {
   // Bundle all localStorage keys into one API call
@@ -433,11 +449,36 @@ function postToAPI(data) {
   try { var u = localStorage.getItem('xuka_users'); if (u) payload.xuka_users = JSON.parse(u); } catch(e){}
   try { var m = localStorage.getItem('xuka_mapping'); if (m) payload.xuka_mapping = JSON.parse(m); } catch(e){}
   try { var r = localStorage.getItem('xuka_debt_reset'); if (r) payload.xuka_debt_reset = r; } catch(e){}
-  fetch(API_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(payload)
-  }).catch(function(){});
+
+  var doPost = function(){
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload)
+    }).then(function(){
+      try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(data)); } catch(e){}
+    }).catch(function(){});
+  };
+
+  // Staleness guard: nếu server đã có thay đổi mới hơn lần đồng bộ gần nhất của máy
+  // này (do thiết bị/tab khác lưu), KHÔNG ghi đè — tránh 1 tab cũ xoá mất dữ liệu
+  // người khác vừa thêm/sửa. Chỉ kiểm tra khi đã từng biết trạng thái server trước đó.
+  var lastKnownSig = null;
+  try { lastKnownSig = localStorage.getItem(LAST_SERVER_SIG_KEY); } catch(e){}
+  if (!lastKnownSig) { doPost(); return; }
+
+  fetch(API_URL, {cache: 'no-store'}).then(function(res){
+    return res.ok ? res.json() : null;
+  }).then(function(d){
+    var serverMain = d && (d.xuka_cn_v1 || d);
+    var serverSig = serverMain ? canonicalSig(serverMain) : null;
+    if (serverSig && serverSig !== lastKnownSig) {
+      alert('Dữ liệu vừa được cập nhật ở thiết bị khác. Trang sẽ tự tải lại để tránh ghi đè mất dữ liệu — bạn thao tác lại giúp mình sau khi tải xong nhé.');
+      location.reload();
+      return;
+    }
+    return doPost();
+  }).catch(function(){ doPost(); });
 }
 
 function fetchRemoteData() {
@@ -462,6 +503,7 @@ function fetchRemoteData() {
             }
             localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
             localStorage.setItem('xuka_ver', '8');
+            try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(main)); } catch(e){}
           }
           // Restore users
           if (d.xuka_users && Array.isArray(d.xuka_users) && d.xuka_users.length) {
@@ -2543,7 +2585,7 @@ async function pollRefresh(){
     if(!d || typeof d !== 'object') return;
     const main = d.xuka_cn_v1 || d;
     if(!main || !(main.sup || main.kh || main.partners)) return;
-    const sig = JSON.stringify(main);
+    const sig = canonicalSig(main);
     if(sig === _pollSig) return;
     _pollSig = sig;
     D.sup = main.sup || [];
@@ -2553,7 +2595,10 @@ async function pollRefresh(){
     if(main.partners && main.partners.length) D.partners = main.partners;
     if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
-    try{ localStorage.setItem(LS_KEY, JSON.stringify(main)); }catch(e){}
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify(main));
+      localStorage.setItem(LAST_SERVER_SIG_KEY, sig);
+    }catch(e){}
     renderScreen(currentScreen);
   }catch(e){}
 }
@@ -3658,7 +3703,7 @@ async function pollRefresh(){
     if(!d || typeof d !== 'object') return;
     const main = d.xuka_cn_v1 || d;
     if(!main || !(main.sup || main.kh || main.partners)) return;
-    const sig = JSON.stringify(main);
+    const sig = canonicalSig(main);
     if(sig === _pollSig) return; // không có gì thay đổi
     _pollSig = sig;
     D.sup = main.sup || [];
@@ -3668,7 +3713,10 @@ async function pollRefresh(){
     if(main.partners && main.partners.length) D.partners = main.partners;
     if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
-    try{ localStorage.setItem('xuka_cn_v1', JSON.stringify(main)); }catch(e){}
+    try{
+      localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
+      localStorage.setItem(LAST_SERVER_SIG_KEY, sig);
+    }catch(e){}
     rd0(); rt1(); rt2(); rt4(); rt5a(); rt5b(); refreshDataLists();
   }catch(e){}
 }
