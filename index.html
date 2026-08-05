@@ -2530,7 +2530,7 @@ function applyMRoleBadge(){
 async function resolveMobileIdentity(){
   let email = '';
   try{
-    const r = await fetch('/platform/api/auth/session', {credentials:'include'});
+    const r = await fetch('/platform/api/auth/session', {credentials:'include', cache:'no-store'});
     if(r.ok){ const d = await r.json(); email = (d && d.user && d.user.username) || ''; }
   }catch(e){}
   if(!email){
@@ -3613,7 +3613,7 @@ function autoLoginByEmail(email){
 // Thử auto-login từ các nguồn platform phổ biến
 async function tryAutoLogin(){
   try{
-    const r = await fetch('/platform/api/auth/session', {credentials:'include'});
+    const r = await fetch('/platform/api/auth/session', {credentials:'include', cache:'no-store'});
     if(r.ok){
       const d = await r.json();
       if(d?.user?.username && autoLoginByEmail(d.user.username)) return true;
