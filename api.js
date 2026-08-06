@@ -2,7 +2,11 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const DATA_FILE = path.join(__dirname, 'xuka_data.json');
+// Data lives OUTSIDE the platform bot folder (which the platform wipes on
+// every reload). Override the location with XUKA_DATA_DIR if needed.
+const DATA_DIR = process.env.XUKA_DATA_DIR || '/home/vmadmin/xuka-data';
+try { fs.mkdirSync(DATA_DIR, { recursive: true }); } catch(e){}
+const DATA_FILE = path.join(DATA_DIR, 'xuka_data.json');
 const PORT = 3456;
 
 http.createServer((req, res) => {
@@ -54,4 +58,4 @@ http.createServer((req, res) => {
   } else {
     res.writeHead(405); res.end();
   }
-}).listen(PORT, '127.0.0.1', () => console.log('xuka-api listening on port ' + PORT));
+}).listen(PORT, '127.0.0.1', () => console.log('xuka-api listening on port ' + PORT + ', data at ' + DATA_FILE));
