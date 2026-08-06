@@ -1590,13 +1590,13 @@ function renderOverview(){
   const MONTHS=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
   const monthLabel=MONTHS[viewMonth-1]+' '+viewYear;
 
-  const khMonth=D.kh.filter(k=>{
-    if(!k.date) return false;
-    const [y,m]=k.date.split('-').map(Number);
-    return y===viewYear&&m===viewMonth&&k.status!=='Cancelled';
+  const ckMonth=D.ck.filter(c=>{
+    if(!c.date) return false;
+    const [y,m]=c.date.split('-').map(Number);
+    return y===viewYear&&m===viewMonth&&(c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi');
   });
-  const totalCK=khMonth.reduce((s,k)=>s+(Number(k.amount)||0),0);
-  const countGD=khMonth.length;
+  const totalCK=ckMonth.reduce((s,c)=>s+(Number(c.amount)||0),0);
+  const countGD=ckMonth.length;
   const supCDP=D.sup.filter(s=>s.status==='Chờ điều phối');
   const supCDPAmt=supCDP.reduce((s,x)=>s+(Number(x.amount)||0),0);
   const supDone=D.sup.filter(s=>s.status==='Done').length;
