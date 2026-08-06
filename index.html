@@ -969,10 +969,11 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
       <button class="hdr-menu-btn" onclick="closeKhForm()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
-      <div class="hdr-center"><div class="hdr-title">Nhập công nợ KH</div></div>
+      <div class="hdr-center"><div class="hdr-title" id="kh-form-title">Nhập công nợ KH</div></div>
       <div class="hdr-right"></div>
     </div>
     <div class="form-body">
+      <input type="hidden" id="kh-edit-id" value="">
       <div class="form-section">
         <label class="form-label">Ngày</label>
         <input type="date" class="form-input" id="kh-date">
@@ -992,9 +993,9 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
         </div>
       </div>
       <div class="form-section">
-        <label class="form-label">Tên KH</label>
+        <label class="form-label">Tên KH + SĐT</label>
         <div class="ac-wrap">
-          <input type="text" class="form-input" id="kh-name" placeholder="Nhập tên khách hàng..." oninput="khNameAC(this)">
+          <input type="text" class="form-input" id="kh-name" placeholder="VD: Nguyễn Văn A - 0901234567" oninput="khNameAC(this)">
           <div class="autocomplete-list" id="kh-name-ac" style="display:none"></div>
         </div>
       </div>
@@ -1677,7 +1678,10 @@ function khDebtListHtml(){
       if(existBill) billBtn=mActionPill(SVG_CLIP+'Xem bill','window.open(\\''+existBill.link+'\\',\\'_blank\\',\\'noopener\\')','#2a9d63','rgba(53,196,122,0.16)');
       else if(k.status==='Chờ khách CK'&&['admin','sale','mh'].includes(mRole)) billBtn=mActionPill(SVG_CLIP+'Nhập bill','openMBillKh(\\''+k._id+'\\')','#9a6a12','rgba(243,200,90,0.22)');
     }
-    let editBtn='',delBtn='';
+    let editBtn='',delBtn='',editInfoBtn='';
+    if(k.status==='Mới nhập'&&mRole==='admin'){
+      editInfoBtn=mActionPill('Sửa','openKhFormEdit(\\''+k._id+'\\')','#9a6a12','rgba(243,200,90,0.22)');
+    }
     if(k.status==='Mới nhập'&&canDpMoiNhap){
       editBtn=mActBtn(SVG_PENCIL_SM,'openMDispatch(\\''+k._id+'\\')');
       delBtn=mActBtn(SVG_TRASH_SM,'mDelKh(\\''+k._id+'\\')','#e05656','rgba(240,101,101,0.13)');
@@ -1704,7 +1708,7 @@ function khDebtListHtml(){
       +'<div style="text-align:right"><div style="font-size:17px;font-weight:700">'+fmtVND(k.amount)+'</div>'
       +(billBtn?'<div style="margin-top:4px">'+billBtn+'</div>':'')
       +'</div></div>'
-      +((editBtn||delBtn)?'<div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:1px solid rgba(120,120,180,0.08)">'+editBtn+delBtn+'</div>':'')
+      +((editInfoBtn||editBtn||delBtn)?'<div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:1px solid rgba(120,120,180,0.08)">'+editInfoBtn+editBtn+delBtn+'</div>':'')
       +'</div>';
   }).join(''):emptyState('Chưa có dữ liệu công nợ KH');
 }
@@ -1732,6 +1736,8 @@ function khSearchInput(el){khSearch=el.value;const c=document.getElementById('kh
 // SCREEN 3: KH FORM
 // ============================================================
 function openKhForm(){
+  document.getElementById('kh-edit-id').value='';
+  document.getElementById('kh-form-title').textContent='Nhập công nợ KH';
   document.getElementById('kh-date').value=today();
   const sel=document.getElementById('kh-nv');
   sel.innerHTML='<option value="">-- Chọn NV --</option>';
@@ -1746,6 +1752,17 @@ function openKhForm(){
     c.className='chip '+(c.dataset.val===selectedKenh?'active':'inactive');
   });
   document.getElementById('kh-form-overlay').classList.add('open');
+}
+function openKhFormEdit(khId){
+  const k=D.kh.find(x=>x._id===khId); if(!k) return;
+  openKhForm();
+  document.getElementById('kh-edit-id').value=khId;
+  document.getElementById('kh-form-title').textContent='Sửa công nợ KH';
+  document.getElementById('kh-date').value=k.date||today();
+  document.getElementById('kh-nv').value=k.nv||'';
+  document.getElementById('kh-name').value=k.name||'';
+  document.getElementById('kh-amount').value=k.amount||'';
+  document.getElementById('kh-note').value=k.note||'';
 }
 function closeKhForm(){document.getElementById('kh-form-overlay').classList.remove('open')}
 function selectKenh(btn){
@@ -1774,8 +1791,19 @@ function saveKhForm(){
   const amount=Number(document.getElementById('kh-amount').value)||0;
   const note=document.getElementById('kh-note').value.trim();
   if(!name){alert('Vui lòng nhập tên KH');return;}
-  const id=genId('KH');
-  D.kh.push({_id:id,date,nv,name,amount,origAmount:amount,status:'Mới nhập',idCK:'',stk:'',cdAm:0,note});
+  const nParts=name.match(/^(.+?)\\s*[-–—]\\s*(\\d{8,})$/);
+  if(!nParts || !nParts[1].trim() || /^\\d+$/.test(nParts[1].trim())){
+    alert('Vui lòng nhập đúng định dạng "Tên KH - SĐT" (VD: Nguyễn Văn A - 0901234567)');return;
+  }
+  const editId=document.getElementById('kh-edit-id').value;
+  if(editId){
+    const k=D.kh.find(x=>x._id===editId);
+    if(!k){ alert('Không tìm thấy khoản công nợ'); return; }
+    k.date=date; k.nv=nv; k.name=name; k.amount=amount; k.origAmount=amount; k.note=note;
+  } else {
+    const id=genId('KH');
+    D.kh.push({_id:id,date,nv,name,amount,origAmount:amount,status:'Mới nhập',idCK:'',stk:'',cdAm:0,note});
+  }
   saveData();
   closeKhForm();
   renderKhDebt();
@@ -5770,6 +5798,10 @@ function saveKH(){
   const n = el('i_kn').value.trim();
   const a = parseInt((el('i_ka').value||'').replace(/\D/g,''))||0;
   if(!n||!a){ toast('Nhập đủ tên KH và số tiền', true); return; }
+  const nParts = n.match(/^(.+?)\s*[-–—]\s*(\d{8,})$/);
+  if(!nParts || !nParts[1].trim() || /^\d+$/.test(nParts[1].trim())){
+    toast('Vui lòng nhập đúng định dạng "Tên KH - SĐT" (VD: Nguyễn Văn A - 0901234567)', true); return;
+  }
 
   // Auto-dispatch: nếu KH có mapping cố định → lấy STK từ D.partners
   const fixedSupName = getFixedSup(n);
