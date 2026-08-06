@@ -6003,7 +6003,7 @@ function supTimeLevel(tm){
 // bất kỳ nhãn mới nào sau này không chứa số) mặc định = 0 (không có ngưỡng, chấp nhận mọi KH).
 function supMinAmount(am){
   if(!am) return 0;
-  const m = am.match(/(\d+)\s*tri[eệ]u/i);
+  const m = am.match(/(\d+)\s*(?:tri[eệ]u|tr)\b/i);
   return m ? parseInt(m[1],10) * 1000000 : 0;
 }
 function khTimeLevel(tm){
