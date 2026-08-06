@@ -507,12 +507,10 @@ function fetchRemoteData() {
           // Restore debt-reset marker (server-side, so it gates every device, not just this browser)
           if (d.xuka_debt_reset) { try { localStorage.setItem('xuka_debt_reset', d.xuka_debt_reset); } catch(e){} }
           if (main && (main.sup || main.kh || main.partners)) {
-            // One-time reset: xoá sạch Công nợ KH / Sup-Checker / Tracking CK để nhập lại từ đầu.
-            if (localStorage.getItem('xuka_debt_reset') !== 'v1') {
-              try { localStorage.setItem('xuka_debt_reset', 'v1'); } catch(e){}
-              main = Object.assign({}, main, {sup: [], kh: [], ck: [], ctr: 1});
-              postToAPI(main);
-            }
+            // Pull-only: lúc mở app CHỈ ghi dữ liệu server xuống localStorage,
+            // KHÔNG bao giờ đẩy ngược lên (chỉ push khi user thao tác thêm/sửa/xoá
+            // qua nút — autosave/saveUsers/saveMapping). Bỏ khối debt_reset cũ vì
+            // nó vừa xoá sạch data vừa push lúc tải, làm mẫu/bản cũ đè bản chung.
             localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
             localStorage.setItem('xuka_ver', '8');
             try { localStorage.setItem(LAST_SERVER_SIG_KEY, canonicalSig(normalizeForSig(main))); } catch(e){}
