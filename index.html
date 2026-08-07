@@ -4530,7 +4530,6 @@ function rt2(){
         <div style="display:flex;gap:4px;align-items:center">
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
-          ${canDpMoiNhap && ['Chờ khách CK','Cancelled'].includes(k.status) ? `<button class="pill pill-del" title="Xoá khoản công nợ" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
     </tr>
