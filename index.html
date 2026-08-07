@@ -1717,7 +1717,7 @@ function renderKhDebt(){
   const FILTERS=['all','ShipUS','Linh Dương','Linh Thảo'];
   const FLABELS={'all':'Tất cả','ShipUS':'ShipUS','Linh Dương':'Linh Dương','Linh Thảo':'Linh Thảo'};
   const chips=FILTERS.map(f=>'<button class="chip '+(khFilter===f?'active':'inactive')+'" onclick="setKhFilter(\\''+f+'\\')">'+FLABELS[f]+'</button>').join('');
-  const STATUSES=['','Mới nhập','Chờ khách CK','Khách đã CK','Done','CK 1 phần','Cancelled'];
+  const STATUSES=['','Mới nhập','Chờ khách CK','Khách đã CK','Done','Cancelled'];
   const statusSel='<select onchange="setKhStatusFilter(this.value)" style="font-size:12.5px;font-weight:500;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:#797f90;outline:none;font-family:inherit">'
     +STATUSES.map(s=>'<option value="'+s+'"'+(khStatusFilter===s?' selected':'')+'>'+(s||'Tất cả tình trạng')+'</option>').join('')+'</select>';
 
@@ -2847,7 +2847,7 @@ init();
       <button id="f2ch-lt"  class="btn"    onclick="setKhChFilter2('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
       <button id="f2ch-co"  class="btn"    onclick="setKhChFilter2('ShipUS')"    style="font-size:13px;padding:5px 14px;border-radius:8px">ShipUS</button>
     </div>
-    <select id="f2s" onchange="rt2()"><option value="">Tất cả tình trạng</option><option>Mới nhập</option><option>Chờ khách CK</option><option>Khách đã CK</option><option>Done</option><option>CK 1 phần</option><option>Cancelled</option></select>
+    <select id="f2s" onchange="rt2()"><option value="">Tất cả tình trạng</option><option>Mới nhập</option><option>Chờ khách CK</option><option>Khách đã CK</option><option>Done</option><option>Cancelled</option></select>
     <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers"></div>
     <datalist id="dl-customers"></datalist>
     <input type="hidden" id="f2ch" value="">
