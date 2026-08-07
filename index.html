@@ -5435,9 +5435,7 @@ function renderCfgMapping(){
     });
   }
 
-  const MAPPING_SUPS = ['Nguyễn Công Phước MH','Phạm Nam','Trancy','Nguyễn Công Phước GC','Nguyễn Phong','Hieu Le','Hoàng Lâm'];
-  const supList = D.partners.filter(p=>MAPPING_SUPS.includes(p.name));
-  MAPPING_SUPS.forEach(name=>{ if(!supList.find(p=>p.name===name)) supList.push({name}); });
+  const supList = D.partners;
 
   if(!filtered.length){
     tb.innerHTML='<div class="empty" style="grid-column:1/-1">Không có kết quả</div>';
