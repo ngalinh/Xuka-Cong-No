@@ -1505,6 +1505,7 @@ let currentScreen='overview';
 let viewMonth=new Date().getMonth()+1;
 let viewYear=new Date().getFullYear();
 let khFilter='all';
+let khStatusFilter='';
 let supTab='all';
 let ckTab='cho';
 let searchVisible={khDebt:false,khList:false,ckTrack:false};
@@ -1661,6 +1662,7 @@ function changeMonth(delta){
 function khDebtListHtml(){
   let rows=[...D.kh].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
   if(khFilter!=='all') rows=rows.filter(k=>khChannel(k)===khFilter);
+  if(khStatusFilter) rows=rows.filter(k=>(k.status||'Mới nhập')===khStatusFilter);
   if(khSearch) rows=rows.filter(k=>(k.name||'').toLowerCase().includes(khSearch.toLowerCase()));
   const canDpMoiNhap=['admin','sale'].includes(mRole);
   const canDpChoKhach=['admin','mh'].includes(mRole);
@@ -1715,11 +1717,15 @@ function renderKhDebt(){
   const FILTERS=['all','ShipUS','Linh Dương','Linh Thảo'];
   const FLABELS={'all':'Tất cả','ShipUS':'ShipUS','Linh Dương':'Linh Dương','Linh Thảo':'Linh Thảo'};
   const chips=FILTERS.map(f=>'<button class="chip '+(khFilter===f?'active':'inactive')+'" onclick="setKhFilter(\\''+f+'\\')">'+FLABELS[f]+'</button>').join('');
+  const STATUSES=['','Mới nhập','Chờ khách CK','Khách đã CK','Done','CK 1 phần','Cancelled'];
+  const statusSel='<select onchange="setKhStatusFilter(this.value)" style="font-size:12.5px;font-weight:500;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:#797f90;outline:none;font-family:inherit">'
+    +STATUSES.map(s=>'<option value="'+s+'"'+(khStatusFilter===s?' selected':'')+'>'+(s||'Tất cả tình trạng')+'</option>').join('')+'</select>';
 
   el.innerHTML=buildHdr({left:'menu',title:'Công nợ KH',right:'search',rightAction:'toggleKhSearch()'})
-    +'<div class="scr-body"><div id="kh-search-bar" style="'+(searchVisible.khDebt?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm khách hàng..." value="'+khSearch+'" oninput="khSearchInput(this)"></div></div><div class="chips" style="margin-bottom:12px">'+chips+'</div><div id="kh-debt-list">'+khDebtListHtml()+'</div></div>'
+    +'<div class="scr-body"><div id="kh-search-bar" style="'+(searchVisible.khDebt?'':'display:none')+'"><div class="search-bar">'+icoSvg(ICO_SEARCH,16)+'<input type="text" placeholder="Tìm khách hàng..." value="'+khSearch+'" oninput="khSearchInput(this)"></div></div><div class="chips" style="margin-bottom:12px">'+chips+'</div><div class="chips" style="margin-bottom:12px">'+statusSel+'</div><div id="kh-debt-list">'+khDebtListHtml()+'</div></div>'
     +'<button class="fab" onclick="openKhForm()">'+icoSvg(ICO_PLUS,24)+'</button>';
 }
+function setKhStatusFilter(v){khStatusFilter=v;renderKhDebt()}
 
 function setKhFilter(f){khFilter=f;renderKhDebt()}
 function toggleKhSearch(){
@@ -4518,13 +4524,13 @@ function rt2(){
           ${canDpAdmin && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
           ${canDpAdmin && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
           ${canDpAdmin && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" title="Huỷ điều phối" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
-          ${canDpAdmin && ['Chờ khách CK','Cancelled'].includes(k.status) ? `<button class="pill pill-del" title="Xoá khoản công nợ" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
       <td style="white-space:nowrap;display:${isAdmin2?'none':''}">
         <div style="display:flex;gap:4px;align-items:center">
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
+          ${canDpMoiNhap && ['Chờ khách CK','Cancelled'].includes(k.status) ? `<button class="pill pill-del" title="Xoá khoản công nợ" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
     </tr>
