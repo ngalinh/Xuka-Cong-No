@@ -5157,8 +5157,9 @@ function checkAutoChot(){
   const now = new Date();
   const day = now.getDay(); // 1=Mon, 4=Thu
   const h   = now.getHours();
-  const m   = now.getMinutes();
-  if((day === 1 || day === 4) && h === 11 && m === 0){
+  // Chỉ cần từ 11:00 trở đi (không bắt buộc đúng phút 11:00) — tránh bị bỏ lỡ
+  // nếu lúc đó không có ai mở app hoặc tab bị trình duyệt throttle timer.
+  if((day === 1 || day === 4) && h >= 11){
     const key = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
     if(_lastChotPhien === key) return;
     _lastChotPhien = key;
@@ -5188,7 +5189,9 @@ function runChotPhien(auto=false){
 // Run on load and every minute
 recalcAllSupStatuses();
 setInterval(recalcAllSupStatuses, 60000);
+checkAutoChot();
 setInterval(checkAutoChot, 60000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) checkAutoChot(); });
 
 /* ================================================
    TAB 5: ĐẶC ĐIỂM
