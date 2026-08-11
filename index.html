@@ -1420,6 +1420,7 @@ function icoSvg(path,sz){
 }
 const SVG_PENCIL_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 const SVG_LINK_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+const SVG_RESTORE_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
 const SVG_TRASH_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
 const SVG_CLOCK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>';
 const SVG_COIN='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>';
@@ -1687,6 +1688,8 @@ function khDebtListHtml(){
     } else if(k.status==='Chờ khách CK'&&canDpChoKhach){
       editBtn=mActBtn(SVG_PENCIL_SM,'openMDispatch(\\''+k._id+'\\')');
       delBtn=mActBtn(SVG_TRASH_SM,'mUndoDispatch(\\''+k._id+'\\')','#e05656','rgba(240,101,101,0.13)');
+    } else if(k.status==='Cancelled'&&mRole==='admin'){
+      editBtn=mActBtn(SVG_RESTORE_SM,'mRestoreKh(\\''+k._id+'\\')');
     }
     return '<div class="list-row">'
       +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">'
@@ -2012,7 +2015,8 @@ function renderSupDebt(){
   const tabs=TABS.map(t=>'<button class="tab-btn '+(supTab===t.id?'active':'')+'" onclick="setSupTab(\\''+t.id+'\\')">'+t.label+'</button>').join('');
   const list=rows.length?rows.map(s=>{
     const pchar=D.partners.find(p=>p.name===s.name);
-    const canDoEdit=canEdit&&s.status==='Chờ điều phối';
+    const canDoEdit=canEdit&&['Chờ điều phối','Cancelled'].includes(s.status);
+    const canDoDel=canEdit&&s.status==='Chờ điều phối';
     return '<div class="list-row">'
       +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">'
       +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:14px;font-weight:600">'+(s.name||'—')+'</span>'+typePill(s.type)+'</div>'
@@ -2027,7 +2031,7 @@ function renderSupDebt(){
       +'</div>'
       +'<div style="text-align:right">'
       +'<div style="font-size:16px;font-weight:700">'+fmtVND(s.amount)+'</div>'
-      +(canDoEdit?'<div style="display:flex;gap:4px;justify-content:flex-end;margin-top:6px">'+mActBtn(SVG_PENCIL_SM,'openMEditSup(\\''+s.id+'\\')' )+mActBtn(SVG_TRASH_SM,'mDelSup(\\''+s.id+'\\')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
+      +((canDoEdit||canDoDel)?'<div style="display:flex;gap:4px;justify-content:flex-end;margin-top:6px">'+(canDoEdit?mActBtn(SVG_PENCIL_SM,'openMEditSup(\\''+s.id+'\\')'):'')+(canDoDel?mActBtn(SVG_TRASH_SM,'mDelSup(\\''+s.id+'\\')','#e05656','rgba(240,101,101,0.13)'):'')+'</div>':'')
       +'</div></div></div>';
   }).join(''):emptyState('Chưa có công nợ Sup/Checker');
   el.innerHTML=buildHdr({left:'menu',title:'Công nợ Sup/Checker'})
@@ -2283,6 +2287,12 @@ function mUndoDispatch(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
   if(!confirm('Huỷ điều phối KH '+k.name+'?')) return;
   k.idCK='';k.stk='';k.status='Mới nhập';k.cdAm=0;
+  saveData(); renderKhDebt();
+}
+function mRestoreKh(id){
+  const k=D.kh.find(x=>x._id===id);if(!k)return;
+  if(!confirm('Khôi phục khoản công nợ này về "Mới nhập"?')) return;
+  k.status='Mới nhập';k.idCK='';k.stk='';k.cdAm=0;
   saveData(); renderKhDebt();
 }
 function mDelCK(idx){
@@ -4416,7 +4426,7 @@ function rt1(){
     const pcharHtml = pchar
       ? `<div style="font-size:12px;line-height:1.9"><div style="color:var(--txt2);white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg> ${pchar.tm}</div><div style="font-weight:600;color:var(--pur3);white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> ${pchar.am}</div></div>`
       : '<span style="font-size:11px;color:var(--txt3)">—</span>';
-    const canDoEdit = canEdit && s.status === 'Chờ điều phối';
+    const canDoEdit = canEdit && ['Chờ điều phối','Cancelled'].includes(s.status);
     const dispatchedTotal = s.idCK ? D.kh.filter(k=>k.idCK===s.idCK).reduce((a,k)=>a+(k.cdAm||0),0) : 0;
     return `<tr>
       <td class="nowrap">${s.date}</td>
@@ -4524,6 +4534,7 @@ function rt2(){
           ${canDpAdmin && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
           ${canDpAdmin && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
           ${canDpAdmin && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" title="Huỷ điều phối" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
+          ${canDpAdmin && k.status === 'Cancelled' ? `<button class="pill pill-edit" title="Khôi phục" onclick="restoreKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>` : ''}
         </div>
       </td>
       <td style="white-space:nowrap;display:${isAdmin2?'none':''}">
@@ -6424,6 +6435,14 @@ function delSup(id){
   D.sup = D.sup.filter(s=>s.id!==id);
   rt1(); rd0(); autosave();
   toast('Đã xoá khoản công nợ Sup/Checker');
+}
+
+function restoreKH(id){
+  const k = D.kh.find(x=>x._id===id); if(!k) return;
+  if(!confirm('Khôi phục khoản công nợ này về "Mới nhập"?')) return;
+  k.status='Mới nhập'; k.idCK=''; k.stk=''; k.cdAm=0;
+  rt2(); rd0(); autosave();
+  toast('✅ Đã khôi phục về Mới nhập');
 }
 
 function showDetSup(id){
