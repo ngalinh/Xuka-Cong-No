@@ -2015,7 +2015,7 @@ function renderSupDebt(){
   const tabs=TABS.map(t=>'<button class="tab-btn '+(supTab===t.id?'active':'')+'" onclick="setSupTab(\\''+t.id+'\\')">'+t.label+'</button>').join('');
   const list=rows.length?rows.map(s=>{
     const pchar=D.partners.find(p=>p.name===s.name);
-    const canDoEdit=canEdit&&['Chờ điều phối','Cancelled'].includes(s.status);
+    const canDoEdit=(canEdit&&s.status==='Chờ điều phối')||(mRole==='admin'&&s.status==='Cancelled');
     const canDoDel=canEdit&&s.status==='Chờ điều phối';
     return '<div class="list-row">'
       +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">'
@@ -2143,12 +2143,20 @@ function renderSettingsUsers(){
       +(canAdmin?'<div style="display:flex;gap:3px">'+mActBtn(SVG_PENCIL_SM,'openMUserForm('+i+')')+mActBtn(SVG_TRASH_SM,'mDelUser('+i+')','#e05656','rgba(240,101,101,0.13)')+'</div>':'')
       +'</div>';
   }).join('');
+  const chotPhienSection = canAdmin
+    ? '<div style="margin-top:18px;background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);padding:16px">'
+      +'<div style="font-size:13.5px;font-weight:700;margin-bottom:6px">⏰ Chốt phiên</div>'
+      +'<div style="font-size:11.5px;color:#797f90;margin-bottom:12px;line-height:1.6">Huỷ (Cancelled) các khoản Sup/Checker "Chờ điều phối"/"Đã điều phối" và khoản KH "Mới nhập"/"Chờ khách CK" chưa hoàn tất trước 11:00 hôm nay.</div>'
+      +'<button onclick="mManualChotPhien()" style="width:100%;padding:11px;border-radius:14px;border:none;background:linear-gradient(135deg,#8a9bf2,#b39bea);color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit">Chốt phiên ngay</button>'
+      +'</div>'
+    : '';
   el.innerHTML=buildHdr({left:'menu',title:'Tài khoản'})
     +'<div class="scr-body">'
     +'<div style="display:flex;justify-content:flex-end;margin-bottom:14px">'
     +(canAdmin?'<button onclick="openMUserForm(-1)" style="padding:8px 16px;border-radius:999px;border:none;background:rgba(125,142,240,0.15);color:#5b6bd6;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">+ Thêm</button>':'')
     +'</div>'
     +'<div style="background:linear-gradient(160deg,rgba(255,255,255,0.70),rgba(255,255,255,0.44));border:1px solid rgba(255,255,255,0.70);border-radius:20px;box-shadow:0 8px 22px rgba(120,120,180,0.10);overflow:hidden">'+(userRows||'<div style="color:#9aa0b2;font-size:13px;padding:15px">Chưa có tài khoản</div>')+'</div>'
+    +chotPhienSection
     +'</div>';
 }
 
@@ -2319,6 +2327,24 @@ function mDelUser(idx){
   if(!confirm('Xoá tài khoản này?')) return;
   CFG_USERS.splice(idx,1);
   saveUsers(); renderSettingsUsers();
+}
+function mManualChotPhien(){
+  if(!confirm('Chốt phiên: huỷ tất cả khoản "Chờ điều phối"/"Đã điều phối" (Sup/Checker) và "Mới nhập"/"Chờ khách CK" (KH) chưa hoàn tất trước 11:00 hôm nay?')) return;
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0, 0, 0).getTime();
+  let supCount=0, khCount=0;
+  D.sup.forEach(s=>{
+    if(['Chờ điều phối','Đã điều phối'].includes(s.status) && (!s.ctime || s.ctime < cutoff)){
+      s.status='Cancelled'; supCount++;
+    }
+  });
+  D.kh.forEach(k=>{
+    if(!['Done','Cancelled','Khách đã CK'].includes(k.status) && (!k.ctime || k.ctime < cutoff)){
+      k.status='Cancelled'; khCount++;
+    }
+  });
+  saveData();
+  alert('Đã huỷ '+supCount+' khoản Sup/Checker và '+khCount+' khoản KH chưa hoàn thành');
 }
 function mDelMapping(kh){
   if(!confirm('Xoá mapping '+kh+'?')) return;
@@ -2962,6 +2988,11 @@ init();
     <div class="tw"><table><thead><tr>
       <th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th>
     </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
+  </div>
+  <div class="cfg-section">
+    <div class="cfg-title" style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg>Chốt phiên</div>
+    <div class="cfg-desc">Huỷ (Cancelled) các khoản Sup/Checker "Chờ điều phối"/"Đã điều phối" và khoản KH "Mới nhập"/"Chờ khách CK" chưa hoàn tất trước 11:00 hôm nay. Bấm thủ công khi cần chốt phiên — không còn tự động chạy.</div>
+    <button class="btn btn-p" onclick="manualChotPhien()">⏰ Chốt phiên ngay</button>
   </div>
 </div>
 
@@ -4428,7 +4459,7 @@ function rt1(){
     const pcharHtml = pchar
       ? `<div style="font-size:12px;line-height:1.9"><div style="color:var(--txt2);white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg> ${pchar.tm}</div><div style="font-weight:600;color:var(--pur3);white-space:nowrap"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> ${pchar.am}</div></div>`
       : '<span style="font-size:11px;color:var(--txt3)">—</span>';
-    const canDoEdit = canEdit && ['Chờ điều phối','Cancelled'].includes(s.status);
+    const canDoEdit = (canEdit && s.status === 'Chờ điều phối') || (currentRole === 'admin' && s.status === 'Cancelled');
     const dispatchedTotal = s.idCK ? D.kh.filter(k=>k.idCK===s.idCK).reduce((a,k)=>a+(k.cdAm||0),0) : 0;
     return `<tr>
       <td class="nowrap">${s.date}</td>
@@ -5161,24 +5192,11 @@ function recalcAllSupStatuses(){
 }
 
 /* ================================================
-   AUTO CHỐT PHIÊN — Thứ 2 & Thứ 5 lúc 11:00 sáng
+   CHỐT PHIÊN — chỉ chạy thủ công (Cài đặt → Tài khoản), admin bấm
    ================================================ */
-let _lastChotPhien = localStorage.getItem('lastChotPhien') || '';
-
-function checkAutoChot(){
-  if(!currentUser) return; // only when logged in
-  const now = new Date();
-  const day = now.getDay(); // 1=Mon, 4=Thu
-  const h   = now.getHours();
-  // Chỉ cần từ 11:00 trở đi (không bắt buộc đúng phút 11:00) — tránh bị bỏ lỡ
-  // nếu lúc đó không có ai mở app hoặc tab bị trình duyệt throttle timer.
-  if((day === 1 || day === 4) && h >= 11){
-    const key = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
-    if(_lastChotPhien === key) return;
-    _lastChotPhien = key;
-    localStorage.setItem('lastChotPhien', key);
-    runChotPhien(true);
-  }
+function manualChotPhien(){
+  if(!confirm('Chốt phiên: huỷ tất cả khoản "Chờ điều phối"/"Đã điều phối" (Sup/Checker) và "Mới nhập"/"Chờ khách CK" (KH) chưa hoàn tất trước 11:00 hôm nay?')) return;
+  runChotPhien(false);
 }
 
 function runChotPhien(auto=false){
@@ -5206,9 +5224,6 @@ function runChotPhien(auto=false){
 // Run on load and every minute
 recalcAllSupStatuses();
 setInterval(recalcAllSupStatuses, 60000);
-checkAutoChot();
-setInterval(checkAutoChot, 60000);
-document.addEventListener('visibilitychange', () => { if(!document.hidden) checkAutoChot(); });
 
 /* ================================================
    TAB 5: ĐẶC ĐIỂM
