@@ -2744,6 +2744,7 @@ init();
       </select>
     </div>
     <div id="locked-ind" class="locked-badge" style="display:none">🔒 Một số tab bị khóa</div>
+<button class="btn" id="btn-chot" onclick="manualChotPhien()" style="font-size:13px;display:none;background:var(--bg2);border:1px solid var(--brd2);color:var(--txt);font-weight:600"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg>Chốt phiên ngay</button>
 <button class="btn" id="btn-suggest" onclick="openSuggest()" style="font-size:13px;display:none;background:linear-gradient(135deg,#8a9bf2,#b39bea);border:none;color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(150,140,230,0.4)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.7 4.6L18.3 9.3l-4.6 1.7L12 15.6l-1.7-4.6L5.7 9.3l4.6-1.7z"/><path d="M19 13.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>Match CK</button>
   </div>
 </div>
@@ -2988,11 +2989,6 @@ init();
     <div class="tw"><table><thead><tr>
       <th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th></th>
     </tr></thead><tbody id="tb-cfg-users"></tbody></table></div>
-  </div>
-  <div class="cfg-section">
-    <div class="cfg-title" style="display:flex;align-items:center;gap:10px"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="3" width="8" height="4" rx="1"/><path d="M8 5H6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2"/><path d="m9 13 2 2 4-4"/></svg>Chốt phiên</div>
-    <div class="cfg-desc">Huỷ (Cancelled) các khoản Sup/Checker "Chờ điều phối"/"Đã điều phối" và khoản KH "Mới nhập"/"Chờ khách CK" chưa hoàn tất trước 11:00 hôm nay. Bấm thủ công khi cần chốt phiên — không còn tự động chạy.</div>
-    <button class="btn btn-p" onclick="manualChotPhien()">⏰ Chốt phiên ngay</button>
   </div>
 </div>
 
