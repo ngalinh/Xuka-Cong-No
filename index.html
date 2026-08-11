@@ -2292,7 +2292,7 @@ function mUndoDispatch(id){
 function mRestoreKh(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
   if(!confirm('Khôi phục khoản công nợ này về "Mới nhập"?')) return;
-  k.status='Mới nhập';k.idCK='';k.stk='';k.cdAm=0;
+  k.status='Mới nhập';k.idCK='';k.stk='';k.cdAm=0;k.ctime=Date.now();
   saveData(); renderKhDebt();
 }
 function mDelCK(idx){
@@ -2355,8 +2355,10 @@ function openMEditSup(id){
 function closeMEditSup(){document.getElementById('m-edit-sup-overlay').classList.remove('open')}
 function saveMEditSup(){
   const s=D.sup.find(x=>x.id===_mEditSupId);if(!s)return;
+  const wasCancelled=s.status==='Cancelled';
   s.stk=document.getElementById('m-es-stk').value.trim();
   s.status=document.getElementById('m-es-status').value;
+  if(wasCancelled && s.status!=='Cancelled') s.ctime=Date.now();
   saveData();closeMEditSup();renderSupDebt();
 }
 
@@ -6408,6 +6410,7 @@ function editStk(supId){
 function saveEditStk(supId){
   const s = D.sup.find(x=>x.id===supId);
   if(!s) return;
+  const wasCancelled = s.status === 'Cancelled';
   s.date   = el('es_date').value;
   s.nv     = el('es_nv').value.trim();
   s.type   = el('es_type').value;
@@ -6417,6 +6420,9 @@ function saveEditStk(supId){
   s.status = el('es_status').value;
   s.idCK   = el('es_idck').value.trim();
   s.note   = el('es_note').value.trim();
+  // Khôi phục từ Cancelled -> làm mới ctime để không bị chốt phiên hôm nay
+  // (chạy lại ở trình duyệt khác chưa dedupe) huỷ nhầm lần nữa.
+  if(wasCancelled && s.status !== 'Cancelled') s.ctime = Date.now();
   // Update linked KH STK if changed
   D.kh.filter(k=>k.idCK===s.idCK).forEach(k=>{ k.stk=s.stk; });
   document.getElementById('m-edit-stk').remove();
@@ -6440,7 +6446,7 @@ function delSup(id){
 function restoreKH(id){
   const k = D.kh.find(x=>x._id===id); if(!k) return;
   if(!confirm('Khôi phục khoản công nợ này về "Mới nhập"?')) return;
-  k.status='Mới nhập'; k.idCK=''; k.stk=''; k.cdAm=0;
+  k.status='Mới nhập'; k.idCK=''; k.stk=''; k.cdAm=0; k.ctime=Date.now();
   rt2(); rd0(); autosave();
   toast('✅ Đã khôi phục về Mới nhập');
 }
