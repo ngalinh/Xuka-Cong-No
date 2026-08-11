@@ -1786,7 +1786,7 @@ function saveKhForm(){
     alert('Vui lòng nhập đúng định dạng "Tên KH - SĐT" (VD: Nguyễn Văn A - 0901234567)');return;
   }
   const id=genId('KH');
-  D.kh.push({_id:id,date,nv,name,amount,origAmount:amount,status:'Mới nhập',idCK:'',stk:'',cdAm:0,note});
+  D.kh.push({_id:id,date,nv,name,amount,origAmount:amount,status:'Mới nhập',idCK:'',stk:'',cdAm:0,note,ctime:Date.now()});
   saveData();
   closeKhForm();
   renderKhDebt();
@@ -2073,7 +2073,7 @@ function saveSupForm(){
   const note=document.getElementById('sup-note').value.trim();
   if(!name){alert('Vui lòng nhập tên Sup/Checker');return;}
   const id=genId('SP');
-  D.sup.push({id,date,nv,type,name,amount,stk:'',status:'Chờ điều phối',idCK:'',note});
+  D.sup.push({id,date,nv,type,name,amount,stk:'',status:'Chờ điều phối',idCK:'',note,ctime:Date.now()});
   saveData();
   closeSupForm();
   renderSupDebt();
@@ -2379,7 +2379,7 @@ function saveMDispatch(){
   const partner=D.partners.find(p=>p.name===partnerName);
   k.idCK=idCK;k.stk=partner?partner.stk:'';k.cdAm=amount;k.status='Chờ khách CK';
   if(partner&&!D.sup.find(s=>s.idCK===idCK)){
-    D.sup.push({id:idCK,date:today(),nv:'',type:partner.type,name:partner.name,amount,stk:partner.stk,status:'Đã điều phối',idCK,note:''});
+    D.sup.push({id:idCK,date:today(),nv:'',type:partner.type,name:partner.name,amount,stk:partner.stk,status:'Đã điều phối',idCK,note:'',ctime:Date.now()});
   }
   saveData();closeMDispatch();renderKhDebt();
 }
@@ -5170,14 +5170,18 @@ function checkAutoChot(){
 
 function runChotPhien(auto=false){
   const label = auto ? 'Tự động chốt phiên 11:00' : 'Chốt phiên thủ công';
+  // Chỉ huỷ các khoản đã tồn tại TRƯỚC mốc 11:00 hôm nay — khoản nhập sau 11:00
+  // thuộc phiên kế tiếp, không bị huỷ dù chốt phiên chạy trễ (VD: tab mở lúc 14h).
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0, 0, 0).getTime();
   let supCount=0, khCount=0;
   D.sup.forEach(s=>{
-    if(!['Done','Cancelled','CK dư'].includes(s.status)){
+    if(!['Done','Cancelled','CK dư'].includes(s.status) && (!s.ctime || s.ctime < cutoff)){
       s.status='Cancelled'; supCount++;
     }
   });
   D.kh.forEach(k=>{
-    if(!['Done','Cancelled','Khách đã CK'].includes(k.status)){
+    if(!['Done','Cancelled','Khách đã CK'].includes(k.status) && (!k.ctime || k.ctime < cutoff)){
       k.status='Cancelled'; khCount++;
     }
   });
@@ -5737,7 +5741,7 @@ function saveSup(){
     id, date:el('i_sd').value, nv:el('i_snv').value,
     type:stype, name:n, amount:a,
     stk:el('i_ss').value, note:el('i_snote').value,
-    status:'Chờ điều phối', idCK: newIdCK
+    status:'Chờ điều phối', idCK: newIdCK, ctime: Date.now()
   });
   // Save to partners if new
   if(!D.partners.find(p=>p.name===n)){
@@ -5798,7 +5802,7 @@ function saveKH(){
     date:el('i_kd').value, nv:el('i_knv').value,
     name:n, amount:a, origAmount:a,
     note:el('i_knote').value, status:'Mới nhập',
-    idCK:'', stk:'', cdAm:0
+    idCK:'', stk:'', cdAm:0, ctime: Date.now()
   };
 
   if(fixedSupName){
