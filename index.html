@@ -5189,7 +5189,7 @@ function runChotPhien(auto=false){
   const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0, 0, 0).getTime();
   let supCount=0, khCount=0;
   D.sup.forEach(s=>{
-    if(!['Done','Cancelled','CK dư'].includes(s.status) && (!s.ctime || s.ctime < cutoff)){
+    if(['Chờ điều phối','Đã điều phối'].includes(s.status) && (!s.ctime || s.ctime < cutoff)){
       s.status='Cancelled'; supCount++;
     }
   });
