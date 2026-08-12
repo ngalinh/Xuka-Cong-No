@@ -6190,9 +6190,15 @@ function selectKHs(khPool, supAmount){
 
 function buildSuggestions(){
   const unassignedKH = D.kh.filter(k => !k.idCK && k.status === 'Mới nhập' && !getFixedSup(k.name)).map(k=>({...k}));
-  // Chỉ lấy Sup/Checker "Chờ điều phối" — khoản đã CK 1 phần/Done/CK dư/Cancelled đều
-  // thuộc phiên trước đã xử lý (dù còn thiếu tiền), không đưa vào gợi ý match của phiên mới.
-  const pendingSup   = D.sup.filter(s => s.status === 'Chờ điều phối');
+  // Lấy Sup/Checker "Chờ điều phối" (chưa ghép gì), hoặc "Đã điều phối" nhưng tổng đã
+  // điều phối cho KH vẫn chưa đạt công nợ gốc (còn dư sức chứa, ghép thêm được trong
+  // cùng phiên). Done/CK 1 phần/CK dư/Cancelled thuộc phiên trước đã xử lý, không lấy.
+  const dispatchedTotalOf = s => s.idCK ? D.kh.filter(k=>k.idCK===s.idCK).reduce((a,k)=>a+(k.cdAm||0),0) : 0;
+  const pendingSup   = D.sup.filter(s=>{
+    if(s.status === 'Chờ điều phối') return true;
+    if(s.status === 'Đã điều phối') return dispatchedTotalOf(s) < s.amount;
+    return false;
+  });
   if(!pendingSup.length) return [];
 
   const khEnriched = unassignedKH.map(k=>{
@@ -6201,7 +6207,9 @@ function buildSuggestions(){
   });
   const supEnriched = pendingSup.map(s=>{
     const c = D.partners.find(p=>p.name===s.name);
-    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: s.amount, _minAmount: supMinAmount(c?c.am:'')};
+    const dispatchedTotal = dispatchedTotalOf(s);
+    const effectiveAmount = Math.max(s.amount - dispatchedTotal, 0);
+    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: effectiveAmount, _minAmount: supMinAmount(c?c.am:'')};
   });
 
   // Sort sup by urgency (level 1 first)
@@ -6229,7 +6237,7 @@ function buildSuggestions(){
         sup, khs: [], total: 0, remaining: targetAmount,
         supLevel: sup._level, khMaxLevel: 0, tf: 0, as: 0, score: 0,
         accepted: null,
-        note: (sup.status === 'CK 1 phần' ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Còn thiếu: ${fmt(targetAmount)} (đã CK ${fmt(sup.amount - targetAmount)}). ` : '')
+        note: (sup.status === 'Đã điều phối' ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Còn thiếu: ${fmt(targetAmount)} (đã điều phối ${fmt(sup.amount - targetAmount)}). ` : '')
           + (minAmount > 0 ? `⚠ Sup/Checker y/c tối thiểu ${fmt(minAmount)}/lần CK, không có KH nào đủ điều kiện.` : '⚠ Chưa có KH nào phù hợp để ghép.')
       });
       continue;
@@ -6241,7 +6249,7 @@ function buildSuggestions(){
         sup, khs: [], total: 0, remaining: targetAmount,
         supLevel: sup._level, khMaxLevel: 0, tf: 0, as: 0, score: 0,
         accepted: null,
-        note: (sup.status === 'CK 1 phần' ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Còn thiếu: ${fmt(targetAmount)}. ` : '') + '⚠ Không có KH nào đủ điều kiện ghép.'
+        note: (sup.status === 'Đã điều phối' ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Còn thiếu: ${fmt(targetAmount)}. ` : '') + '⚠ Không có KH nào đủ điều kiện ghép.'
       });
       continue;
     }
@@ -6254,8 +6262,8 @@ function buildSuggestions(){
     const as = pct >= 0.99 ? 3 : pct >= 0.85 ? 2 : pct >= 0.6 ? 1 : 0;
 
     let note = '';
-    if(sup.status === 'CK 1 phần'){
-      note = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Công nợ còn thiếu: ${fmt(targetAmount)} (đã CK ${fmt(sup.amount - targetAmount)}). `;
+    if(sup.status === 'Đã điều phối'){
+      note = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> Công nợ còn thiếu: ${fmt(targetAmount)} (đã điều phối ${fmt(sup.amount - targetAmount)}). `;
     }
     if(worstKhLevel > sup._level){
       note += `⚠ KH bank ${['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]} nhưng Sup/Checker y/c ${['','trong ngày','2-3 ngày','không giục'][sup._level]} — cascade do hết KH phù hợp.`;
@@ -6365,7 +6373,7 @@ function renderSuggest(){
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <span style="font-size:15px;font-weight:700">${sug.sup.name}</span>
             <span class="badge ${sug.sup.type==='Sup'?'b-sup':'b-mh'}">${sug.sup.type}</span>
-            ${sug.sup.status==='CK 1 phần'?'<span class="badge b-part">CK 1 phần</span>':''}
+            ${sug.sup.status==='Đã điều phối'?'<span class="badge b-part">Còn dư sức chứa</span>':''}
             <span style="padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;${lvStyle(sug.supLevel)}">Level ${sug.supLevel}</span>
           </div>
           <div style="font-size:12px;color:#797f90;margin-top:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg> ${supChar?supChar.tm:'—'} · <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg> ${supChar?supChar.am:'—'}</div>
