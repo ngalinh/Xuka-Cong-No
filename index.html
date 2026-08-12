@@ -5329,10 +5329,33 @@ function saveEditKHStk(){
   if(!supName){ toast('Chọn Sup/Checker', true); return; }
   const partner = D.partners.find(p=>p.name===supName);
   const newAmt = parseInt(el('eks-amount').value) || k.cdAm || k.amount;
+
+  const oldSup = D.sup.find(s=>s.idCK===k.idCK);
+
+  // Đổi Sup/Checker → phải cấp lại ID CK theo công nợ hiện có của đối tác mới
+  // (giống logic ở saveMDispatch), không được giữ nguyên ID CK cũ trong khi
+  // đổi STK, nếu không ID CK sẽ trỏ sai đối tác.
+  const existingSup = D.sup.find(s=>s.name===supName && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
+  const newIdCK = existingSup ? existingSup.idCK : genId(partner && partner.type==='Checker' ? 'NL' : 'TD');
+
+  k.idCK = newIdCK;
   k.stk  = partner ? partner.stk : '';
   k.cdAm = newAmt;
+
+  const newSupEntry = D.sup.find(s=>s.idCK===newIdCK);
+  if(newSupEntry){
+    if(newSupEntry.status==='Chờ điều phối') newSupEntry.status='Đã điều phối';
+  } else if(partner){
+    D.sup.push({id:newIdCK,date:today(),nv:'',type:partner.type,name:partner.name,amount:newAmt,stk:partner.stk,status:'Đã điều phối',idCK:newIdCK,note:'',ctime:Date.now()});
+  }
+
+  if(oldSup && oldSup.idCK!==newIdCK){
+    const stillLinked = D.kh.some(x=>x.idCK===oldSup.idCK && x._id!==k._id);
+    if(!stillLinked && oldSup.status==='Đã điều phối') oldSup.status='Chờ điều phối';
+  }
+
   window._stkStore = {};
-  autosave(); rt2();
+  autosave(); rt2(); rt1();
   closeM('m-edit-kh-stk');
   toast('✅ Đã cập nhật điều phối');
   _eksKhId = null;
