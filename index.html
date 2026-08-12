@@ -5507,6 +5507,28 @@ function renderCfgMapping(){
   }).join('');
 }
 
+// Ghép ngay các khoản KH/Sup đang tồn tại sẵn khi vừa thêm/sửa mapping — trước đó
+// mapping chỉ tự áp dụng cho khoản tạo MỚI sau này (trong saveKH/saveSup), nên nếu
+// cả KH và Sup đã có sẵn từ trước rồi mới thêm mapping thì không tự ghép được.
+function applyMappingRetroactive(supName){
+  const sup = D.sup.find(s=>s.name===supName && s.status==='Chờ điều phối');
+  if(!sup) return 0;
+  let autoCount = 0;
+  D.kh.forEach(k=>{
+    if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
+    if(k.idCK) return;
+    if(getFixedSup(k.name) === supName){
+      k.idCK   = sup.idCK;
+      k.stk    = sup.stk;
+      k.cdAm   = k.amount;
+      k.status = 'Chờ khách CK';
+      autoCount++;
+    }
+  });
+  if(autoCount > 0){ sup.status = 'Đã điều phối'; autosave(); rd0(); rt1(); rt2(); }
+  return autoCount;
+}
+
 function saveMappingRow(kh, sup){
   const m = getMapping();
   if(sup){
@@ -5521,10 +5543,9 @@ function saveMappingRow(kh, sup){
   const supSel = el('map-filter-sup');
   if(supSel){ while(supSel.options.length>1) supSel.remove(1); }
   renderCfgMapping();
-  toast(sup ? `✅ Đã map: ${kh} → ${sup}` : `✅ Đã bỏ map: ${kh}`);
+  const n = sup ? applyMappingRetroactive(sup) : 0;
+  toast(sup ? `✅ Đã map: ${kh} → ${sup}` + (n>0?` (đã tự ghép ${n} khoản có sẵn)`:'') : `✅ Đã bỏ map: ${kh}`);
 }
-
-const MAPPING_SUP_OPTIONS = ['Nguyễn Công Phước MH','Phạm Nam','Trancy','Nguyễn Công Phước GC','Nguyễn Phong','Hieu Le','Hoàng Lâm'];
 
 function toggleAddMappingForm(){
   const form = el('add-mapping-form');
@@ -5559,7 +5580,7 @@ function selectMapKh(name){
 function mapSupSearch(q){
   const ac = el('map-sup-ac');
   const query = q.trim().toLowerCase();
-  const matches = MAPPING_SUP_OPTIONS.filter(n=>n.toLowerCase().includes(query));
+  const matches = D.partners.map(p=>p.name).filter(n=>n.toLowerCase().includes(query));
   el('map-sup-sel').value = '';
   if(!matches.length){ ac.innerHTML = '<div class="autocomplete-empty">Không tìm thấy Sup/Checker</div>'; ac.style.display=''; return; }
   ac.innerHTML = matches.map(n=>`<div class="autocomplete-item" onmousedown="selectMapSup('${n.replace(/'/g,"\\'")}')">${n}</div>`).join('');
@@ -5581,7 +5602,8 @@ function saveAddMapping(){
   saveMapping();
   el('add-mapping-form').style.display = 'none';
   renderCfgMapping();
-  toast(`✅ Đã thêm: ${kh} → ${sup}`);
+  const n = applyMappingRetroactive(sup);
+  toast(`✅ Đã thêm: ${kh} → ${sup}` + (n>0?` (đã tự ghép ${n} khoản có sẵn)`:''));
 }
 
 function openAddMapping(){ toggleAddMappingForm(); }
