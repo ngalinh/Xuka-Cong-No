@@ -1679,6 +1679,7 @@ let selectedKenh='ShipUS';
 // NAVIGATION
 // ============================================================
 const SCREENS = ['overview','khDebt','khList','tracking','supDebt','supList','settingsUsers','settingsMapping','settingsUpload','settingsChar'];
+const MOBILE_LAST_SCREEN_KEY = 'xuka_last_screen';
 
 function navTo(screen){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1689,6 +1690,7 @@ function navTo(screen){
   if(di) di.classList.add('active');
   closeDrawer();
   renderScreen(screen);
+  try{ localStorage.setItem(MOBILE_LAST_SCREEN_KEY, screen); }catch(e){}
 }
 
 function renderScreen(screen){
@@ -2981,7 +2983,10 @@ async function init(){
   CFG_USERS=loadUsers();
   KH_SUP_MAP=loadMapping();
   await resolveMobileIdentity();
-  navTo('overview');
+  let lastScreen = '';
+  try{ lastScreen = localStorage.getItem(MOBILE_LAST_SCREEN_KEY) || ''; }catch(e){}
+  const allowedScreens = MOBILE_ROLE_SCREENS[mRole] || MOBILE_ROLE_SCREENS.sale;
+  navTo(lastScreen && allowedScreens.includes(lastScreen) ? lastScreen : 'overview');
   document.addEventListener('click',e=>{
     document.querySelectorAll('.autocomplete-list').forEach(ac=>{
       if(!ac.closest('.ac-wrap').contains(e.target)) ac.style.display='none';
@@ -4053,6 +4058,7 @@ async function tryAutoLogin(){
 }
 
 const LOGIN_EMAIL_KEY = 'xuka_logged_in_email';
+const LAST_TAB_KEY = 'xuka_last_tab';
 
 // Đăng nhập theo tài khoản đã chọn từ danh sách Cài đặt > Tài khoản
 function loginAsUser(idx){
@@ -4106,6 +4112,10 @@ function switchAccount(){
 function finishLogin(){
   loadSample();
   applyRole(true);
+  let lastTab = '';
+  try{ lastTab = localStorage.getItem(LAST_TAB_KEY) || ''; }catch(e){}
+  const allowedTabs = ROLE_TABS[currentRole] || [];
+  if(lastTab && lastTab!=='t0' && allowedTabs.includes(lastTab)) go(lastTab);
   // KHONG tu day len server khi dang nhap — tranh phat tan data mau/cu de len ban dung chung.
   // Server chi duoc ghi khi user thuc su them/sua/xoa (cac thao tac do tu goi saveToStorage).
   startPolling();
@@ -4449,6 +4459,7 @@ function go(id){
     cfg3:()=>{},
     cfg4:renderCharOpts};
   if(rend[id]) rend[id]();
+  try{ localStorage.setItem(LAST_TAB_KEY, id); }catch(e){}
 }
 
 /* ================================================
