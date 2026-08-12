@@ -1506,6 +1506,148 @@ function getFixedSup(name){
   }
   return null;
 }
+
+/* ===== Match CK — thuật toán gợi ý ghép (port từ desktop) ===== */
+function supTimeLevel(tm){
+  if(!tm) return 3;
+  const l = tm.toLowerCase();
+  if(l.includes('trong ngày') || l.includes('trước')) return 1;
+  if(l.includes('2-3') || l.includes('max 3') || l.includes('2-3 ngày')) return 2;
+  return 3;
+}
+function supMinAmount(am){
+  if(!am) return 0;
+  const m = am.match(/(\\d+)\\s*(?:tri[eệ]u|tr)\\b/i);
+  return m ? parseInt(m[1],10) * 1000000 : 0;
+}
+function khTimeLevel(tm){
+  if(!tm) return 3;
+  const l = tm.toLowerCase();
+  if(l.includes('trong ngày') || l.includes('nhanh')) return 1;
+  if(l.includes('1-2') || l.includes('3-5')) return 2;
+  return 3;
+}
+function timeFit(khLevel, supLevel){
+  if(khLevel > supLevel) return -1;
+  if(khLevel === supLevel) return 3;
+  if(supLevel - khLevel === 1) return 2;
+  return 1;
+}
+function selectKHs(khPool, supAmount){
+  const sorted = [...khPool].sort((a,b)=>b.amount-a.amount);
+  const selected = [];
+  let total = 0;
+  for(const k of sorted){
+    if(total + k.amount <= supAmount){
+      selected.push(k);
+      total += k.amount;
+    }
+  }
+  return {khs: selected, total, remaining: supAmount - total};
+}
+function getKhChar(name){
+  if(!name) return null;
+  const nameLower = name.toLowerCase();
+  return D.khChars.find(c=>c.name.toLowerCase()===nameLower) ||
+    D.khChars.find(c=>
+      c.name.toLowerCase().includes(name.split('-')[0].trim().toLowerCase()) ||
+      nameLower.includes(c.name.split('-')[0].trim().toLowerCase())
+    ) || null;
+}
+function starRating(n){
+  n = Math.max(0, Math.min(3, n));
+  return '<span style="color:#f0b429">'+'★'.repeat(n)+'</span><span style="color:#d5d8e3">'+'☆'.repeat(3-n)+'</span>';
+}
+function buildSuggestions(){
+  const unassignedKH = D.kh.filter(k => !k.idCK && k.status === 'Mới nhập' && !getFixedSup(k.name)).map(k=>({...k}));
+  const dispatchedTotalOf = s => s.idCK ? D.kh.filter(k=>k.idCK===s.idCK).reduce((a,k)=>a+(k.cdAm||0),0) : 0;
+  const pendingSup = D.sup.filter(s=>{
+    if(s.status === 'Chờ điều phối') return true;
+    if(s.status === 'Đã điều phối') return dispatchedTotalOf(s) < s.amount;
+    return false;
+  });
+  if(!pendingSup.length) return [];
+
+  const khEnriched = unassignedKH.map(k=>{
+    const c = getKhChar(k.name);
+    return {...k, _tm: c?c.tm:'', _level: khTimeLevel(c?c.tm:'')};
+  });
+  const supEnriched = pendingSup.map(s=>{
+    const c = D.partners.find(p=>p.name===s.name);
+    const dispatchedTotal = dispatchedTotalOf(s);
+    const effectiveAmount = Math.max(s.amount - dispatchedTotal, 0);
+    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: effectiveAmount, _minAmount: supMinAmount(c?c.am:'')};
+  });
+
+  supEnriched.sort((a,b)=>a._level-b._level);
+
+  const suggestions = [];
+  const usedKhIds = new Set();
+  const SVG_HG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>';
+
+  for(const sup of supEnriched){
+    const targetAmount = sup._effectiveAmount;
+    const minAmount = sup._minAmount;
+
+    let pool = khEnriched.filter(k => !usedKhIds.has(k._id||k.name) && k._level <= sup._level && k.amount >= minAmount);
+
+    if(!pool.length){
+      pool = khEnriched.filter(k => !usedKhIds.has(k._id||k.name) && k.amount >= minAmount);
+    }
+
+    if(!pool.length){
+      suggestions.push({
+        sup, khs: [], total: 0, remaining: targetAmount,
+        supLevel: sup._level, khMaxLevel: 0, tf: 0, as: 0, score: 0,
+        accepted: null,
+        note: (sup.status === 'Đã điều phối' ? SVG_HG+' Còn thiếu: '+fmtVND(targetAmount)+' (đã điều phối '+fmtVND(sup.amount - targetAmount)+'). ' : '')
+          + (minAmount > 0 ? '⚠ Sup/Checker y/c tối thiểu '+fmtVND(minAmount)+'/lần CK, không có KH nào đủ điều kiện.' : '⚠ Chưa có KH nào phù hợp để ghép.')
+      });
+      continue;
+    }
+
+    const {khs, total, remaining} = selectKHs(pool, targetAmount);
+    if(!khs.length){
+      suggestions.push({
+        sup, khs: [], total: 0, remaining: targetAmount,
+        supLevel: sup._level, khMaxLevel: 0, tf: 0, as: 0, score: 0,
+        accepted: null,
+        note: (sup.status === 'Đã điều phối' ? SVG_HG+' Còn thiếu: '+fmtVND(targetAmount)+'. ' : '') + '⚠ Không có KH nào đủ điều kiện ghép.'
+      });
+      continue;
+    }
+
+    khs.forEach(k=>usedKhIds.add(k._id||k.name));
+
+    const worstKhLevel = Math.max(...khs.map(k=>k._level));
+    const tf = timeFit(worstKhLevel, sup._level);
+    const pct = total / targetAmount;
+    const as = pct >= 0.99 ? 3 : pct >= 0.85 ? 2 : pct >= 0.6 ? 1 : 0;
+
+    let note = '';
+    if(sup.status === 'Đã điều phối'){
+      note = SVG_HG+' Công nợ còn thiếu: '+fmtVND(targetAmount)+' (đã điều phối '+fmtVND(sup.amount - targetAmount)+'). ';
+    }
+    if(worstKhLevel > sup._level){
+      note += '⚠ KH bank '+['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]+' nhưng Sup/Checker y/c '+['','trong ngày','2-3 ngày','không giục'][sup._level]+' — cascade do hết KH phù hợp.';
+    } else if(worstKhLevel < sup._level){
+      note += '💡 KH bank '+['','trong ngày','1-2 / 3-5 ngày','giục nhiều lần'][worstKhLevel]+' nhưng Sup/Checker chỉ cần '+['','trong ngày','2-3 ngày','không giục'][sup._level]+' — cascade.';
+    }
+
+    suggestions.push({
+      sup, khs, total, remaining,
+      supLevel: sup._level, khMaxLevel: worstKhLevel,
+      tf, as, score: tf + as,
+      accepted: null, note,
+      targetAmount
+    });
+  }
+
+  suggestions.sort((a,b)=>b.score-a.score);
+  return suggestions;
+}
+let _suggestions = [];
+
 function saveUsers(){
   try{localStorage.setItem('xuka_users',JSON.stringify(CFG_USERS));}catch(e){}
   postToAPI({sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions});
@@ -2009,45 +2151,113 @@ function saveCKForm(){
 // SCREEN 6: MATCH CK OVERLAY
 // ============================================================
 function openMatchOverlay(){
+  if(mRole!=='admin'){ alert('Không có quyền truy cập'); return; }
   const ov=document.getElementById('match-overlay');
   ov.classList.add('open');
+  _suggestions = buildSuggestions();
   renderMatchOverlay();
 }
 function closeMatchOverlay(){document.getElementById('match-overlay').classList.remove('open')}
 function renderMatchOverlay(){
-  const pending=D.sup.filter(s=>s.status==='Chờ điều phối');
-  const khNew=D.kh.filter(k=>k.status==='Mới nhập');
-  document.getElementById('match-sub').textContent=pending.length+' gợi ý chờ duyệt';
-  const body=document.getElementById('match-body');
-  if(!pending.length){
-    body.innerHTML=emptyState('Không có Sup nào chờ điều phối');return;
+  const sub = document.getElementById('match-sub');
+  if(sub) sub.textContent = _suggestions.length + ' gợi ý chờ duyệt';
+  const body = document.getElementById('match-body');
+  if(!_suggestions.length){
+    body.innerHTML = emptyState('Không có khoản nào cần ghép — tất cả KH đã được gán hoặc không có Sup/Checker chờ điều phối.');
+    return;
   }
-  body.innerHTML=pending.map((s,si)=>{
-    const khRows=khNew.slice(0,3).map((k,ki)=>'<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:13px;background:rgba(125,142,240,0.07);border:1px solid rgba(125,142,240,0.14)"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">'+k.name+'</div><div style="display:flex;align-items:center;gap:5px;font-size:10.5px;color:#797f90;margin-top:2px"><span>'+fmtVND(k.amount)+'</span><span style="opacity:.45">·</span><span>'+fmtDate(k.date)+'</span></div></div><button onclick="rejectMatch('+si+','+ki+')" style="width:32px;height:32px;border-radius:50%;border:none;background:rgba(240,101,101,0.13);color:#e05656;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button><button onclick="acceptMatch('+si+','+ki+')" style="width:36px;height:36px;border-radius:50%;border:none;background:rgba(53,196,122,0.18);color:#2a9d63;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(53,196,122,0.25)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 6"/></svg></button></div>').join('');
-    const totalKh=khNew.slice(0,3).reduce((a,k)=>a+(Number(k.amount)||0),0);
-    const pct=s.amount>0?Math.round(totalKh/s.amount*100):0;
-    const pctBg=pct>=85?'rgba(53,196,122,0.16)':pct>=50?'rgba(243,200,90,0.22)':'rgba(240,101,101,0.13)';
-    const pctFg=pct>=85?'#2a9d63':pct>=50?'#9a6a12':'#e05656';
-    const short=Math.max(0,s.amount-totalKh);
-    return '<div style="background:linear-gradient(160deg,rgba(255,255,255,0.74),rgba(255,255,255,0.48));border:1px solid rgba(255,255,255,0.75);border-radius:20px;box-shadow:0 8px 20px rgba(120,120,180,0.12);padding:16px;margin-bottom:14px"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px"><div style="flex:1"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-size:14.5px;font-weight:700">'+s.name+'</span>'+typePill(s.type)+'</div><div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#797f90;margin-top:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg><span>'+fmtDate(s.date)+'</span></div></div><div style="text-align:right"><div style="font-size:10px;color:#9aa0b2;font-weight:600;text-transform:uppercase">Công nợ</div><div style="font-size:15px;font-weight:700">'+fmtVND(s.amount)+'</div></div></div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">'+(khRows||'<div style="font-size:12px;color:#9aa0b2">Không có KH mới nhập</div>')+'</div><div style="display:flex;align-items:center;gap:10px;padding-top:12px;border-top:1px solid rgba(120,120,180,0.12)"><span style="padding:5px 11px;border-radius:999px;font-size:11.5px;font-weight:700;background:'+pctBg+';color:'+pctFg+'">'+pct+'% công nợ</span>'+(short>0?'<span style="font-size:11px;color:#797f90">thiếu <strong style="color:#e05656">'+fmtVND(short)+'</strong></span>':'')+'</div></div>';
+
+  const tfLabels = {3:'Khớp hoàn hảo', 2:'KH bank nhanh hơn yêu cầu', 1:'KH bank sớm, Sup không cần gấp', '-1':'Không tương thích'};
+  const asLabels = {3:'Khớp số tiền', 2:'Gần đủ (≥85%)', 1:'Chấp nhận được (≥60%)', 0:'Chênh lệch nhiều'};
+  const lvStyle = n => n===1 ? 'background:rgba(159,229,216,0.45);color:#1f8a7a'
+                     : n===2 ? 'background:rgba(125,142,240,0.15);color:#5b6bd6'
+                     : 'background:rgba(243,200,90,0.22);color:#9a6a12';
+  const pctStyle = p => p>=85 ? 'background:rgba(53,196,122,0.16);color:#2a9d63'
+                      : p>=50 ? 'background:rgba(243,200,90,0.22);color:#9a6a12'
+                      : 'background:rgba(240,101,101,0.14);color:#e05656';
+  const CHK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 6"/></svg>';
+  const XIC = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>';
+
+  body.innerHTML = _suggestions.map((sug, si) => {
+    const supChar = D.partners.find(p=>p.name===sug.sup.name);
+    const target = sug.targetAmount || sug.sup.amount;
+    const diff = target - sug.total;
+    const pct  = target > 0 ? sug.total / target * 100 : 0;
+    const allSkipped = sug.khs.every(k=>k._sug_accepted===false);
+    const tfN = Math.max(sug.tf,0);
+
+    const rows = sug.khs.map((k,ki)=>{
+      const kc = getKhChar(k.name);
+      const khParts = k.name.match(/^(.+?)\\s*[-–]\\s*(\\d[\\d\\s]*)$/);
+      const dispName = khParts ? khParts[1].trim() : k.name;
+      const acc = k._sug_accepted;
+      const right = acc===true
+        ? '<span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;background:rgba(53,196,122,0.16);color:#2a9d63">✓ Đã ghép</span>'
+        : acc===false
+        ? '<span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:700;background:rgba(240,101,101,0.13);color:#e05656">Đã bỏ qua</span>'
+        : '<button onclick="acceptKH('+si+','+ki+')" style="border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;background:rgba(53,196,122,0.16);color:#2a9d63;display:flex;align-items:center;justify-content:center">'+CHK+'</button>'
+         +'<button onclick="skipKH('+si+','+ki+')" style="border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;background:rgba(240,101,101,0.13);color:#e05656;display:flex;align-items:center;justify-content:center;margin-left:6px">'+XIC+'</button>';
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:13px;background:rgba(125,142,240,0.06);border:1px solid rgba(125,142,240,0.13);opacity:'+(acc===false?'0.55':'1')+'">'
+        +'<div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600">'+dispName+'</div>'
+        +'<div style="font-size:11.5px;color:#797f90;margin-top:2px">'+fmtVND(k.amount)+(kc?' · '+kc.tm:'')+'</div></div>'
+        +right+'</div>';
+    }).join('');
+
+    return '<div style="background:rgba(255,255,255,0.72);border:1px solid rgba(255,255,255,0.9);border-radius:20px;box-shadow:0 6px 18px rgba(120,120,180,0.1);padding:16px;margin-bottom:14px;opacity:'+(allSkipped?'0.5':'1')+'">'
+      +'<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-size:14.5px;font-weight:700">'+sug.sup.name+'</span>'+typePill(sug.sup.type)
+      +(sug.sup.status==='Đã điều phối'?'<span style="padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;background:rgba(125,142,240,0.15);color:#5b6bd6">Còn dư sức chứa</span>':'')
+      +'<span style="padding:3px 9px;border-radius:999px;font-size:10.5px;font-weight:600;'+lvStyle(sug.supLevel)+'">Level '+sug.supLevel+'</span>'
+      +'</div>'
+      +'<div style="font-size:11.5px;color:#797f90;margin-top:5px">'+(supChar?supChar.tm:'—')+' · '+(supChar?supChar.am:'—')+'</div>'
+      +'</div>'
+      +'<div style="text-align:right;flex-shrink:0">'
+      +'<div style="font-size:10px;color:#9aa0b2;font-weight:600;text-transform:uppercase">Công nợ</div>'
+      +'<div style="font-size:15px;font-weight:700;white-space:nowrap">'+fmtVND(target)+'</div>'
+      +'</div>'
+      +'</div>'
+      +'<div style="font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#9aa0b2;margin-bottom:8px">KH được gợi ý ('+sug.khs.length+') — Tổng: '+fmtVND(sug.total)+'</div>'
+      +'<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">'+rows+'</div>'
+      +'<div style="display:flex;align-items:center;gap:12px;padding-top:12px;border-top:1px solid rgba(120,120,180,0.12);flex-wrap:wrap">'
+      +'<span style="padding:5px 11px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap;'+pctStyle(pct)+'">'+pct.toFixed(1)+'% công nợ</span>'
+      +'<span style="font-size:11px;color:#797f90;white-space:nowrap">'+(diff>0?'Còn thiếu: <strong style="color:#e05656">'+fmtVND(diff)+'</strong>':'<strong style="color:#2a9d63">✓ Đủ</strong>')+'</span>'
+      +'<div style="flex:1;min-width:8px"></div>'
+      +'<div style="display:flex;gap:14px">'
+      +'<div style="text-align:center"><div style="font-size:9.5px;color:#9aa0b2;font-weight:600;margin-bottom:2px">Thời gian</div><div style="font-size:12px;letter-spacing:1px">'+starRating(tfN)+'</div><div style="font-size:9.5px;color:#797f90;margin-top:1px">'+(tfLabels[sug.tf]||'')+'</div></div>'
+      +'<div style="text-align:center"><div style="font-size:9.5px;color:#9aa0b2;font-weight:600;margin-bottom:2px">Số tiền</div><div style="font-size:12px;letter-spacing:1px">'+starRating(sug.as)+'</div><div style="font-size:9.5px;color:#797f90;margin-top:1px">'+(asLabels[sug.as]||'')+'</div></div>'
+      +'</div>'
+      +'</div>'
+      +(sug.note ? '<div style="margin-top:10px;padding:8px 12px;background:rgba(125,142,240,0.1);border-radius:12px;font-size:11px;color:#5b6bd6;line-height:1.5">'+sug.note+'</div>' : '')
+      +'</div>';
   }).join('');
 }
-function acceptMatch(si,ki){
-  const pending=D.sup.filter(s=>s.status==='Chờ điều phối');
-  const khNew=D.kh.filter(k=>k.status==='Mới nhập');
-  if(pending[si]) pending[si].status='Đã điều phối';
-  if(khNew[ki]) khNew[ki].status='Đã điều phối';
-  saveData();renderMatchOverlay();
+function acceptKH(si,ki){
+  const sug=_suggestions[si]; if(!sug) return;
+  const k=sug.khs[ki]; if(!k) return;
+  const realSup=D.sup.find(x=>x.id===sug.sup.id);
+  if(!realSup) return;
+  if(!realSup.idCK) realSup.idCK=genId(realSup.type==='Checker'?'NL':'TD');
+  realSup.status='Đã điều phối';
+  const existing=D.kh.find(x=>x._id===k._id||x.name===k.name);
+  if(existing){ existing.idCK=realSup.idCK; existing.stk=realSup.stk; existing.cdAm=k.amount; existing.status='Chờ khách CK'; }
+  k._sug_accepted=true;
+  saveData();
+  renderMatchOverlay();
+  renderSupDebt();
+  renderKhDebt();
 }
-function rejectMatch(si,ki){
-  const khNew=D.kh.filter(k=>k.status==='Mới nhập');
-  if(khNew[ki]) khNew[ki].status='Cancelled';
-  saveData();renderMatchOverlay();
+function skipKH(si,ki){
+  _suggestions[si].khs[ki]._sug_accepted=false;
+  renderMatchOverlay();
 }
 function acceptAllMatches(){
-  D.sup.filter(s=>s.status==='Chờ điều phối').forEach(s=>s.status='Đã điều phối');
-  D.kh.filter(k=>k.status==='Mới nhập').forEach(k=>k.status='Đã điều phối');
-  saveData();renderMatchOverlay();
+  _suggestions.forEach((_,si)=>{
+    _suggestions[si].khs.forEach((_,ki)=>{
+      if(_suggestions[si].khs[ki]._sug_accepted===undefined) acceptKH(si,ki);
+    });
+  });
+  alert('Đã chấp nhận tất cả gợi ý');
 }
 
 // ============================================================
@@ -2472,20 +2682,33 @@ function mDpPartnerAC(input){
   if(!q){ac.style.display='none';return;}
   const m=D.partners.filter(p=>p.name.toLowerCase().includes(q)).slice(0,6);
   if(!m.length){ac.style.display='none';return;}
-  ac.innerHTML=m.map(p=>'<div class="autocomplete-item" onclick="document.getElementById(\\'m-dp-partner\\').value=\\''+p.name+'\\';document.getElementById(\\'m-dp-partner-ac\\').style.display=\\'none\\'">'+p.name+' '+typePill(p.type)+'</div>').join('');
+  ac.innerHTML=m.map(p=>'<div class="autocomplete-item" onclick="mDpSelectPartner(\\''+p.name+'\\')">'+p.name+' '+typePill(p.type)+'</div>').join('');
   ac.style.display='block';
+}
+function mDpSelectPartner(name){
+  document.getElementById('m-dp-partner').value=name;
+  document.getElementById('m-dp-partner-ac').style.display='none';
+  const idckEl=document.getElementById('m-dp-idck');
+  if(!idckEl.value.trim()){
+    const existingSup=D.sup.find(s=>s.name===name && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
+    if(existingSup) idckEl.value=existingSup.idCK;
+  }
 }
 function saveMDispatch(){
   const k=D.kh.find(x=>x._id===_mDispatchId);if(!k)return;
-  const idCK=document.getElementById('m-dp-idck').value.trim()||(k.idCK||genId('TD'));
+  const typedIdCK=document.getElementById('m-dp-idck').value.trim();
   const partnerName=document.getElementById('m-dp-partner').value.trim();
   const amount=Number(document.getElementById('m-dp-amount').value)||0;
   const partner=D.partners.find(p=>p.name===partnerName);
+  const idCK=typedIdCK||genId(partner&&partner.type==='Checker'?'NL':'TD');
   k.idCK=idCK;k.stk=partner?partner.stk:'';k.cdAm=amount;k.status='Chờ khách CK';
-  if(partner&&!D.sup.find(s=>s.idCK===idCK)){
+  const existingSup=D.sup.find(s=>s.idCK===idCK);
+  if(existingSup){
+    if(existingSup.status==='Chờ điều phối') existingSup.status='Đã điều phối';
+  } else if(partner){
     D.sup.push({id:idCK,date:today(),nv:'',type:partner.type,name:partner.name,amount,stk:partner.stk,status:'Đã điều phối',idCK,note:'',ctime:Date.now()});
   }
-  saveData();closeMDispatch();renderKhDebt();
+  saveData();closeMDispatch();renderKhDebt();renderSupDebt();
 }
 
 // Bill CK from KH overlay
