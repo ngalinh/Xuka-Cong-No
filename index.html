@@ -1625,7 +1625,7 @@ function renderOverview(){
   const supByDay=Array(daysInMonth+1).fill(0);
   const ckByDay=Array(daysInMonth+1).fill(0);
   D.sup.forEach(s=>{
-    if(!s.date) return;
+    if(!s.date||s.status==='Cancelled') return;
     const [y,m,d]=s.date.split('-').map(Number);
     if(y===viewYear&&m===viewMonth) supByDay[d]=(supByDay[d]||0)+(Number(s.amount)||0);
   });
@@ -1644,7 +1644,7 @@ function renderOverview(){
     bars+='<div class="bar-day">'+(ckh>0?'<div class="bar-stack" style="height:'+ckh+'px;background:linear-gradient(180deg,#b39bea,#9b8ee8)"></div>':'')+'<div class="bar-stack" style="height:'+sh+'px;background:linear-gradient(180deg,#7d8ef0,#5b6bd6)"></div><div class="bar-lbl">'+day+'</div></div>';
   }
 
-  const supTotal2=D.sup.filter(s=>{const[y,m]=((s.date||'').split('-')).map(Number);return y===viewYear&&m===viewMonth}).reduce((a,s)=>a+(Number(s.amount)||0),0);
+  const supTotal2=D.sup.filter(s=>{if(s.status==='Cancelled')return false;const[y,m]=((s.date||'').split('-')).map(Number);return y===viewYear&&m===viewMonth}).reduce((a,s)=>a+(Number(s.amount)||0),0);
   const ckTotal2=D.ck.filter(c=>{const[y,m]=((c.date||'').split('-')).map(Number);return y===viewYear&&m===viewMonth}).reduce((a,c)=>a+(Number(c.amount)||0),0);
   const grandTotal=supTotal2+ckTotal2||1;
   const supPct=Math.round(supTotal2/grandTotal*100);
