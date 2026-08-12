@@ -2689,10 +2689,8 @@ function mDpSelectPartner(name){
   document.getElementById('m-dp-partner').value=name;
   document.getElementById('m-dp-partner-ac').style.display='none';
   const idckEl=document.getElementById('m-dp-idck');
-  if(!idckEl.value.trim()){
-    const existingSup=D.sup.find(s=>s.name===name && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
-    if(existingSup) idckEl.value=existingSup.idCK;
-  }
+  const existingSup=D.sup.find(s=>s.name===name && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
+  idckEl.value=existingSup?existingSup.idCK:'';
 }
 function saveMDispatch(){
   const k=D.kh.find(x=>x._id===_mDispatchId);if(!k)return;
