@@ -6190,8 +6190,9 @@ function selectKHs(khPool, supAmount){
 
 function buildSuggestions(){
   const unassignedKH = D.kh.filter(k => !k.idCK && k.status === 'Mới nhập' && !getFixedSup(k.name)).map(k=>({...k}));
-  // Include both "Chờ điều phối" and "CK 1 phần" (still has unpaid balance)
-  const pendingSup   = D.sup.filter(s => s.status === 'Chờ điều phối' || s.status === 'CK 1 phần');
+  // Chỉ lấy Sup/Checker "Chờ điều phối" — khoản đã CK 1 phần/Done/CK dư/Cancelled đều
+  // thuộc phiên trước đã xử lý (dù còn thiếu tiền), không đưa vào gợi ý match của phiên mới.
+  const pendingSup   = D.sup.filter(s => s.status === 'Chờ điều phối');
   if(!pendingSup.length) return [];
 
   const khEnriched = unassignedKH.map(k=>{
@@ -6200,12 +6201,7 @@ function buildSuggestions(){
   });
   const supEnriched = pendingSup.map(s=>{
     const c = D.partners.find(p=>p.name===s.name);
-    // For "CK 1 phần": effective target = remaining unpaid amount
-    const cs = calcSupStatus(s);
-    const effectiveAmount = s.status === 'CK 1 phần'
-      ? Math.max(s.amount - cs.total, 0)
-      : s.amount;
-    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: effectiveAmount, _minAmount: supMinAmount(c?c.am:'')};
+    return {...s, _tm: c?c.tm:'', _level: supTimeLevel(c?c.tm:''), _effectiveAmount: s.amount, _minAmount: supMinAmount(c?c.am:'')};
   });
 
   // Sort sup by urgency (level 1 first)
