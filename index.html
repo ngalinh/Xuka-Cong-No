@@ -2713,7 +2713,16 @@ function saveMDispatch(){
   const partnerName=document.getElementById('m-dp-partner').value.trim();
   const amount=Number(document.getElementById('m-dp-amount').value)||0;
   const partner=D.partners.find(p=>p.name===partnerName);
-  const idCK=typedIdCK||genId(partner&&partner.type==='Checker'?'NL':'TD');
+  // Nếu đã chọn đúng 1 đối tác có thật, ID CK luôn phải theo công nợ hiện có của đối tác đó
+  // (bỏ qua giá trị cũ còn sót trong ô ID CK) — không phụ thuộc việc autocomplete có bắn sự
+  // kiện điền sẵn hay không, tránh trường hợp gõ tay/chọn mà ô ID CK không được cập nhật.
+  let idCK;
+  if(partner){
+    const existingSup=D.sup.find(s=>s.name===partnerName && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
+    idCK=existingSup?existingSup.idCK:(typedIdCK||genId(partner.type==='Checker'?'NL':'TD'));
+  } else {
+    idCK=typedIdCK||genId('TD');
+  }
   k.idCK=idCK;k.stk=partner?partner.stk:'';k.cdAm=amount;k.status='Chờ khách CK';
   const existingSup=D.sup.find(s=>s.idCK===idCK);
   if(existingSup){
