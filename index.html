@@ -2263,7 +2263,22 @@ function acceptAllMatches(){
 // ============================================================
 // SCREEN 7: CÔNG NỢ SUP/CHECKER
 // ============================================================
+function cleanupOrphanSup(){
+  const orphanIds=new Set();
+  D.sup.forEach(s=>{
+    if(s.status!=='Đã điều phối'||!s.idCK) return;
+    const dispatchedTotal=D.kh.filter(k=>k.idCK===s.idCK).reduce((a,k)=>a+(k.cdAm||0),0);
+    if(dispatchedTotal>0) return;
+    if(D.ck.some(c=>c.idCK===s.idCK)) return;
+    orphanIds.add(s.id);
+  });
+  if(orphanIds.size){
+    D.sup=D.sup.filter(s=>!orphanIds.has(s.id));
+    saveData();
+  }
+}
 function renderSupDebt(){
+  cleanupOrphanSup();
   const el=document.getElementById('scr-supDebt');
   const TABS=[{id:'all',label:'Tất cả'},{id:'Sup',label:'Sup'},{id:'Checker',label:'Checker'}];
   let rows=[...D.sup].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
