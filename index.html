@@ -1490,6 +1490,22 @@ function loadMapping(){
   }catch(e){}
   return {};
 }
+function getFixedSup(name){
+  if(!name) return null;
+  const norm = s => s.replace(/[–—]/g,'-').replace(/\\s+/g,' ').trim().toLowerCase();
+  const n = norm(name);
+  for(const [k,v] of Object.entries(KH_SUP_MAP)){
+    if(norm(k)===n) return v;
+  }
+  const namePart = n => n.split(/\\s*[-–—]\\s*\\d/).shift().trim();
+  const nPart = namePart(n);
+  if(nPart){
+    for(const [k,v] of Object.entries(KH_SUP_MAP)){
+      if(namePart(norm(k))===nPart) return v;
+    }
+  }
+  return null;
+}
 function saveUsers(){
   try{localStorage.setItem('xuka_users',JSON.stringify(CFG_USERS));}catch(e){}
   postToAPI({sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions});
@@ -1789,7 +1805,38 @@ function saveKhForm(){
     alert('Vui lòng nhập đúng định dạng "Tên KH - SĐT" (VD: Nguyễn Văn A - 0901234567)');return;
   }
   const id=genId('KH');
-  D.kh.push({_id:id,date,nv,name,amount,origAmount:amount,status:'Mới nhập',idCK:'',stk:'',cdAm:0,note,ctime:Date.now()});
+  const newKH={_id:id,date,nv,name,amount,origAmount:amount,status:'Mới nhập',idCK:'',stk:'',cdAm:0,note,ctime:Date.now()};
+
+  // Auto-dispatch: nếu KH có mapping cố định với Sup/Checker
+  const fixedSupName=getFixedSup(name);
+  if(fixedSupName){
+    const fixedPartner=D.partners.find(p=>p.name===fixedSupName);
+    const fixedSup=D.sup.find(s=>s.name===fixedSupName&&s.status==='Chờ điều phối');
+    const stk=fixedPartner?fixedPartner.stk:(fixedSup?fixedSup.stk:'');
+    let idCK='';
+    if(fixedSup){
+      idCK=fixedSup.idCK;
+      fixedSup.status='Đã điều phối';
+    } else {
+      const existingKH=D.kh.find(k=>
+        k.idCK&&getFixedSup(k.name)===fixedSupName&&k.date===date&&
+        !['Done','Cancelled','Khách đã CK'].includes(k.status)
+      );
+      if(existingKH){
+        idCK=existingKH.idCK;
+      } else {
+        const d=date.replace(/-/g,'').slice(2);
+        const prefix=(fixedPartner&&fixedPartner.type==='Checker')?'NL':'TD';
+        idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+      }
+    }
+    newKH.idCK=idCK;
+    newKH.stk=stk;
+    newKH.cdAm=amount;
+    newKH.status='Chờ khách CK';
+  }
+
+  D.kh.push(newKH);
   saveData();
   closeKhForm();
   renderKhDebt();
@@ -2077,7 +2124,26 @@ function saveSupForm(){
   const note=document.getElementById('sup-note').value.trim();
   if(!name){alert('Vui lòng nhập tên Sup/Checker');return;}
   const id=genId('SP');
-  D.sup.push({id,date,nv,type,name,amount,stk:'',status:'Chờ điều phối',idCK:'',note,ctime:Date.now()});
+  const partner=D.partners.find(p=>p.name===name);
+  const newSup={id,date,nv,type,name,amount,stk:partner?partner.stk:'',status:'Chờ điều phối',idCK:'',note,ctime:Date.now()};
+  D.sup.push(newSup);
+
+  // Auto-dispatch: tất cả KH có mapping cố định với Sup vừa nhập
+  let autoCount=0;
+  D.kh.forEach(k=>{
+    if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
+    if(getFixedSup(k.name)===name){
+      if(!newSup.idCK){
+        const d=date.replace(/-/g,'').slice(2);
+        const prefix=type==='Checker'?'NL':'TD';
+        newSup.idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+      }
+      k.idCK=newSup.idCK; k.stk=newSup.stk; k.cdAm=k.amount; k.status='Chờ khách CK';
+      autoCount++;
+    }
+  });
+  if(autoCount>0) newSup.status='Đã điều phối';
+
   saveData();
   closeSupForm();
   renderSupDebt();
@@ -2566,12 +2632,34 @@ function openMappingForm(khName){
   document.getElementById('m-mapping-form-overlay').classList.add('open');
 }
 function closeMappingForm(){document.getElementById('m-mapping-form-overlay').classList.remove('open');document.getElementById('m-mf-kh').disabled=false;}
+function applyMappingRetroactive(supName){
+  const sup=D.sup.find(s=>s.name===supName&&s.status==='Chờ điều phối');
+  if(!sup) return 0;
+  let autoCount=0;
+  D.kh.forEach(k=>{
+    if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
+    if(k.idCK) return;
+    if(getFixedSup(k.name)===supName){
+      if(!sup.idCK){
+        const d=(sup.date||today()).replace(/-/g,'').slice(2);
+        const prefix=sup.type==='Checker'?'NL':'TD';
+        sup.idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+      }
+      k.idCK=sup.idCK; k.stk=sup.stk; k.cdAm=k.amount; k.status='Chờ khách CK';
+      autoCount++;
+    }
+  });
+  if(autoCount>0) sup.status='Đã điều phối';
+  return autoCount;
+}
 function saveMappingForm(){
   const kh=document.getElementById('m-mf-kh').value;
   const sup=document.getElementById('m-mf-sup').value;
   if(!kh||!sup){alert('Chọn đầy đủ KH và Sup/Checker');return;}
   KH_SUP_MAP[kh]=sup;
   saveMapping();closeMappingForm();renderSettingsMapping();
+  const n=applyMappingRetroactive(sup);
+  if(n>0){ saveData(); renderKhDebt(); renderSupDebt(); }
 }
 
 // ============================================================
