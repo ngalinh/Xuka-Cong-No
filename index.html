@@ -2889,22 +2889,42 @@ function openMappingForm(khName){
 function closeMappingForm(){document.getElementById('m-mapping-form-overlay').classList.remove('open');document.getElementById('m-mf-kh').disabled=false;}
 function applyMappingRetroactive(supName){
   const sup=D.sup.find(s=>s.name===supName&&s.status==='Chờ điều phối');
-  if(!sup) return 0;
+  const partner=D.partners.find(p=>p.name===supName);
   let autoCount=0;
+  // Chưa có khoản Sup/Checker nào "Chờ điều phối" cho đối tác này (VD: mapping được
+  // set up trước khi ai nhập công nợ Sup/Checker) — vẫn cấp idCK cho KH đang chờ, giống
+  // hệt fallback trong saveKH(), để khi công nợ Sup/Checker được nhập sau, auto-dispatch
+  // ở saveSup() sẽ tự ghép lại đúng theo tên đối tác.
+  let fallbackIdCK='';
+  const today_date=today();
   D.kh.forEach(k=>{
     if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
     if(k.idCK) return;
     if(getFixedSup(k.name)===supName){
-      if(!sup.idCK){
-        const d=(sup.date||today()).replace(/-/g,'').slice(2);
-        const prefix=sup.type==='Checker'?'NL':'TD';
-        sup.idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+      let idCK, stk;
+      if(sup){
+        if(!sup.idCK){
+          const d=(sup.date||today_date).replace(/-/g,'').slice(2);
+          const prefix=sup.type==='Checker'?'NL':'TD';
+          sup.idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+        }
+        idCK=sup.idCK; stk=sup.stk;
+      } else {
+        if(!fallbackIdCK){
+          const existingKH=D.kh.find(x=>
+            x.idCK && getFixedSup(x.name)===supName && x.date===today_date &&
+            !['Done','Cancelled','Khách đã CK'].includes(x.status)
+          );
+          fallbackIdCK = existingKH ? existingKH.idCK :
+            (partner?.type==='Checker'?'NL':'TD')+today_date.replace(/-/g,'').slice(2)+String(D.ctr++).padStart(2,'0');
+        }
+        idCK=fallbackIdCK; stk=partner?partner.stk:'';
       }
-      k.idCK=sup.idCK; k.stk=sup.stk; k.cdAm=k.amount; k.status='Chờ khách CK';
+      k.idCK=idCK; k.stk=stk; k.cdAm=k.amount; k.status='Chờ khách CK';
       autoCount++;
     }
   });
-  if(autoCount>0) sup.status='Đã điều phối';
+  if(sup && autoCount>0) sup.status='Đã điều phối';
   return autoCount;
 }
 function saveMappingForm(){
@@ -5894,20 +5914,41 @@ function renderCfgMapping(){
 // cả KH và Sup đã có sẵn từ trước rồi mới thêm mapping thì không tự ghép được.
 function applyMappingRetroactive(supName){
   const sup = D.sup.find(s=>s.name===supName && s.status==='Chờ điều phối');
-  if(!sup) return 0;
+  const partner = D.partners.find(p=>p.name===supName);
   let autoCount = 0;
+  // Chưa có khoản Sup/Checker nào "Chờ điều phối" cho đối tác này (VD: mapping được
+  // set up trước khi ai nhập công nợ Sup/Checker) — vẫn cấp idCK cho KH đang chờ, giống
+  // hệt fallback trong saveKH(), để khi công nợ Sup/Checker được nhập sau, auto-dispatch
+  // ở saveSup() sẽ tự ghép lại đúng theo tên đối tác.
+  let fallbackIdCK = '';
+  const today_date = today();
   D.kh.forEach(k=>{
     if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
     if(k.idCK) return;
     if(getFixedSup(k.name) === supName){
-      k.idCK   = sup.idCK;
-      k.stk    = sup.stk;
+      let idCK, stk;
+      if(sup){
+        idCK = sup.idCK; stk = sup.stk;
+      } else {
+        if(!fallbackIdCK){
+          const existingKH = D.kh.find(x=>
+            x.idCK && getFixedSup(x.name)===supName && x.date===today_date &&
+            !['Done','Cancelled','Khách đã CK'].includes(x.status)
+          );
+          fallbackIdCK = existingKH ? existingKH.idCK :
+            (partner?.type==='Checker'?'NL':'TD')+today_date.replace(/-/g,'').slice(2)+String(D.ctr++).padStart(2,'0');
+        }
+        idCK = fallbackIdCK; stk = partner ? partner.stk : '';
+      }
+      k.idCK   = idCK;
+      k.stk    = stk;
       k.cdAm   = k.amount;
       k.status = 'Chờ khách CK';
       autoCount++;
     }
   });
-  if(autoCount > 0){ sup.status = 'Đã điều phối'; autosave(); rd0(); rt1(); rt2(); }
+  if(sup && autoCount > 0) sup.status = 'Đã điều phối';
+  if(autoCount > 0){ autosave(); rd0(); rt1(); rt2(); }
   return autoCount;
 }
 
