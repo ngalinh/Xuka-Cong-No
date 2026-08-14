@@ -2627,6 +2627,14 @@ function mManualChotPhien(){
   const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0, 0, 0).getTime();
   let supCount=0, khCount=0;
   D.sup.forEach(s=>{
+    // Cập nhật lại status theo tiền đã CK xác nhận trước khi xét huỷ, tránh huỷ nhầm
+    // khoản thực ra đã có tiền về (status lưu trong data có thể đang cũ).
+    if(s.idCK){
+      const confirmed = D.ck.filter(c=>c.idCK===s.idCK &&
+        (c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi'));
+      const total = confirmed.reduce((a,c)=>a+c.amount,0);
+      if(total>0) s.status = total>=s.amount ? 'Done' : 'CK 1 phần';
+    }
     if(['Chờ điều phối','Đã điều phối'].includes(s.status) && (!s.ctime || s.ctime < cutoff)){
       s.status='Cancelled'; supCount++;
     }
@@ -5570,6 +5578,13 @@ function runChotPhien(auto=false){
   const cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 11, 0, 0, 0).getTime();
   let supCount=0, khCount=0;
   D.sup.forEach(s=>{
+    // Cập nhật lại status theo tiền đã CK xác nhận trước khi xét huỷ — status lưu trong
+    // data có thể đang cũ (chỉ được làm mới khi dòng này từng render ở tab Công nợ
+    // Sup/Checker), tránh huỷ nhầm khoản thực ra đã có tiền về.
+    if(s.idCK){
+      const cs = calcSupStatus(s);
+      if(cs.total > 0) s.status = cs.status;
+    }
     if(['Chờ điều phối','Đã điều phối'].includes(s.status) && (!s.ctime || s.ctime < cutoff)){
       s.status='Cancelled'; supCount++;
     }
