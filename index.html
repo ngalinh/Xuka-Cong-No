@@ -1506,6 +1506,14 @@ function getFixedSup(name){
   }
   return null;
 }
+// Tìm khoản Sup/Checker còn nhận được KH mới: đang "Chờ điều phối", hoặc "Đã điều
+// phối" nhưng vẫn còn dư sức chứa (chưa dispatch hết s.amount) — dùng chung cho mọi
+// nơi cần auto-map KH vào Sup theo mapping cố định, để không phụ thuộc thứ tự nhập
+// Sup/KH/mapping trước sau.
+function findAvailableSup(supName){
+  return D.sup.find(s=>s.name===supName && (s.status==='Chờ điều phối' ||
+    (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
+}
 
 /* ===== Match CK — thuật toán gợi ý ghép (port từ desktop) ===== */
 function supTimeLevel(tm){
@@ -1955,12 +1963,12 @@ function saveKhForm(){
   const fixedSupName=getFixedSup(name);
   if(fixedSupName){
     const fixedPartner=D.partners.find(p=>p.name===fixedSupName);
-    const fixedSup=D.sup.find(s=>s.name===fixedSupName&&s.status==='Chờ điều phối');
+    const fixedSup=findAvailableSup(fixedSupName);
     const stk=fixedPartner?fixedPartner.stk:(fixedSup?fixedSup.stk:'');
     let idCK='';
     if(fixedSup){
       idCK=fixedSup.idCK;
-      fixedSup.status='Đã điều phối';
+      if(fixedSup.status==='Chờ điều phối') fixedSup.status='Đã điều phối';
     } else {
       const existingKH=D.kh.find(k=>
         k.idCK&&getFixedSup(k.name)===fixedSupName&&k.date===date&&
@@ -2888,7 +2896,7 @@ function openMappingForm(khName){
 }
 function closeMappingForm(){document.getElementById('m-mapping-form-overlay').classList.remove('open');document.getElementById('m-mf-kh').disabled=false;}
 function applyMappingRetroactive(supName){
-  const sup=D.sup.find(s=>s.name===supName&&s.status==='Chờ điều phối');
+  const sup=findAvailableSup(supName);
   const partner=D.partners.find(p=>p.name===supName);
   let autoCount=0;
   // Chưa có khoản Sup/Checker nào "Chờ điều phối" cho đối tác này (VD: mapping được
@@ -4603,6 +4611,14 @@ function getFixedSup(name){
   }
   return null;
 }
+// Tìm khoản Sup/Checker còn nhận được KH mới: đang "Chờ điều phối", hoặc "Đã điều
+// phối" nhưng vẫn còn dư sức chứa (chưa dispatch hết s.amount) — dùng chung cho mọi
+// nơi cần auto-map KH vào Sup theo mapping cố định, để không phụ thuộc thứ tự nhập
+// Sup/KH/mapping trước sau.
+function findAvailableSup(supName){
+  return D.sup.find(s=>s.name===supName && (s.status==='Chờ điều phối' ||
+    (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
+}
 
 function getKhChar(name){
   if(!name) return null;
@@ -5913,7 +5929,7 @@ function renderCfgMapping(){
 // mapping chỉ tự áp dụng cho khoản tạo MỚI sau này (trong saveKH/saveSup), nên nếu
 // cả KH và Sup đã có sẵn từ trước rồi mới thêm mapping thì không tự ghép được.
 function applyMappingRetroactive(supName){
-  const sup = D.sup.find(s=>s.name===supName && s.status==='Chờ điều phối');
+  const sup = findAvailableSup(supName);
   const partner = D.partners.find(p=>p.name===supName);
   let autoCount = 0;
   // Chưa có khoản Sup/Checker nào "Chờ điều phối" cho đối tác này (VD: mapping được
@@ -6262,10 +6278,9 @@ function saveKH(){
   // Auto-dispatch: nếu KH có mapping cố định → lấy STK từ D.partners
   const fixedSupName = getFixedSup(n);
   const fixedPartner = fixedSupName ? D.partners.find(p=>p.name===fixedSupName) : null;
-  // Cũng tìm khoản Sup đang Chờ điều phối để link idCK nếu có
-  const fixedSup = fixedSupName
-    ? D.sup.find(s=>s.name===fixedSupName && s.status==='Chờ điều phối')
-    : null;
+  // Cũng tìm khoản Sup còn nhận được (Chờ điều phối, hoặc Đã điều phối nhưng còn dư
+  // sức chứa) để link idCK nếu có
+  const fixedSup = fixedSupName ? findAvailableSup(fixedSupName) : null;
 
   const newKH = {
     date:el('i_kd').value, nv:el('i_knv').value,
