@@ -157,6 +157,20 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .autocomplete-item:hover{background:rgba(138,155,242,0.1)}
 .autocomplete-empty{padding:9px 14px;font-size:12.5px;color:var(--txt3)}
 
+/* MULTI-SELECT STATUS FILTER (tick chọn nhiều trạng thái) */
+.msf{position:relative;display:inline-block}
+.msf-btn{font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:var(--txt);outline:none;font-family:inherit;cursor:pointer;white-space:nowrap}
+.msf-btn:hover{border-color:var(--acc)}
+.msf-btn.msf-active{border-color:var(--acc);background:rgba(138,155,242,0.14);color:var(--acc);font-weight:600}
+.msf-panel{display:none;position:absolute;top:100%;left:0;z-index:60;margin-top:4px;min-width:220px;width:max-content;background:#fff;border:1px solid rgba(140,150,230,0.3);border-radius:12px;box-shadow:0 8px 20px rgba(120,120,180,0.15);padding:6px;max-height:280px;overflow-y:auto}
+.msf-panel.open{display:block}
+.msf-opt{display:flex;align-items:center;gap:8px;padding:7px 8px;font-size:13px;color:#2a2e3a;cursor:pointer;border-radius:8px;white-space:nowrap}
+.msf-opt:hover{background:rgba(138,155,242,0.1)}
+.msf-opt input{cursor:pointer}
+.msf-clear{border-top:1px solid rgba(120,120,180,0.12);margin-top:4px;padding-top:6px}
+.msf-clear button{width:100%;text-align:left;padding:7px 8px;font-size:12.5px;color:var(--txt2);background:none;border:none;cursor:pointer;border-radius:8px;font-family:inherit}
+.msf-clear button:hover{background:rgba(138,155,242,0.1);color:var(--acc)}
+
 /* TABLES */
 .tw{overflow-x:auto;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:var(--glass-brd);border-radius:24px;box-shadow:var(--glass-sh);padding:8px 8px 4px}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -412,6 +426,8 @@ tr:hover td{background:rgba(255,255,255,0.4)}
   .toolbar .seg{justify-content:flex-start;overflow-x:auto}
   .toolbar .search{max-width:none!important;width:100%}
   .toolbar>select{width:100%}
+  .toolbar>.msf{width:100%}
+  .toolbar>.msf .msf-btn{width:100%;text-align:left}
   .toolbar .btn-p{margin-left:0!important;width:100%;justify-content:center}
   /* modals fill the screen comfortably */
   .modbg{padding:14px}
@@ -3236,7 +3252,18 @@ init();
       <button id="f1t-sup" class="btn"    onclick="setSupTypeFilter('Sup')"    style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
       <button id="f1t-mh"  class="btn"    onclick="setSupTypeFilter('Checker')" style="font-size:13px;padding:5px 14px;border-radius:8px">Checker</button>
     </div>
-    <select id="f1s" onchange="rt1()"><option value="">Tất cả tình trạng</option><option>Chờ điều phối</option><option>Đã điều phối</option><option>CK 1 phần</option><option>Done</option><option>CK dư</option><option>Cancelled</option></select>
+    <div class="msf" id="f1s-msf">
+      <button type="button" class="msf-btn" id="f1s-btn" onclick="msfToggle('f1s')">Tất cả tình trạng</button>
+      <div class="msf-panel" id="f1s-panel">
+        <label class="msf-opt"><input type="checkbox" value="Chờ điều phối" onchange="msfChange('f1s')">Chờ điều phối</label>
+        <label class="msf-opt"><input type="checkbox" value="Đã điều phối" onchange="msfChange('f1s')">Đã điều phối</label>
+        <label class="msf-opt"><input type="checkbox" value="CK 1 phần" onchange="msfChange('f1s')">CK 1 phần</label>
+        <label class="msf-opt"><input type="checkbox" value="Done" onchange="msfChange('f1s')">Done</label>
+        <label class="msf-opt"><input type="checkbox" value="CK dư" onchange="msfChange('f1s')">CK dư</label>
+        <label class="msf-opt"><input type="checkbox" value="Cancelled" onchange="msfChange('f1s')">Cancelled</label>
+        <div class="msf-clear"><button type="button" onclick="msfClearAll('f1s')">Xoá lọc trạng thái</button></div>
+      </div>
+    </div>
     <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners"></div>
     <datalist id="dl-partners"></datalist>
     <input type="hidden" id="f1t" value="">
@@ -3260,7 +3287,17 @@ init();
       <button id="f2ch-lt"  class="btn"    onclick="setKhChFilter2('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
       <button id="f2ch-co"  class="btn"    onclick="setKhChFilter2('ShipUS')"    style="font-size:13px;padding:5px 14px;border-radius:8px">ShipUS</button>
     </div>
-    <select id="f2s" onchange="rt2()"><option value="">Tất cả tình trạng</option><option>Mới nhập</option><option>Chờ khách CK</option><option>Khách đã CK</option><option>Done</option><option>Cancelled</option></select>
+    <div class="msf" id="f2s-msf">
+      <button type="button" class="msf-btn" id="f2s-btn" onclick="msfToggle('f2s')">Tất cả tình trạng</button>
+      <div class="msf-panel" id="f2s-panel">
+        <label class="msf-opt"><input type="checkbox" value="Mới nhập" onchange="msfChange('f2s')">Mới nhập</label>
+        <label class="msf-opt"><input type="checkbox" value="Chờ khách CK" onchange="msfChange('f2s')">Chờ khách CK</label>
+        <label class="msf-opt"><input type="checkbox" value="Khách đã CK" onchange="msfChange('f2s')">Khách đã CK</label>
+        <label class="msf-opt"><input type="checkbox" value="Done" onchange="msfChange('f2s')">Done</label>
+        <label class="msf-opt"><input type="checkbox" value="Cancelled" onchange="msfChange('f2s')">Cancelled</label>
+        <div class="msf-clear"><button type="button" onclick="msfClearAll('f2s')">Xoá lọc trạng thái</button></div>
+      </div>
+    </div>
     <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers"></div>
     <datalist id="dl-customers"></datalist>
     <input type="hidden" id="f2ch" value="">
@@ -3277,7 +3314,15 @@ init();
 <!-- ===== TAB 3: TRACKING CK (was t4) ===== -->
 <div id="t3" class="sec">
   <div class="toolbar">
-    <select id="f4s" onchange="rt4()"><option value="">Tất cả tình trạng</option><option>Chờ XN & Đã tham chiếu HT</option><option>Đã XN & Nhập file Sup/Checker</option><option>Done & Nhập Thu Chi</option></select>
+    <div class="msf" id="f4s-msf">
+      <button type="button" class="msf-btn" id="f4s-btn" onclick="msfToggle('f4s')">Tất cả tình trạng</button>
+      <div class="msf-panel" id="f4s-panel">
+        <label class="msf-opt"><input type="checkbox" value="Chờ XN & Đã tham chiếu HT" onchange="msfChange('f4s')">Chờ XN & Đã tham chiếu HT</label>
+        <label class="msf-opt"><input type="checkbox" value="Đã XN & Nhập file Sup/Checker" onchange="msfChange('f4s')">Đã XN & Nhập file Sup/Checker</label>
+        <label class="msf-opt"><input type="checkbox" value="Done & Nhập Thu Chi" onchange="msfChange('f4s')">Done & Nhập Thu Chi</label>
+        <div class="msf-clear"><button type="button" onclick="msfClearAll('f4s')">Xoá lọc trạng thái</button></div>
+      </div>
+    </div>
     <select id="f4nv" onchange="rt4()"><option value="">Tất cả NV</option></select>
     <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f4q" placeholder="Tìm tên KH…" oninput="rt4()"></div>
     <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')" style="margin-left:auto">+ Nhập bill CK</button>
@@ -4810,6 +4855,41 @@ function rd0(){
 }
 
 /* ================================================
+   MULTI-SELECT STATUS FILTER (dùng chung cho f1s/f2s/f4s)
+   ================================================ */
+const MSF_RENDER = {f1s:()=>rt1(), f2s:()=>rt2(), f4s:()=>rt4()};
+
+function msfValues(id){
+  const panel = el(id+'-panel');
+  if(!panel) return [];
+  return [...panel.querySelectorAll('input[type=checkbox]:checked')].map(cb=>cb.value);
+}
+function msfToggle(id){
+  document.querySelectorAll('.msf-panel').forEach(p=>{ if(p.id!==id+'-panel') p.classList.remove('open'); });
+  const panel = el(id+'-panel');
+  if(panel) panel.classList.toggle('open');
+}
+function msfChange(id){
+  const sel = msfValues(id);
+  const btn = el(id+'-btn');
+  if(btn){
+    btn.textContent = !sel.length ? 'Tất cả tình trạng' : (sel.length===1 ? sel[0] : sel.length+' trạng thái');
+    btn.classList.toggle('msf-active', sel.length>0);
+  }
+  if(MSF_RENDER[id]) MSF_RENDER[id]();
+}
+function msfClearAll(id){
+  const panel = el(id+'-panel');
+  if(panel) panel.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.checked=false);
+  msfChange(id);
+}
+document.addEventListener('click', e=>{
+  document.querySelectorAll('.msf').forEach(wrap=>{
+    if(!wrap.contains(e.target)) wrap.querySelector('.msf-panel')?.classList.remove('open');
+  });
+});
+
+/* ================================================
    TAB 1: CÔNG NỢ SUP/MH
    ================================================ */
 function calcSupStatus(sup){
@@ -4823,14 +4903,14 @@ function calcSupStatus(sup){
 }
 
 function rt1(){
-  const st = el('f1s').value, tp = el('f1t').value;
+  const st = msfValues('f1s'), tp = el('f1t').value;
   const q  = el('f1q').value.toLowerCase();
   const canEdit = ['admin','mh'].includes(currentRole);
   let list = D.sup.filter(s=>
     (!tp||s.type===tp) &&
     (!q||s.name.toLowerCase().includes(q))
   );
-  if(st) list = list.filter(s=>s.status===st);
+  if(st.length) list = list.filter(s=>st.includes(s.status));
   // newest first (already unshifted on add, but also sort by date desc)
   list = [...list].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
 
@@ -4869,7 +4949,7 @@ function rt1(){
 }
 
 function rt2(){
-  const st = el('f2s').value, q = el('f2q').value.toLowerCase();
+  const st = msfValues('f2s'), q = el('f2q').value.toLowerCase();
   const ch = el('f2ch')?.value || '';
   const canDp  = ['admin'].includes(currentRole); // legacy, kept for billCell
   const isAdmin2 = currentRole === 'admin';
@@ -4877,7 +4957,7 @@ function rt2(){
   if(th2dp)  th2dp.style.display  = isAdmin2 ? '' : 'none';
   if(th2act) th2act.style.display = isAdmin2 ? 'none' : '';
   let list = D.kh.filter(k=>{
-    if(st && k.status!==st) return false;
+    if(st.length && !st.includes(k.status)) return false;
     if(q  && !k.name.toLowerCase().includes(q)) return false;
     if(ch){
       const khChar = D.khChars.find(c=>c.name===k.name);
@@ -5215,13 +5295,13 @@ function cancelDp(){
    TAB 4: TRACKING CK
    ================================================ */
 function rt4(){
-  const st = el('f4s').value, q = el('f4q').value.toLowerCase();
+  const st = msfValues('f4s'), q = el('f4q').value.toLowerCase();
   const nv = el('f4nv').value;
   const role = currentRole;
   const actions = ROLE_TRACK_ACTIONS[role] || [];
 
   let list = D.ck.filter(c=>
-    (!st||c.status.includes(st)) &&
+    (!st.length||st.some(s=>c.status.includes(s))) &&
     (!q||c.kh.toLowerCase().includes(q)) &&
     (!nv||c.nv===nv)
   );
