@@ -1368,6 +1368,7 @@ const D = {
   partners: [],
   khChars: [],
   charOptions: JSON.parse(JSON.stringify(DEFAULT_CHAR_OPTIONS)),
+  lastChotPhien: 0, // mốc thời gian (ctime) chốt phiên gần nhất — đánh dấu "ngày đầu tiên của phiên hiện tại"
 };
 
 function escapeHtml(s){
@@ -1466,6 +1467,7 @@ function loadData(){
     if(p.partners&&p.partners.length) D.partners=p.partners;
     if(p.khChars&&p.khChars.length) D.khChars=p.khChars;
     D.charOptions=Object.assign({},DEFAULT_CHAR_OPTIONS,p.charOptions||{});
+    D.lastChotPhien=p.lastChotPhien||0;
     const _mig=a=>{try{return JSON.parse(JSON.stringify(a).replaceAll('Mua hộ','Checker').replaceAll('Sup/MH','Sup/Checker'));}catch(e){return a;}};
     D.sup=_mig(D.sup);D.kh=_mig(D.kh);D.ck=_mig(D.ck);D.partners=_mig(D.partners);D.khChars=_mig(D.khChars);
     D.sup.forEach(s=>{if(!s.stk){const pt=D.partners.find(p=>p.name===s.name);if(pt&&pt.stk)s.stk=pt.stk;}});
@@ -1473,7 +1475,7 @@ function loadData(){
 }
 function saveData(){
   try{
-    const payload={sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions};
+    const payload={sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions,lastChotPhien:D.lastChotPhien};
     localStorage.setItem(LS_KEY,JSON.stringify(payload));
     postToAPI(payload);
   }catch(e){}
@@ -2668,6 +2670,7 @@ function mManualChotPhien(){
       k.status='Cancelled'; khCount++;
     }
   });
+  D.lastChotPhien = cutoff; // đánh dấu mốc bắt đầu phiên mới
   saveData();
   alert('Đã huỷ '+supCount+' khoản Sup/Checker và '+khCount+' khoản KH chưa hoàn thành');
 }
@@ -3072,6 +3075,7 @@ async function pollRefresh(){
     if(main.partners && main.partners.length) D.partners = main.partners;
     if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
+    D.lastChotPhien = main.lastChotPhien || 0;
     try{
       localStorage.setItem(LS_KEY, JSON.stringify(main));
       localStorage.setItem(LAST_SERVER_SIG_KEY, sig);
@@ -4226,6 +4230,7 @@ async function pollRefresh(){
     if(main.partners && main.partners.length) D.partners = main.partners;
     if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
+    D.lastChotPhien = main.lastChotPhien || 0;
     try{
       localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
       localStorage.setItem(LAST_SERVER_SIG_KEY, sig);
@@ -5139,13 +5144,15 @@ function showDpFromKH(khId){
 
   const isEdit = !!k.idCK;
 
-  // Populate sup options: chỉ gợi ý Sup/Checker của phiên hiện tại (nhập trong hôm
-  // nay) — Sup/Checker phiên trước dù còn dư sức chứa cũng không hiện ở đây, tránh
-  // gán nhầm KH mới vào công nợ đã "nguội" từ phiên trước. Riêng Sup/Checker đang
-  // được gán cho KH này (trường hợp sửa điều phối) vẫn luôn hiện, để không mất dấu
-  // lựa chọn hiện tại dù nó thuộc phiên trước.
+  // Populate sup options: chỉ gợi ý Sup/Checker của phiên hiện tại — tính từ mốc
+  // chốt phiên gần nhất (D.lastChotPhien), KHÔNG phải chỉ "hôm nay", vì phiên có
+  // thể kéo dài nhiều ngày nếu chưa ai bấm Chốt phiên. Sup/Checker phiên trước dù
+  // còn dư sức chứa cũng không hiện ở đây, tránh gán nhầm KH mới vào công nợ đã
+  // "nguội" từ phiên trước. Riêng Sup/Checker đang được gán cho KH này (trường hợp
+  // sửa điều phối) vẫn luôn hiện, để không mất dấu lựa chọn hiện tại dù nó thuộc
+  // phiên trước.
   const supOptions = D.sup.filter(s=>!['Cancelled','Done'].includes(s.status) &&
-    (s.date===today() || (k.idCK && s.idCK===k.idCK)));
+    ((s.ctime && s.ctime>=(D.lastChotPhien||0)) || (k.idCK && s.idCK===k.idCK)));
 
   el('dptitle').textContent = isEdit
     ? `✏️ Sửa điều phối: ${k.name}`
@@ -5714,6 +5721,7 @@ function runChotPhien(auto=false){
       k.status='Cancelled'; khCount++;
     }
   });
+  D.lastChotPhien = cutoff; // đánh dấu mốc bắt đầu phiên mới
   autosave(); rd0(); rt1(); rt2();
   if(supCount+khCount > 0)
     toast(`⏰ ${label}: đã huỷ ${supCount} khoản Sup/Checker và ${khCount} khoản KH chưa hoàn thành`, false, 6000);
@@ -7113,7 +7121,7 @@ const LS_VER = '8'; // bump to force-reset all clients
 
 function saveToStorage(){
   try {
-    const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars, charOptions: D.charOptions };
+    const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars, charOptions: D.charOptions, lastChotPhien: D.lastChotPhien };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
     postToAPI(payload);
   } catch(e){ /* quota exceeded or private mode */ }
@@ -7131,6 +7139,7 @@ function loadFromStorage(){
     if(p.partners && p.partners.length)  D.partners = p.partners;
     if(p.khChars && p.khChars.length)    D.khChars  = p.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, p.charOptions || {});
+    D.lastChotPhien = p.lastChotPhien || 0;
     // Migrate legacy labels to new naming
     const _mig = a => { try { return JSON.parse(JSON.stringify(a).replaceAll('Mua hộ','Checker').replaceAll('Sup/MH','Sup/Checker')); } catch(e){ return a; } };
     D.sup=_mig(D.sup); D.kh=_mig(D.kh); D.ck=_mig(D.ck); D.partners=_mig(D.partners); D.khChars=_mig(D.khChars);
