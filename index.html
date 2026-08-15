@@ -5139,8 +5139,13 @@ function showDpFromKH(khId){
 
   const isEdit = !!k.idCK;
 
-  // Populate sup options: show all Sup/Checker that have an ID or can get one
-  const supOptions = D.sup.filter(s=>!['Cancelled','Done'].includes(s.status));
+  // Populate sup options: chỉ gợi ý Sup/Checker của phiên hiện tại (nhập trong hôm
+  // nay) — Sup/Checker phiên trước dù còn dư sức chứa cũng không hiện ở đây, tránh
+  // gán nhầm KH mới vào công nợ đã "nguội" từ phiên trước. Riêng Sup/Checker đang
+  // được gán cho KH này (trường hợp sửa điều phối) vẫn luôn hiện, để không mất dấu
+  // lựa chọn hiện tại dù nó thuộc phiên trước.
+  const supOptions = D.sup.filter(s=>!['Cancelled','Done'].includes(s.status) &&
+    (s.date===today() || (k.idCK && s.idCK===k.idCK)));
 
   el('dptitle').textContent = isEdit
     ? `✏️ Sửa điều phối: ${k.name}`
