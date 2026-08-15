@@ -2613,8 +2613,13 @@ function mDelKh(id){
 function mUndoDispatch(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
   if(!confirm('Huỷ điều phối KH '+k.name+'?')) return;
+  const oldSup=D.sup.find(s=>s.idCK===k.idCK);
+  if(oldSup && oldSup.status==='Đã điều phối'){
+    const othersLinked=D.kh.filter(x=>x.idCK===oldSup.idCK && x._id!==k._id);
+    if(!othersLinked.length) oldSup.status='Chờ điều phối';
+  }
   k.idCK='';k.stk='';k.status='Mới nhập';k.cdAm=0;
-  saveData(); renderKhDebt();
+  saveData(); renderKhDebt(); renderSupDebt();
 }
 function mRestoreKh(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
@@ -5557,11 +5562,16 @@ function confirmUndoDispatch(khId){
 
 function doUndoDispatch(){
   const k = D.kh.find(x=>x._id===_undoDispatchId); if(!k) return;
+  const oldSup = D.sup.find(s=>s.idCK===k.idCK);
+  if(oldSup && oldSup.status==='Đã điều phối'){
+    const othersLinked = D.kh.filter(x=>x.idCK===oldSup.idCK && x._id!==k._id);
+    if(!othersLinked.length) oldSup.status='Chờ điều phối';
+  }
   k.status = 'Mới nhập';
   k.idCK   = '';
   k.stk    = '';
   k.cdAm   = 0;
-  autosave(); rt2();
+  autosave(); rt2(); rt1();
   closeM('m-undo-dispatch');
   toast('✅ Đã huỷ điều phối, khoản trở về Mới nhập');
   _undoDispatchId = null;
