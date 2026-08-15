@@ -157,16 +157,16 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .autocomplete-item:hover{background:rgba(138,155,242,0.1)}
 .autocomplete-empty{padding:9px 14px;font-size:12.5px;color:var(--txt3)}
 
-/* MULTI-SELECT STATUS FILTER (tick chọn nhiều trạng thái) */
+/* MULTI-SELECT STATUS FILTER (tick chọn nhiều trạng thái) — giữ nguyên style select cũ,
+   chỉ thêm mũi tên dropdown + panel tick chọn thay vì list option gốc */
 .msf{position:relative;display:inline-block}
-.msf-btn{font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:var(--txt);outline:none;font-family:inherit;cursor:pointer;white-space:nowrap}
-.msf-btn:hover{border-color:var(--acc)}
-.msf-btn.msf-active{border-color:var(--acc);background:rgba(138,155,242,0.14);color:var(--acc);font-weight:600}
-.msf-panel{display:none;position:absolute;top:100%;left:0;z-index:60;margin-top:4px;min-width:220px;width:max-content;background:#fff;border:1px solid rgba(140,150,230,0.3);border-radius:12px;box-shadow:0 8px 20px rgba(120,120,180,0.15);padding:6px;max-height:280px;overflow-y:auto}
+.msf-btn{font-size:13px;padding:9px 34px 9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background-color:rgba(255,255,255,0.6);color:var(--txt);outline:none;font-family:inherit;cursor:pointer;white-space:nowrap;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23797f90' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.msf-btn:focus{border-color:var(--acc)}
+.msf-panel{display:none;position:absolute;top:100%;left:0;z-index:60;margin-top:4px;min-width:100%;width:max-content;background:#fff;border:1px solid rgba(140,150,230,0.3);border-radius:12px;box-shadow:0 8px 20px rgba(120,120,180,0.15);padding:6px;max-height:280px;overflow-y:auto}
 .msf-panel.open{display:block}
 .msf-opt{display:flex;align-items:center;gap:8px;padding:7px 8px;font-size:13px;color:#2a2e3a;cursor:pointer;border-radius:8px;white-space:nowrap}
 .msf-opt:hover{background:rgba(138,155,242,0.1)}
-.msf-opt input{cursor:pointer}
+.msf-opt input[type=checkbox]{cursor:pointer;width:15px;height:15px;flex:none;margin:0;padding:0;border-radius:4px;accent-color:var(--acc)}
 .msf-clear{border-top:1px solid rgba(120,120,180,0.12);margin-top:4px;padding-top:6px}
 .msf-clear button{width:100%;text-align:left;padding:7px 8px;font-size:12.5px;color:var(--txt2);background:none;border:none;cursor:pointer;border-radius:8px;font-family:inherit}
 .msf-clear button:hover{background:rgba(138,155,242,0.1);color:var(--acc)}
@@ -3264,7 +3264,7 @@ init();
         <div class="msf-clear"><button type="button" onclick="msfClearAll('f1s')">Xoá lọc trạng thái</button></div>
       </div>
     </div>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners"></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners" autocomplete="off"></div>
     <datalist id="dl-partners"></datalist>
     <input type="hidden" id="f1t" value="">
     <button class="btn btn-p" id="btn-add-sup" onclick="openM('msup')" style="margin-left:auto">+ Nhập công nợ</button>
@@ -3298,7 +3298,7 @@ init();
         <div class="msf-clear"><button type="button" onclick="msfClearAll('f2s')">Xoá lọc trạng thái</button></div>
       </div>
     </div>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers"></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers" autocomplete="off"></div>
     <datalist id="dl-customers"></datalist>
     <input type="hidden" id="f2ch" value="">
     <button class="btn btn-p" id="btn-add-kh" onclick="openM('mkh')" style="margin-left:auto">+ Nhập công nợ KH</button>
@@ -3324,7 +3324,7 @@ init();
       </div>
     </div>
     <select id="f4nv" onchange="rt4()"><option value="">Tất cả NV</option></select>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f4q" placeholder="Tìm tên KH…" oninput="rt4()"></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f4q" placeholder="Tìm tên KH…" oninput="rt4()" autocomplete="off"></div>
     <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')" style="margin-left:auto">+ Nhập bill CK</button>
   </div>
   <div class="tw"><table>
@@ -3342,7 +3342,7 @@ init();
       <button id="f5type-sup" class="btn"    onclick="setSupFilter('Sup')" style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
       <button id="f5type-mh"  class="btn"    onclick="setSupFilter('Checker')" style="font-size:13px;padding:5px 14px;border-radius:8px">Checker</button>
     </div>
-    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qa" placeholder="Tìm tên…" oninput="rt5a()"></div>
+    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qa" placeholder="Tìm tên…" oninput="rt5a()" autocomplete="off"></div>
     <button class="btn btn-p" id="btn-add-partner" onclick="openAddPartner()" style="margin-left:auto">+ Thêm Sup/Checker</button>
   </div>
   <input type="hidden" id="f5type" value="">
@@ -3361,7 +3361,7 @@ init();
       <button id="f5ch-lt"  class="btn"    onclick="setKhChFilter('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
       <button id="f5ch-co"  class="btn"    onclick="setKhChFilter('ShipUS')"    style="font-size:13px;padding:5px 14px;border-radius:8px">ShipUS</button>
     </div>
-    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qb" placeholder="Tìm tên KH…" oninput="rt5b()"></div>
+    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qb" placeholder="Tìm tên KH…" oninput="rt5b()" autocomplete="off"></div>
     <input type="hidden" id="f5ch" value="">
     <button class="btn btn-p" id="btn-add-kh-char" onclick="openAddKhChar()" style="margin-left:auto">+ Thêm KH</button>
   </div>
@@ -3450,7 +3450,7 @@ init();
       <select id="map-filter-sup" onchange="renderCfgMapping()" style="font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:var(--txt);outline:none;font-family:inherit">
         <option value="">Tất cả Sup/Checker</option>
       </select>
-      <div class="search" style="max-width:240px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="map-filter-q" placeholder="Tìm tên KH…" oninput="renderCfgMapping()"></div>
+      <div class="search" style="max-width:240px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="map-filter-q" placeholder="Tìm tên KH…" oninput="renderCfgMapping()" autocomplete="off"></div>
     </div>
     <div id="tb-cfg-mapping" class="map-grid"></div>
   </div>
@@ -4874,7 +4874,6 @@ function msfChange(id){
   const btn = el(id+'-btn');
   if(btn){
     btn.textContent = !sel.length ? 'Tất cả tình trạng' : (sel.length===1 ? sel[0] : sel.length+' trạng thái');
-    btn.classList.toggle('msf-active', sel.length>0);
   }
   if(MSF_RENDER[id]) MSF_RENDER[id]();
 }
