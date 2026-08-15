@@ -4911,7 +4911,24 @@ function calcSupStatus(sup){
   return {total, status:'CK dư'};
 }
 
+// Tự phục hồi Sup/Checker kẹt "Đã điều phối" mồ côi — trường hợp bị huỷ điều phối
+// từ trước khi doUndoDispatch()/mUndoDispatch() được sửa để trả trạng thái đúng
+// (không còn KH nào tham chiếu idCK này, và chưa có bill CK thật nào ghi nhận).
+function repairOrphanSupStatus(){
+  let fixed = 0;
+  D.sup.forEach(s=>{
+    if(s.status!=='Đã điều phối' || !s.idCK) return;
+    const dispatchedTotal = D.kh.filter(k=>k.idCK===s.idCK).reduce((a,k)=>a+(k.cdAm||0),0);
+    if(dispatchedTotal>0) return;
+    if(D.ck.some(c=>c.idCK===s.idCK)) return;
+    s.status = 'Chờ điều phối';
+    fixed++;
+  });
+  if(fixed>0) autosave();
+}
+
 function rt1(){
+  repairOrphanSupStatus();
   const st = msfValues('f1s'), tp = el('f1t').value;
   const q  = el('f1q').value.toLowerCase();
   const canEdit = ['admin','mh'].includes(currentRole);
