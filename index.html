@@ -146,7 +146,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .seg .btn.on{background:var(--grad);color:#fff;box-shadow:none}
 .search{display:flex;align-items:center;gap:9px;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.8);min-width:200px;max-width:340px;flex:1}
 .search svg{flex:none;color:#9aa0b2}
-.search input{border:none!important;background:transparent!important;outline:none;font-size:13px;color:var(--txt);font-family:inherit;flex:1;padding:0!important;min-width:0;box-shadow:none!important}
+.search input{border:none!important;background:transparent!important;outline:none;font-size:13px;color:var(--txt);font-family:inherit;flex:1;padding:0!important;min-width:0;box-shadow:none!important;-webkit-appearance:none;appearance:none}
 .search input::placeholder{color:#9aa0b2}
 
 /* SEARCHABLE DROPDOWN (desktop) — type to filter, click to pick */
@@ -3273,7 +3273,7 @@ init();
         <div class="msf-clear"><button type="button" onclick="msfClearAll('f1s')">Xoá lọc trạng thái</button></div>
       </div>
     </div>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners" autocomplete="off"></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" type="search" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     <datalist id="dl-partners"></datalist>
     <input type="hidden" id="f1t" value="">
     <button class="btn btn-p" id="btn-add-sup" onclick="openM('msup')" style="margin-left:auto">+ Nhập công nợ</button>
@@ -3307,7 +3307,7 @@ init();
         <div class="msf-clear"><button type="button" onclick="msfClearAll('f2s')">Xoá lọc trạng thái</button></div>
       </div>
     </div>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers" autocomplete="off"></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f2q" type="search" placeholder="Tìm tên KH…" oninput="rt2()" list="dl-customers" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     <datalist id="dl-customers"></datalist>
     <input type="hidden" id="f2ch" value="">
     <button class="btn btn-p" id="btn-add-kh" onclick="openM('mkh')" style="margin-left:auto">+ Nhập công nợ KH</button>
@@ -3333,7 +3333,7 @@ init();
       </div>
     </div>
     <select id="f4nv" onchange="rt4()"><option value="">Tất cả NV</option></select>
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f4q" placeholder="Tìm tên KH…" oninput="rt4()" autocomplete="off"></div>
+    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f4q" type="search" placeholder="Tìm tên KH…" oninput="rt4()" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     <button class="btn btn-p" id="btn-add-ck" onclick="openM('mck')" style="margin-left:auto">+ Nhập bill CK</button>
   </div>
   <div class="tw"><table>
@@ -3351,7 +3351,7 @@ init();
       <button id="f5type-sup" class="btn"    onclick="setSupFilter('Sup')" style="font-size:13px;padding:5px 14px;border-radius:8px">Sup</button>
       <button id="f5type-mh"  class="btn"    onclick="setSupFilter('Checker')" style="font-size:13px;padding:5px 14px;border-radius:8px">Checker</button>
     </div>
-    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qa" placeholder="Tìm tên…" oninput="rt5a()" autocomplete="off"></div>
+    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qa" type="search" placeholder="Tìm tên…" oninput="rt5a()" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     <button class="btn btn-p" id="btn-add-partner" onclick="openAddPartner()" style="margin-left:auto">+ Thêm Sup/Checker</button>
   </div>
   <input type="hidden" id="f5type" value="">
@@ -3370,7 +3370,7 @@ init();
       <button id="f5ch-lt"  class="btn"    onclick="setKhChFilter('Linh Thảo')"  style="font-size:13px;padding:5px 14px;border-radius:8px">Linh Thảo</button>
       <button id="f5ch-co"  class="btn"    onclick="setKhChFilter('ShipUS')"    style="font-size:13px;padding:5px 14px;border-radius:8px">ShipUS</button>
     </div>
-    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qb" placeholder="Tìm tên KH…" oninput="rt5b()" autocomplete="off"></div>
+    <div class="search" style="max-width:260px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f5qb" type="search" placeholder="Tìm tên KH…" oninput="rt5b()" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     <input type="hidden" id="f5ch" value="">
     <button class="btn btn-p" id="btn-add-kh-char" onclick="openAddKhChar()" style="margin-left:auto">+ Thêm KH</button>
   </div>
@@ -3433,7 +3433,7 @@ init();
       <div class="fg">
         <div class="fr"><label>Tên KH</label>
           <div class="ac-wrap">
-            <input type="text" id="map-kh-input" placeholder="Tìm tên KH..." autocomplete="off"
+            <input type="search" id="map-kh-input" placeholder="Tìm tên KH..." autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"
               oninput="mapKhSearch(this.value)" onfocus="mapKhSearch(this.value)"
               onblur="setTimeout(()=>{const a=el('map-kh-ac');if(a)a.style.display='none'},150)">
             <input type="hidden" id="map-kh-sel" value="">
@@ -3459,7 +3459,7 @@ init();
       <select id="map-filter-sup" onchange="renderCfgMapping()" style="font-size:13px;padding:9px 16px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:var(--txt);outline:none;font-family:inherit">
         <option value="">Tất cả Sup/Checker</option>
       </select>
-      <div class="search" style="max-width:240px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="map-filter-q" placeholder="Tìm tên KH…" oninput="renderCfgMapping()" autocomplete="off"></div>
+      <div class="search" style="max-width:240px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="map-filter-q" type="search" placeholder="Tìm tên KH…" oninput="renderCfgMapping()" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     </div>
     <div id="tb-cfg-mapping" class="map-grid"></div>
   </div>
