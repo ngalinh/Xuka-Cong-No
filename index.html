@@ -1438,6 +1438,7 @@ function icoSvg(path,sz){
 const SVG_PENCIL_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
 const SVG_LINK_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 const SVG_RESTORE_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+const SVG_COPY_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 const SVG_TRASH_SM='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
 const SVG_CLOCK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>';
 const SVG_COIN='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>';
@@ -1867,15 +1868,16 @@ function khDebtListHtml(){
       if(existBill) billBtn=mActionPill(SVG_CLIP+'Xem bill','window.open(\\''+existBill.link+'\\',\\'_blank\\',\\'noopener\\')','#2a9d63','rgba(53,196,122,0.16)');
       else if(k.status==='Chờ khách CK'&&['admin','sale','mh'].includes(mRole)) billBtn=mActionPill(SVG_CLIP+'Nhập bill','openMBillKh(\\''+k._id+'\\')','#9a6a12','rgba(243,200,90,0.22)');
     }
-    let editBtn='',delBtn='';
+    let editBtn='',delBtn='',copyBtn='';
     if(k.status==='Mới nhập'&&canDpMoiNhap){
       editBtn=mActBtn(SVG_LINK_SM,'openMDispatch(\\''+k._id+'\\')');
       delBtn=mActBtn(SVG_TRASH_SM,'mDelKh(\\''+k._id+'\\')','#e05656','rgba(240,101,101,0.13)');
     } else if(k.status==='Chờ khách CK'&&canDpChoKhach){
       editBtn=mActBtn(SVG_PENCIL_SM,'openMDispatch(\\''+k._id+'\\')');
       delBtn=mActBtn(SVG_TRASH_SM,'mUndoDispatch(\\''+k._id+'\\')','#e05656','rgba(240,101,101,0.13)');
-    } else if(k.status==='Cancelled'&&mRole==='admin'){
-      editBtn=mActBtn(SVG_RESTORE_SM,'mRestoreKh(\\''+k._id+'\\')');
+    } else if(k.status==='Cancelled'){
+      if(mRole==='admin') editBtn=mActBtn(SVG_RESTORE_SM,'mRestoreKh(\\''+k._id+'\\')');
+      if(canDpMoiNhap) copyBtn=mActBtn(SVG_COPY_SM,'mCopyKH(\\''+k._id+'\\')');
     }
     return '<div class="list-row">'
       +'<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">'
@@ -1896,7 +1898,7 @@ function khDebtListHtml(){
       +'<div style="text-align:right"><div style="font-size:17px;font-weight:700">'+fmtVND(k.amount)+'</div>'
       +(billBtn?'<div style="margin-top:4px">'+billBtn+'</div>':'')
       +'</div></div>'
-      +((editBtn||delBtn)?'<div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:1px solid rgba(120,120,180,0.08)">'+editBtn+delBtn+'</div>':'')
+      +((editBtn||delBtn||copyBtn)?'<div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:1px solid rgba(120,120,180,0.08)">'+editBtn+copyBtn+delBtn+'</div>':'')
       +'</div>';
   }).join(''):emptyState('Chưa có dữ liệu công nợ KH');
 }
@@ -2625,6 +2627,45 @@ function mRestoreKh(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
   if(!confirm('Khôi phục khoản công nợ này về "Mới nhập"?')) return;
   k.status='Mới nhập';k.idCK='';k.stk='';k.cdAm=0;k.ctime=Date.now();
+  saveData(); renderKhDebt();
+}
+// Sao chép 1 khoản công nợ KH đã Cancelled thành khoản MỚI hôm nay — giữ nguyên dòng
+// Cancelled cũ làm lịch sử. Áp dụng lại đúng auto-dispatch theo mapping cố định,
+// giống hệt saveKhForm() khi nhập KH mới thủ công.
+function mCopyKH(id){
+  const old=D.kh.find(x=>x._id===id);if(!old)return;
+  if(!confirm('Sao chép công nợ "'+old.name+'" thành khoản mới hôm nay?')) return;
+  const date=today();
+  const newKH={_id:genId('KH'),date,nv:old.nv,name:old.name,amount:old.amount,
+    origAmount:old.origAmount||old.amount,note:old.note||'',status:'Mới nhập',
+    idCK:'',stk:'',cdAm:0,ctime:Date.now()};
+
+  const fixedSupName=getFixedSup(old.name);
+  if(fixedSupName){
+    const fixedPartner=D.partners.find(p=>p.name===fixedSupName);
+    const fixedSup=findAvailableSup(fixedSupName);
+    const stk=fixedPartner?fixedPartner.stk:(fixedSup?fixedSup.stk:'');
+    let idCK='';
+    if(fixedSup){
+      idCK=fixedSup.idCK;
+      if(fixedSup.status==='Chờ điều phối') fixedSup.status='Đã điều phối';
+    } else {
+      const existingKH=D.kh.find(k=>
+        k.idCK&&getFixedSup(k.name)===fixedSupName&&k.date===date&&
+        !['Done','Cancelled','Khách đã CK'].includes(k.status)
+      );
+      if(existingKH){
+        idCK=existingKH.idCK;
+      } else {
+        const d=date.replace(/-/g,'').slice(2);
+        const prefix=fixedPartner?.type==='Checker'?'NL':'TD';
+        idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+      }
+    }
+    newKH.idCK=idCK;newKH.stk=stk;newKH.cdAm=old.amount;newKH.status='Chờ khách CK';
+  }
+
+  D.kh.unshift(newKH);
   saveData(); renderKhDebt();
 }
 function mDelCK(idx){
@@ -5058,12 +5099,14 @@ function rt2(){
           ${canDpAdmin && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
           ${canDpAdmin && k.status === 'Chờ khách CK' ? `<button class="pill pill-del" title="Huỷ điều phối" onclick="confirmUndoDispatch('${k._id}')">${SVG_TRASH}</button>` : ''}
           ${canDpAdmin && k.status === 'Cancelled' ? `<button class="pill pill-edit" title="Khôi phục" onclick="restoreKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>` : ''}
+          ${canDpMoiNhap && k.status === 'Cancelled' ? `<button class="pill pill-edit" title="Sao chép thành khoản mới hôm nay" onclick="copyKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
         </div>
       </td>
       <td style="white-space:nowrap;display:${isAdmin2?'none':''}">
         <div style="display:flex;gap:4px;align-items:center">
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-edit" title="Sửa" onclick="confirmEditKH('${k._id}','edit')">${SVG_PENCIL}</button>` : ''}
           ${canDpMoiNhap && k.status === 'Mới nhập' ? `<button class="pill pill-del" title="Xoá" onclick="confirmEditKH('${k._id}','del')">${SVG_TRASH}</button>` : ''}
+          ${canDpMoiNhap && k.status === 'Cancelled' ? `<button class="pill pill-edit" title="Sao chép thành khoản mới hôm nay" onclick="copyKH('${k._id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
         </div>
       </td>
     </tr>
@@ -7043,6 +7086,55 @@ function restoreKH(id){
   k.status='Mới nhập'; k.idCK=''; k.stk=''; k.cdAm=0; k.ctime=Date.now();
   rt2(); rd0(); autosave();
   toast('✅ Đã khôi phục về Mới nhập');
+}
+
+// Sao chép 1 khoản công nợ KH đã Cancelled (VD bị huỷ do hết phiên) thành khoản MỚI
+// hôm nay — giữ nguyên dòng Cancelled cũ làm lịch sử, không sửa/xoá nó. Áp dụng lại
+// đúng auto-dispatch theo mapping cố định (giống hệt khi nhập KH mới thủ công), để
+// hành vi nhất quán dù là gõ tay hay bấm Sao chép.
+function copyKH(id){
+  const old = D.kh.find(x=>x._id===id); if(!old) return;
+  if(!confirm(`Sao chép công nợ "${old.name}" thành khoản mới hôm nay?`)) return;
+  ensureKhIds();
+
+  const fixedSupName = getFixedSup(old.name);
+  const fixedPartner = fixedSupName ? D.partners.find(p=>p.name===fixedSupName) : null;
+  const fixedSup = fixedSupName ? findAvailableSup(fixedSupName) : null;
+  const today_date = today();
+
+  const newKH = {
+    _id: 'k'+Math.random().toString(36).slice(2,9),
+    date: today_date, nv: old.nv,
+    name: old.name, amount: old.amount, origAmount: old.origAmount||old.amount,
+    note: old.note||'', status: 'Mới nhập',
+    idCK: '', stk: '', cdAm: 0, ctime: Date.now()
+  };
+
+  if(fixedSupName){
+    const stk = fixedPartner ? fixedPartner.stk : (fixedSup ? fixedSup.stk : '');
+    let idCK = '';
+    if(fixedSup){
+      idCK = fixedSup.idCK;
+      if(fixedSup.status==='Chờ điều phối') fixedSup.status='Đã điều phối';
+    } else {
+      const existingKH = D.kh.find(k=>
+        k.idCK && getFixedSup(k.name)===fixedSupName && k.date===today_date &&
+        !['Done','Cancelled','Khách đã CK'].includes(k.status)
+      );
+      if(existingKH){
+        idCK = existingKH.idCK;
+      } else {
+        const d = today_date.replace(/-/g,'').slice(2);
+        const prefix = fixedPartner?.type === 'Checker' ? 'NL' : 'TD';
+        idCK = prefix + d + String(D.ctr++).padStart(2,'0');
+      }
+    }
+    newKH.idCK = idCK; newKH.stk = stk; newKH.cdAm = old.amount; newKH.status = 'Chờ khách CK';
+  }
+
+  D.kh.unshift(newKH);
+  autosave(); rt2(); rt1(); rd0();
+  toast(`✅ Đã sao chép "${old.name}" thành khoản mới${fixedSupName?' → tự điều phối '+fixedSupName:''}`);
 }
 
 function showDetSup(id){
