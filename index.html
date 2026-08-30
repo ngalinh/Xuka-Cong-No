@@ -1242,7 +1242,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
         <button type="button" class="form-input" id="m-dp-picker-btn" onclick="mDpOpenPicker()" style="text-align:left;background:var(--bg);cursor:pointer">-- Chọn đối tác Sup/Checker --</button>
       </div>
       <div id="m-dp-stk-info" style="display:none;font-size:12px;color:#797f90;padding:8px 10px;background:var(--bg2);border-radius:8px;margin-bottom:14px;line-height:1.8"></div>
-      <div class="form-section"><label class="form-label">Số tiền chỉ định KH chuyển khoản (VNĐ)</label><input type="number" class="form-input" id="m-dp-amount" placeholder="0"></div>
+      <div class="form-section"><label class="form-label">Số tiền chỉ định KH chuyển khoản (VNĐ)</label><input type="text" inputmode="numeric" class="form-input" id="m-dp-amount" placeholder="0" oninput="mFormatAmountInput(this)"></div>
       <div id="m-dp-warn" style="display:none;background:rgba(243,200,90,0.15);border-radius:10px;padding:10px 12px;margin-top:8px">
         <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:#9a6a12"><input type="checkbox" id="m-dp-confirm-edit" onchange="mDpToggleSaveBtn()" style="margin-top:2px">Tôi đã thông báo cho Sale/CSKH về việc đổi Sup/Checker cho khoản này</label>
       </div>
@@ -2787,6 +2787,10 @@ let _mDpSelectedSupId=null;
 function mCopyText(t){
   navigator.clipboard && navigator.clipboard.writeText(t).then(()=>alert('Đã copy: '+t));
 }
+function mFormatAmountInput(input){
+  const raw=input.value.replace(/\\D/g,'');
+  input.value=raw?parseInt(raw).toLocaleString('en-US'):'';
+}
 function openMDispatch(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
   _mDispatchId=id;
@@ -2815,7 +2819,8 @@ function openMDispatch(id){
     : '-- Chọn đối tác Sup/Checker --';
   mDpUpdateStkInfo();
 
-  document.getElementById('m-dp-amount').value=k.cdAm||k.amount||'';
+  const dpAmt=k.cdAm||k.amount||0;
+  document.getElementById('m-dp-amount').value=dpAmt?dpAmt.toLocaleString('en-US'):'';
 
   const warnEl = document.getElementById('m-dp-warn');
   const saveBtn = document.getElementById('m-dp-save-btn');
@@ -2882,7 +2887,7 @@ function saveMDispatch(){
     alert('Vui lòng xác nhận đã thông báo Sale/CSKH'); return;
   }
   if(!_mDpSelectedSupId){ alert('Chọn tài khoản Sup/Checker'); return; }
-  const amount=Number(document.getElementById('m-dp-amount').value)||0;
+  const amount=parseInt(document.getElementById('m-dp-amount').value.replace(/\\D/g,''))||0;
   if(!amount){ alert('Nhập số tiền chỉ định'); return; }
 
   if(_mDpSelectedSupId==='__new__'){
