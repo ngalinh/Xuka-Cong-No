@@ -775,6 +775,7 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
   font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
   box-shadow:0 8px 20px rgba(150,140,230,0.35);
 }
+.form-btn-save:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
 
 /* === MONTH SWITCHER === */
 .month-pill{
@@ -1227,14 +1228,32 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
 
   <!-- DISPATCH KH OVERLAY -->
   <div class="form-overlay" id="m-dispatch-overlay">
-    <div class="hdr"><button class="hdr-menu-btn" onclick="closeMDispatch()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button><div class="hdr-center"><div class="hdr-title">Điều phối KH</div></div><div class="hdr-right"></div></div>
+    <div class="hdr"><button class="hdr-menu-btn" onclick="closeMDispatch()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button><div class="hdr-center"><div class="hdr-title" id="m-dp-title">Điều phối KH</div></div><div class="hdr-right"></div></div>
     <div class="form-body">
-      <div class="form-section"><label class="form-label">Tên KH</label><input class="form-input" id="m-dp-kh" readonly></div>
-      <div class="form-section"><label class="form-label">ID CK (để trống = tạo mới)</label><input class="form-input" id="m-dp-idck" placeholder="VD: TD010525..."></div>
-      <div class="form-section"><label class="form-label">Sup/Checker nhận</label><div class="ac-wrap"><input class="form-input" id="m-dp-partner" placeholder="Tìm Sup/Checker..." oninput="mDpPartnerAC(this)"><div class="autocomplete-list" id="m-dp-partner-ac" style="display:none"></div></div></div>
-      <div class="form-section"><label class="form-label">Số tiền chỉ định (VNĐ)</label><input type="number" class="form-input" id="m-dp-amount" placeholder="0"></div>
+      <div style="background:var(--bg2);border-radius:14px;padding:12px 14px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <div><div class="scard-title">Khách hàng</div><div id="m-dp-kh-name" style="font-weight:700"></div></div>
+          <div style="text-align:right"><div class="scard-title">Công nợ gốc</div><div id="m-dp-kh-amount" style="font-weight:700"></div></div>
+        </div>
+        <div id="m-dp-kh-char" style="margin-top:6px"></div>
+        <div id="m-dp-current-sup" style="display:none;margin-top:8px;padding-top:8px;border-top:1px solid rgba(120,120,180,0.12);font-size:12px;color:#797f90"></div>
+      </div>
+      <div class="form-section"><label class="form-label">Chọn tài khoản Sup/Checker nhận tiền</label>
+        <button type="button" class="form-input" id="m-dp-picker-btn" onclick="mDpOpenPicker()" style="text-align:left;background:var(--bg);cursor:pointer">-- Chọn đối tác Sup/Checker --</button>
+      </div>
+      <div id="m-dp-stk-info" style="display:none;font-size:12px;color:#797f90;padding:8px 10px;background:var(--bg2);border-radius:8px;margin-bottom:14px;line-height:1.8"></div>
+      <div class="form-section"><label class="form-label">Số tiền chỉ định KH chuyển khoản (VNĐ)</label><input type="number" class="form-input" id="m-dp-amount" placeholder="0"></div>
+      <div id="m-dp-warn" style="display:none;background:rgba(243,200,90,0.15);border-radius:10px;padding:10px 12px;margin-top:8px">
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:#9a6a12"><input type="checkbox" id="m-dp-confirm-edit" onchange="mDpToggleSaveBtn()" style="margin-top:2px">Tôi đã thông báo cho Sale/CSKH về việc đổi Sup/Checker cho khoản này</label>
+      </div>
     </div>
-    <div class="form-bottom"><button class="form-btn-cancel" onclick="closeMDispatch()">Hủy</button><button class="form-btn-save" onclick="saveMDispatch()">Điều phối</button></div>
+    <div class="form-bottom"><button class="form-btn-cancel" onclick="closeMDispatch()">Hủy</button><button class="form-btn-save" id="m-dp-save-btn" onclick="saveMDispatch()">Điều phối</button></div>
+  </div>
+
+  <!-- SUP/CHECKER PICKER (chọn 1 khoản công nợ cụ thể, giống bản desktop) -->
+  <div class="form-overlay" id="m-dp-picker-overlay">
+    <div class="hdr"><button class="hdr-menu-btn" onclick="mDpClosePicker()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button><div class="hdr-center"><div class="hdr-title">Chọn Sup/Checker</div></div><div class="hdr-right"></div></div>
+    <div class="scr-body" id="m-dp-picker-list"></div>
   </div>
 
   <!-- BILL CK FROM KH OVERLAY -->
@@ -2764,55 +2783,120 @@ function saveMEditSup(){
 
 // Dispatch KH overlay
 var _mDispatchId=null;
+let _mDpSelectedSupId=null;
+function mCopyText(t){
+  navigator.clipboard && navigator.clipboard.writeText(t).then(()=>alert('Đã copy: '+t));
+}
 function openMDispatch(id){
   const k=D.kh.find(x=>x._id===id);if(!k)return;
   _mDispatchId=id;
-  document.getElementById('m-dp-kh').value=k.name;
-  document.getElementById('m-dp-idck').value=k.idCK||'';
-  document.getElementById('m-dp-partner').value='';
+  const isEdit=!!k.idCK;
+  document.getElementById('m-dp-title').textContent = isEdit ? '✏️ Sửa điều phối' : '🔀 Gán ID CK';
+  document.getElementById('m-dp-kh-name').textContent = k.name;
+  document.getElementById('m-dp-kh-amount').textContent = fmtVND(k.origAmount||k.amount);
+
+  const char = getKhChar(k.name);
+  document.getElementById('m-dp-kh-char').innerHTML = char
+    ? '<div style="font-size:11.5px;color:#797f90">'+SVG_CLOCK+char.tm+(char.am?' · '+SVG_COIN+char.am:'')+'</div>'
+    : '';
+
+  const currentSup = k.idCK ? D.sup.find(s=>s.idCK===k.idCK) : null;
+  const curSupEl = document.getElementById('m-dp-current-sup');
+  if(currentSup){
+    curSupEl.style.display='';
+    curSupEl.innerHTML = 'ID CK hiện tại: <b class="mono">'+k.idCK+'</b> → '+currentSup.name;
+  } else {
+    curSupEl.style.display='none';
+  }
+
+  _mDpSelectedSupId = currentSup ? currentSup.id : null;
+  document.getElementById('m-dp-picker-btn').textContent = currentSup
+    ? ('['+currentSup.type+'] '+currentSup.name)
+    : '-- Chọn đối tác Sup/Checker --';
+  mDpUpdateStkInfo();
+
   document.getElementById('m-dp-amount').value=k.cdAm||k.amount||'';
+
+  const warnEl = document.getElementById('m-dp-warn');
+  const saveBtn = document.getElementById('m-dp-save-btn');
+  if(isEdit){
+    warnEl.style.display='';
+    document.getElementById('m-dp-confirm-edit').checked=false;
+    saveBtn.disabled=true;
+  } else {
+    warnEl.style.display='none';
+    saveBtn.disabled=false;
+  }
+
   document.getElementById('m-dispatch-overlay').classList.add('open');
 }
-function closeMDispatch(){document.getElementById('m-dispatch-overlay').classList.remove('open')}
-function mDpPartnerAC(input){
-  const q=input.value.toLowerCase();
-  const ac=document.getElementById('m-dp-partner-ac');
-  if(!q){ac.style.display='none';return;}
-  const m=D.partners.filter(p=>p.name.toLowerCase().includes(q)).slice(0,6);
-  if(!m.length){ac.style.display='none';return;}
-  ac.innerHTML=m.map(p=>'<div class="autocomplete-item" onclick="mDpSelectPartner(\\''+p.name+'\\')">'+p.name+' '+typePill(p.type)+'</div>').join('');
-  ac.style.display='block';
+function mDpToggleSaveBtn(){
+  document.getElementById('m-dp-save-btn').disabled = !document.getElementById('m-dp-confirm-edit').checked;
 }
-function mDpSelectPartner(name){
-  document.getElementById('m-dp-partner').value=name;
-  document.getElementById('m-dp-partner-ac').style.display='none';
-  const idckEl=document.getElementById('m-dp-idck');
-  const existingSup=D.sup.find(s=>s.name===name && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
-  idckEl.value=existingSup?existingSup.idCK:'';
+function closeMDispatch(){document.getElementById('m-dispatch-overlay').classList.remove('open')}
+
+// Danh sách chọn Sup/Checker: chỉ gợi ý khoản của phiên hiện tại (tính từ mốc Chốt
+// phiên gần nhất D.lastChotPhien) — khớp đúng logic đã dùng bên desktop
+// (showDpFromKH). Khoản đang gán cho đúng KH này (sửa điều phối) vẫn luôn hiện.
+function mDpOpenPicker(){
+  const k=D.kh.find(x=>x._id===_mDispatchId);if(!k)return;
+  const supOptions = D.sup.filter(s=>!['Cancelled','Done'].includes(s.status) &&
+    ((s.ctime && s.ctime>=(D.lastChotPhien||0)) || (k.idCK && s.idCK===k.idCK)));
+  const list = document.getElementById('m-dp-picker-list');
+  list.innerHTML = (supOptions.length ? supOptions.map(s=>
+    '<div class="list-row" style="cursor:pointer" onclick="mDpPick(\\''+s.id+'\\')">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px">'
+    +'<div style="font-size:14px;font-weight:600">'+s.name+' '+typePill(s.type)+'</div>'
+    +statusPill(s.status)+'</div>'
+    +'<div style="font-size:12px;color:#797f90;margin-top:6px">Công nợ: '+fmtVND(s.amount)+'</div>'
+    +'</div>'
+  ).join('') : emptyState('Không có Sup/Checker nào của phiên hiện tại'))
+  +'<div class="list-row" style="cursor:pointer;color:#5b6bd6;font-weight:600;text-align:center" onclick="mDpPick(\\'__new__\\')">➕ Tạo khoản mới cho đối tác chưa có trong danh sách</div>';
+  document.getElementById('m-dp-picker-overlay').classList.add('open');
+}
+function mDpClosePicker(){document.getElementById('m-dp-picker-overlay').classList.remove('open')}
+function mDpPick(supId){
+  _mDpSelectedSupId = supId;
+  if(supId==='__new__'){
+    document.getElementById('m-dp-picker-btn').textContent = '➕ Tạo khoản mới cho đối tác chưa có';
+  } else {
+    const s = D.sup.find(x=>x.id===supId);
+    document.getElementById('m-dp-picker-btn').textContent = s ? ('['+s.type+'] '+s.name) : '-- Chọn đối tác Sup/Checker --';
+  }
+  mDpUpdateStkInfo();
+  mDpClosePicker();
+}
+function mDpUpdateStkInfo(){
+  const info = document.getElementById('m-dp-stk-info');
+  if(!_mDpSelectedSupId || _mDpSelectedSupId==='__new__'){ info.style.display='none'; return; }
+  const s = D.sup.find(x=>x.id===_mDpSelectedSupId);
+  if(!s){ info.style.display='none'; return; }
+  info.style.display='block';
+  info.innerHTML = '<b>STK nhận:</b> '+(s.stk||'—')+' &nbsp; <b>Công nợ:</b> '+fmtVND(s.amount)
+    +'<br><button class="btn btn-sm" style="margin-top:4px" onclick="mCopyText(\\''+(s.stk||'').replace(/'/g,"\\\\'")+'\\')">'+SVG_CLIP+'Copy STK</button>';
 }
 function saveMDispatch(){
   const k=D.kh.find(x=>x._id===_mDispatchId);if(!k)return;
-  const typedIdCK=document.getElementById('m-dp-idck').value.trim();
-  const partnerName=document.getElementById('m-dp-partner').value.trim();
+  const isEdit=!!k.idCK;
+  if(isEdit && !document.getElementById('m-dp-confirm-edit').checked){
+    alert('Vui lòng xác nhận đã thông báo Sale/CSKH'); return;
+  }
+  if(!_mDpSelectedSupId){ alert('Chọn tài khoản Sup/Checker'); return; }
   const amount=Number(document.getElementById('m-dp-amount').value)||0;
-  const partner=D.partners.find(p=>p.name===partnerName);
-  // Nếu đã chọn đúng 1 đối tác có thật, ID CK luôn phải theo công nợ hiện có của đối tác đó
-  // (bỏ qua giá trị cũ còn sót trong ô ID CK) — không phụ thuộc việc autocomplete có bắn sự
-  // kiện điền sẵn hay không, tránh trường hợp gõ tay/chọn mà ô ID CK không được cập nhật.
-  let idCK;
-  if(partner){
-    const existingSup=D.sup.find(s=>s.name===partnerName && (s.status==='Chờ điều phối' || (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
-    idCK=existingSup?existingSup.idCK:(typedIdCK||genId(partner.type==='Checker'?'NL':'TD'));
-  } else {
-    idCK=typedIdCK||genId('TD');
+  if(!amount){ alert('Nhập số tiền chỉ định'); return; }
+
+  if(_mDpSelectedSupId==='__new__'){
+    alert('Vui lòng nhập công nợ Sup/Checker trước ở tab Công nợ Sup/Checker'); return;
   }
-  k.idCK=idCK;k.stk=partner?partner.stk:'';k.cdAm=amount;k.status='Chờ khách CK';
-  const existingSup=D.sup.find(s=>s.idCK===idCK);
-  if(existingSup){
-    if(existingSup.status==='Chờ điều phối') existingSup.status='Đã điều phối';
-  } else if(partner){
-    D.sup.push({id:idCK,date:today(),nv:'',type:partner.type,name:partner.name,amount,stk:partner.stk,status:'Đã điều phối',idCK,note:'',ctime:Date.now()});
-  }
+
+  const sup=D.sup.find(s=>s.id===_mDpSelectedSupId);
+  if(!sup){ alert('Không tìm thấy Sup/Checker'); return; }
+
+  if(!sup.idCK) sup.idCK=genId(sup.type==='Checker'?'NL':'TD');
+  if(sup.status==='Chờ điều phối') sup.status='Đã điều phối';
+
+  k.idCK=sup.idCK;k.stk=sup.stk;k.cdAm=amount;k.status='Chờ khách CK';
+
   saveData();closeMDispatch();renderKhDebt();renderSupDebt();
 }
 
