@@ -2339,6 +2339,7 @@ function renderSupDebt(){
     const canDoEdit=(canEdit&&s.status==='Chờ điều phối')||(mRole==='admin'&&s.status==='Cancelled');
     const canDoDel=canEdit&&s.status==='Chờ điều phối';
     const canDoRestore=mRole==='admin'&&s.status==='Cancelled';
+    const canDoCopy=canEdit&&s.status==='Cancelled';
     return '<div class="list-row">'
       +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">'
       +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:14px;font-weight:600">'+(s.name||'—')+'</span>'+typePill(s.type)+'</div>'
@@ -2353,7 +2354,7 @@ function renderSupDebt(){
       +'</div>'
       +'<div style="text-align:right">'
       +'<div style="font-size:16px;font-weight:700">'+fmtVND(s.amount)+'</div>'
-      +((canDoEdit||canDoDel||canDoRestore)?'<div style="display:flex;gap:4px;justify-content:flex-end;margin-top:6px">'+(canDoEdit?mActBtn(SVG_PENCIL_SM,'openMEditSup(\\''+s.id+'\\')'):'')+(canDoRestore?mActBtn(SVG_RESTORE_SM,'mRestoreSup(\\''+s.id+'\\')'):'')+(canDoDel?mActBtn(SVG_TRASH_SM,'mDelSup(\\''+s.id+'\\')','#e05656','rgba(240,101,101,0.13)'):'')+'</div>':'')
+      +((canDoEdit||canDoDel||canDoRestore||canDoCopy)?'<div style="display:flex;gap:4px;justify-content:flex-end;margin-top:6px">'+(canDoEdit?mActBtn(SVG_PENCIL_SM,'openMEditSup(\\''+s.id+'\\')'):'')+(canDoRestore?mActBtn(SVG_RESTORE_SM,'mRestoreSup(\\''+s.id+'\\')'):'')+(canDoCopy?mActBtn(SVG_COPY_SM,'mCopySup(\\''+s.id+'\\')'):'')+(canDoDel?mActBtn(SVG_TRASH_SM,'mDelSup(\\''+s.id+'\\')','#e05656','rgba(240,101,101,0.13)'):'')+'</div>':'')
       +'</div></div></div>';
   }).join(''):emptyState('Chưa có công nợ Sup/Checker');
   el.innerHTML=buildHdr({left:'menu',title:'Công nợ Sup/Checker'})
@@ -2653,6 +2654,34 @@ function mRestoreSup(id){
   const s=D.sup.find(x=>x.id===id);if(!s)return;
   if(!confirm('Khôi phục khoản công nợ Sup/Checker này về "Chờ điều phối"?')) return;
   s.status='Chờ điều phối';s.ctime=Date.now();
+  saveData(); renderSupDebt();
+}
+// Sao chép 1 khoản công nợ Sup/Checker đã Cancelled thành khoản MỚI hôm nay — giữ
+// nguyên dòng Cancelled cũ làm lịch sử. Áp dụng lại đúng auto-dispatch cho KH có
+// mapping cố định với đối tác này, giống hệt saveSupForm() khi nhập công nợ mới.
+function mCopySup(id){
+  const old=D.sup.find(x=>x.id===id);if(!old)return;
+  if(!confirm('Sao chép công nợ "'+old.name+'" thành khoản mới hôm nay?')) return;
+  const date=today();
+  const newSup={id:genId('SP'),date,nv:old.nv,type:old.type,name:old.name,amount:old.amount,
+    stk:old.stk,status:'Chờ điều phối',idCK:'',note:old.note||'',ctime:Date.now()};
+  D.sup.push(newSup);
+
+  let autoCount=0;
+  D.kh.forEach(k=>{
+    if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
+    if(getFixedSup(k.name)===newSup.name){
+      if(!newSup.idCK){
+        const d=date.replace(/-/g,'').slice(2);
+        const prefix=newSup.type==='Checker'?'NL':'TD';
+        newSup.idCK=prefix+d+String(D.ctr++).padStart(2,'0');
+      }
+      k.idCK=newSup.idCK; k.stk=newSup.stk; k.cdAm=k.amount; k.status='Chờ khách CK';
+      autoCount++;
+    }
+  });
+  if(autoCount>0) newSup.status='Đã điều phối';
+
   saveData(); renderSupDebt();
 }
 // Sao chép 1 khoản công nợ KH đã Cancelled thành khoản MỚI hôm nay — giữ nguyên dòng
@@ -5103,6 +5132,7 @@ function rt1(){
         <div style="display:flex;gap:4px;align-items:center">
           ${canDoEdit ? `<button class="pill pill-edit" onclick="editStk('${s.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
           ${currentRole === 'admin' && s.status === 'Cancelled' ? `<button class="pill pill-edit" title="Khôi phục" onclick="restoreSup('${s.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>` : ''}
+          ${canEdit && s.status === 'Cancelled' ? `<button class="pill pill-edit" title="Sao chép thành khoản mới hôm nay" onclick="copySup('${s.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
           ${canEdit && s.status === 'Chờ điều phối' ? `<button class="pill pill-del" onclick="delSup('${s.id}')">${SVG_TRASH}</button>` : ''}
         </div>
       </td>
@@ -7190,6 +7220,41 @@ function restoreSup(id){
   s.status='Chờ điều phối'; s.ctime=Date.now();
   rt1(); rd0(); autosave();
   toast('✅ Đã khôi phục về Chờ điều phối');
+}
+
+// Sao chép 1 khoản công nợ Sup/Checker đã Cancelled thành khoản MỚI hôm nay — giữ
+// nguyên dòng Cancelled cũ làm lịch sử. Áp dụng lại đúng auto-dispatch cho KH có
+// mapping cố định với đối tác này, giống hệt saveSup() khi nhập công nợ mới.
+function copySup(id){
+  const old = D.sup.find(x=>x.id===id); if(!old) return;
+  if(!confirm(`Sao chép công nợ "${old.name}" thành khoản mới hôm nay?`)) return;
+
+  const date = today();
+  const prefix = old.type === 'Sup' ? 'TD' : 'NL';
+  const newIdCK = prefix + date.replace(/-/g,'').slice(2) + String(D.ctr++).padStart(2,'0');
+  D.sup.unshift({
+    id: 's'+Date.now(), date, nv: old.nv, type: old.type, name: old.name, amount: old.amount,
+    stk: old.stk, note: old.note||'', status: 'Chờ điều phối', idCK: newIdCK, ctime: Date.now()
+  });
+
+  // Auto-dispatch: tất cả KH có mapping cố định với đối tác vừa sao chép
+  // Kể cả KH đã có idCK cũ — luôn cập nhật sang idCK mới nhất
+  const newSup = D.sup[0];
+  let autoCount = 0;
+  D.kh.forEach(k=>{
+    if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
+    if(getFixedSup(k.name) === newSup.name){
+      k.idCK   = newSup.idCK;
+      k.stk    = newSup.stk;
+      k.cdAm   = k.amount;
+      k.status = 'Chờ khách CK';
+      autoCount++;
+    }
+  });
+  if(autoCount > 0) newSup.status = 'Đã điều phối';
+
+  autosave(); rt1(); rt2(); rd0();
+  toast(`✅ Đã sao chép "${old.name}" thành khoản mới${autoCount>0?` → tự điều phối ${autoCount} KH`:''}`);
 }
 
 // Sao chép 1 khoản công nợ KH đã Cancelled (VD bị huỷ do hết phiên) thành khoản MỚI
