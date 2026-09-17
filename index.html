@@ -459,16 +459,19 @@ function canonicalSig(obj) {
   try { return JSON.stringify(sortKeys(obj)); } catch(e) { return null; }
 }
 
-// Chỉ so sánh đúng 4 field dữ liệu giao dịch cốt lõi (sup/kh/ck/ctr) — loại dữ liệu
-// thực sự cần bảo vệ khỏi bị ghi đè mất. Cố tình bỏ qua partners/khChars/charOptions:
-// các field này có kiểu xử lý "chỉ ghi đè nếu server có dữ liệu, không thì giữ nguyên
-// giá trị mặc định/đang có sẵn phía client" (xem loadFromStorage/loadData) — nên dữ
-// liệu thô lấy thẳng từ server và giá trị D phía client dễ lệch cấu trúc dù nội dung
-// giao dịch thực chất không đổi, khiến 2 chữ ký không bao giờ khớp lại được nữa (chặn
-// mọi lần lưu sau đó vĩnh viễn).
+// Chỉ so sánh đúng 5 field dữ liệu giao dịch cốt lõi (sup/kh/ck/ctr/lastChotPhien) —
+// loại dữ liệu thực sự cần bảo vệ khỏi bị ghi đè mất. Cố tình bỏ qua partners/khChars/
+// charOptions: các field này có kiểu xử lý "chỉ ghi đè nếu server có dữ liệu, không thì
+// giữ nguyên giá trị mặc định/đang có sẵn phía client" (xem loadFromStorage/loadData) —
+// nên dữ liệu thô lấy thẳng từ server và giá trị D phía client dễ lệch cấu trúc dù nội
+// dung giao dịch thực chất không đổi, khiến 2 chữ ký không bao giờ khớp lại được nữa
+// (chặn mọi lần lưu sau đó vĩnh viễn). lastChotPhien phải nằm trong chữ ký này — nếu
+// không, 1 thiết bị đang cầm mốc Chốt phiên cũ (do mở tab từ trước khi ai đó Chốt phiên
+// trên máy khác) chỉ cần lưu 1 thao tác bất kỳ là vô tình ghi đè mất mốc Chốt phiên mới
+// trên server, làm "phiên hiện tại" bị tính lùi về trước đó rất lâu.
 function normalizeForSig(main) {
   main = main || {};
-  return { sup: main.sup || [], kh: main.kh || [], ck: main.ck || [], ctr: main.ctr || 1 };
+  return { sup: main.sup || [], kh: main.kh || [], ck: main.ck || [], ctr: main.ctr || 1, lastChotPhien: main.lastChotPhien || 0 };
 }
 
 function postToAPI(data) {
