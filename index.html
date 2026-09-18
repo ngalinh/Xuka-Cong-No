@@ -459,20 +459,19 @@ function canonicalSig(obj) {
   try { return JSON.stringify(sortKeys(obj)); } catch(e) { return null; }
 }
 
-// Chỉ so sánh đúng 6 field dữ liệu giao dịch cốt lõi (sup/kh/ck/ctr/lastChotPhien/
-// muaUsd) — loại dữ liệu thực sự cần bảo vệ khỏi bị ghi đè mất. Cố tình bỏ qua
-// partners/khChars/charOptions: các field này có kiểu xử lý "chỉ ghi đè nếu server có
-// dữ liệu, không thì giữ nguyên giá trị mặc định/đang có sẵn phía client" (xem
-// loadFromStorage/loadData) — nên dữ liệu thô lấy thẳng từ server và giá trị D phía
-// client dễ lệch cấu trúc dù nội dung giao dịch thực chất không đổi, khiến 2 chữ ký
-// không bao giờ khớp lại được nữa (chặn mọi lần lưu sau đó vĩnh viễn). lastChotPhien
-// phải nằm trong chữ ký này — nếu không, 1 thiết bị đang cầm mốc Chốt phiên cũ (do mở
-// tab từ trước khi ai đó Chốt phiên trên máy khác) chỉ cần lưu 1 thao tác bất kỳ là vô
-// tình ghi đè mất mốc Chốt phiên mới trên server, làm "phiên hiện tại" bị tính lùi về
-// trước đó rất lâu.
+// Chỉ so sánh đúng 5 field dữ liệu giao dịch cốt lõi (sup/kh/ck/ctr/lastChotPhien) —
+// loại dữ liệu thực sự cần bảo vệ khỏi bị ghi đè mất. Cố tình bỏ qua partners/khChars/
+// charOptions: các field này có kiểu xử lý "chỉ ghi đè nếu server có dữ liệu, không thì
+// giữ nguyên giá trị mặc định/đang có sẵn phía client" (xem loadFromStorage/loadData) —
+// nên dữ liệu thô lấy thẳng từ server và giá trị D phía client dễ lệch cấu trúc dù nội
+// dung giao dịch thực chất không đổi, khiến 2 chữ ký không bao giờ khớp lại được nữa
+// (chặn mọi lần lưu sau đó vĩnh viễn). lastChotPhien phải nằm trong chữ ký này — nếu
+// không, 1 thiết bị đang cầm mốc Chốt phiên cũ (do mở tab từ trước khi ai đó Chốt phiên
+// trên máy khác) chỉ cần lưu 1 thao tác bất kỳ là vô tình ghi đè mất mốc Chốt phiên mới
+// trên server, làm "phiên hiện tại" bị tính lùi về trước đó rất lâu.
 function normalizeForSig(main) {
   main = main || {};
-  return { sup: main.sup || [], kh: main.kh || [], ck: main.ck || [], ctr: main.ctr || 1, lastChotPhien: main.lastChotPhien || 0, muaUsd: main.muaUsd || [] };
+  return { sup: main.sup || [], kh: main.kh || [], ck: main.ck || [], ctr: main.ctr || 1, lastChotPhien: main.lastChotPhien || 0 };
 }
 
 function postToAPI(data) {
@@ -1081,59 +1080,6 @@ input[type="date"].form-input{-webkit-appearance:none;appearance:none;line-heigh
     </div>
   </div>
 
-  <!-- SỔ MUA $ FORM OVERLAY -->
-  <div class="form-overlay" id="musd-form-overlay">
-    <div class="hdr">
-      <button class="hdr-menu-btn" onclick="closeMUsdForm()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-      <div class="hdr-center"><div class="hdr-title" id="musd-form-title">Nhập giao dịch mua $</div></div>
-      <div class="hdr-right"></div>
-    </div>
-    <div class="form-body">
-      <div class="form-section">
-        <label class="form-label">Ngày</label>
-        <input type="date" class="form-input" id="musd-date">
-      </div>
-      <div class="form-section">
-        <label class="form-label">Website</label>
-        <input type="text" class="form-input" id="musd-website" placeholder="VD: Macys, Sephora, USDT..." list="musd-website-dl">
-        <datalist id="musd-website-dl"></datalist>
-      </div>
-      <div class="form-section">
-        <label class="form-label">Đối tác (Sup/Checker)</label>
-        <div class="ac-wrap">
-          <input type="text" class="form-input" id="musd-name" placeholder="Chọn tên đối tác..." oninput="musdNameAC(this)">
-          <div class="autocomplete-list" id="musd-name-ac" style="display:none"></div>
-        </div>
-      </div>
-      <div class="form-section">
-        <label class="form-label">Tiền USD</label>
-        <input type="number" step="0.01" class="form-input" id="musd-usd" placeholder="0.00" oninput="updateMUsdVnd()">
-      </div>
-      <div class="form-section">
-        <label class="form-label">Rate</label>
-        <input type="text" class="form-input" id="musd-rate" placeholder="VD: 24000" oninput="updateMUsdVnd()">
-      </div>
-      <div class="form-section">
-        <label class="form-label">Tiền VNĐ (tự tính)</label>
-        <div style="font-size:16px;font-weight:700;padding:10px 12px;background:rgba(120,120,180,0.08);border-radius:10px" id="musd-vnd-preview">0</div>
-      </div>
-      <div class="form-section">
-        <label class="form-label">Người thu</label>
-        <select class="form-input" id="musd-nv"><option value="">-- Chọn NV --</option></select>
-      </div>
-      <div class="form-section">
-        <label class="form-label">Ghi chú</label>
-        <textarea class="form-input" id="musd-note" placeholder="Ghi chú..."></textarea>
-      </div>
-    </div>
-    <div class="form-bottom">
-      <button class="form-btn-cancel" onclick="closeMUsdForm()">Hủy</button>
-      <button class="form-btn-save" onclick="saveMUsdForm()">Lưu</button>
-    </div>
-  </div>
-
   <!-- TRACKING FORM OVERLAY -->
   <div class="form-overlay" id="ck-form-overlay">
     <div class="hdr">
@@ -1443,7 +1389,6 @@ const D = {
   sup: [], kh: [], ck: [], ctr: 1,
   partners: [],
   khChars: [],
-  muaUsd: [],
   charOptions: JSON.parse(JSON.stringify(DEFAULT_CHAR_OPTIONS)),
   lastChotPhien: 0, // mốc thời gian (ctime) chốt phiên gần nhất — đánh dấu "ngày đầu tiên của phiên hiện tại"
 };
@@ -1542,7 +1487,6 @@ function loadData(){
     D.kh=p.kh||[];
     D.ck=p.ck||[];
     D.ctr=p.ctr||1;
-    D.muaUsd=p.muaUsd||[];
     if(p.partners&&p.partners.length) D.partners=p.partners;
     if(p.khChars&&p.khChars.length) D.khChars=p.khChars;
     D.charOptions=Object.assign({},DEFAULT_CHAR_OPTIONS,p.charOptions||{});
@@ -1554,7 +1498,7 @@ function loadData(){
 }
 function saveData(){
   try{
-    const payload={sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions,lastChotPhien:D.lastChotPhien,muaUsd:D.muaUsd};
+    const payload={sup:D.sup,kh:D.kh,ck:D.ck,ctr:D.ctr,partners:D.partners,khChars:D.khChars,charOptions:D.charOptions,lastChotPhien:D.lastChotPhien};
     localStorage.setItem(LS_KEY,JSON.stringify(payload));
     postToAPI(payload);
   }catch(e){}
@@ -1611,28 +1555,6 @@ function findAvailableSup(supName){
   return D.sup.find(s=>s.name===supName && (s.status==='Chờ điều phối' ||
     (s.status==='Đã điều phối' && D.kh.filter(x=>x.idCK===s.idCK).reduce((a,x)=>a+(x.cdAm||0),0) < s.amount)));
 }
-
-/* ===== Sổ mua $ — sổ cái công nợ Sup/Checker (port từ desktop) ===== */
-const MUA_USD_STATUSES = ['Blank','Y/C TT','CK trực tiếp','Paid'];
-function supUsdGrandTotal(name){
-  return D.muaUsd.filter(r=>r.name===name && ['Y/C TT','CK trực tiếp','Paid'].includes(r.status))
-    .reduce((a,r)=>a+(r.vndAmount||0),0);
-}
-function supUsdDispatchedTotal(name){
-  const idcks = new Set(D.sup.filter(s=>s.name===name && s.idCK).map(s=>s.idCK));
-  if(!idcks.size) return 0;
-  return D.ck.filter(c=>idcks.has(c.idCK) &&
-    (c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi'))
-    .reduce((a,c)=>a+c.amount,0);
-}
-function supUsdDirectPaidTotal(name){
-  return D.muaUsd.filter(r=>r.name===name && r.status==='Paid')
-    .reduce((a,r)=>a+(r.vndAmount||0),0);
-}
-function supUsdRemaining(name){
-  return supUsdGrandTotal(name) - supUsdDispatchedTotal(name) - supUsdDirectPaidTotal(name);
-}
-function genMuaUsdId(){ return 'mu'+Date.now()+Math.random().toString(36).slice(2,6); }
 
 /* ===== Match CK — thuật toán gợi ý ghép (port từ desktop) ===== */
 function supTimeLevel(tm){
@@ -2407,11 +2329,7 @@ function cleanupOrphanSup(){
     saveData();
   }
 }
-let supDebtView='debt';
-function setSupDebtView(v){supDebtView=v;renderSupDebt()}
-
 function renderSupDebt(){
-  if(supDebtView==='usd'){ renderMuaUsdScreen(); return; }
   cleanupOrphanSup();
   const el=document.getElementById('scr-supDebt');
   const TABS=[{id:'all',label:'Tất cả'},{id:'Sup',label:'Sup'},{id:'Checker',label:'Checker'}];
@@ -2419,7 +2337,6 @@ function renderSupDebt(){
   if(supTab!=='all') rows=rows.filter(s=>s.type===supTab);
   const canEdit=['admin','mh'].includes(mRole);
   const tabs=TABS.map(t=>'<button class="tab-btn '+(supTab===t.id?'active':'')+'" onclick="setSupTab(\\''+t.id+'\\')">'+t.label+'</button>').join('');
-  const viewSeg='<div class="tab-bar" style="margin-bottom:8px"><button class="tab-btn active" onclick="setSupDebtView(\\'debt\\')">Công nợ</button><button class="tab-btn" onclick="setSupDebtView(\\'usd\\')">Sổ mua $</button></div>';
   const list=rows.length?rows.map(s=>{
     const pchar=D.partners.find(p=>p.name===s.name);
     const canDoEdit=(canEdit&&s.status==='Chờ điều phối')||(mRole==='admin'&&s.status==='Cancelled');
@@ -2444,7 +2361,8 @@ function renderSupDebt(){
       +'</div></div></div>';
   }).join(''):emptyState('Chưa có công nợ Sup/Checker');
   el.innerHTML=buildHdr({left:'menu',title:'Công nợ Sup/Checker'})
-    +'<div class="scr-body">'+viewSeg+'<div class="tab-bar">'+tabs+'</div>'+list+'</div>';
+    +'<div class="scr-body"><div class="tab-bar">'+tabs+'</div>'+list+'</div>'
+    +'<button class="fab" onclick="openSupForm()">'+icoSvg(ICO_PLUS,24)+'</button>';
 }
 
 function setSupTab(t){supTab=t;renderSupDebt()}
@@ -2508,150 +2426,6 @@ function saveSupForm(){
   saveData();
   closeSupForm();
   renderSupDebt();
-}
-
-// ============================================================
-// SỔ MUA $ (subtab trong Công nợ Sup/Checker)
-// ============================================================
-const USD_STATUS_BADGE_M = {'Blank':'#797f90','Y/C TT':'#9a6a12','CK trực tiếp':'#1f8a7a','Paid':'#2a9d63'};
-const USD_STATUS_BG_M = {'Blank':'rgba(120,120,180,0.12)','Y/C TT':'rgba(243,200,90,0.22)','CK trực tiếp':'rgba(159,229,216,0.45)','Paid':'rgba(53,196,122,0.16)'};
-
-let musdMonth='';
-let musdQ='';
-function renderMuaUsdScreen(){
-  const el=document.getElementById('scr-supDebt');
-  const canEdit=['admin','mh'].includes(mRole);
-  const viewSeg='<div class="tab-bar" style="margin-bottom:8px"><button class="tab-btn" onclick="setSupDebtView(\\'debt\\')">Công nợ</button><button class="tab-btn active" onclick="setSupDebtView(\\'usd\\')">Sổ mua $</button></div>';
-
-  let rows=D.muaUsd.filter(r=>
-    (!musdMonth || (r.date||'').slice(0,7)===musdMonth) &&
-    (!musdQ || (r.name||'').toLowerCase().includes(musdQ.toLowerCase()))
-  );
-  rows=[...rows].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.ctime||0)-(a.ctime||0));
-
-  const names=[...new Set(D.muaUsd.map(r=>r.name).filter(Boolean))].sort();
-  const summary=names.map(name=>{
-    const total=supUsdGrandTotal(name);
-    if(total<=0) return '';
-    const remaining=supUsdRemaining(name);
-    return '<div style="background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.9);border-radius:14px;padding:10px 14px;margin-bottom:8px">'
-      +'<div style="font-size:13px;font-weight:700">'+name+'</div>'
-      +'<div style="display:flex;justify-content:space-between;margin-top:4px">'
-      +'<span style="font-size:11px;color:#797f90">Tổng: '+fmtVND(total)+'</span>'
-      +'<span style="font-size:13px;font-weight:700;color:'+(remaining>0?'#e05656':'#2a9d63')+'">Còn lại: '+fmtVND(remaining)+'</span>'
-      +'</div></div>';
-  }).join('');
-
-  const list=rows.length?rows.map(r=>{
-    const canDel=canEdit && r.status==='Blank';
-    const statusSel=canEdit
-      ? '<select onchange="changeMUsdStatus(\\''+r.id+'\\',this.value)" style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;border:none;background:'+(USD_STATUS_BG_M[r.status]||'rgba(120,120,180,0.12)')+';color:'+(USD_STATUS_BADGE_M[r.status]||'#797f90')+'">'
-        +MUA_USD_STATUSES.map(s=>'<option value="'+s+'" '+(r.status===s?'selected':'')+'>'+s+'</option>').join('')+'</select>'
-      : statusPill(r.status);
-    return '<div class="list-row">'
-      +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">'
-      +'<span style="font-size:14px;font-weight:600">'+r.name+'</span>'+statusSel
-      +'</div>'
-      +'<div style="font-size:11px;color:#9aa0b2;margin-bottom:5px">'+SVG_CAL+fmtDate(r.date)+(r.website?' · '+r.website:'')+(r.nv?' · '+r.nv:'')+'</div>'
-      +'<div style="display:flex;align-items:flex-end;justify-content:space-between;padding-top:6px;border-top:1px solid rgba(120,120,180,0.1)">'
-      +'<div style="font-size:11px;color:#797f90">$'+(r.usdAmount||0).toLocaleString('en-US')+' × '+fmtVND(r.rate)+(r.note?'<div style="margin-top:2px">'+r.note+'</div>':'')+'</div>'
-      +'<div style="text-align:right">'
-      +'<div style="font-size:15px;font-weight:700">'+fmtVND(r.vndAmount)+'</div>'
-      +(canEdit?'<div style="display:flex;gap:4px;justify-content:flex-end;margin-top:6px">'+mActBtn(SVG_PENCIL_SM,'openMUsdFormM(\\''+r.id+'\\')')+(canDel?mActBtn(SVG_TRASH_SM,'delMUsdRow(\\''+r.id+'\\')','#e05656','rgba(240,101,101,0.13)'):'')+'</div>':'')
-      +'</div></div></div>';
-  }).join(''):emptyState('Chưa có giao dịch mua $ nào');
-
-  el.innerHTML=buildHdr({left:'menu',title:'Sổ mua $'})
-    +'<div class="scr-body">'+viewSeg
-    +'<div style="display:flex;gap:6px;margin-bottom:10px">'
-    +'<input type="month" value="'+musdMonth+'" onchange="musdMonth=this.value;renderMuaUsdScreen()" style="flex:1;font-size:12.5px;padding:7px 10px;border-radius:10px;border:1px solid rgba(140,150,230,0.3);background:rgba(255,255,255,0.75);color:#2a2e3a">'
-    +'<input type="text" value="'+musdQ+'" placeholder="Tìm đối tác..." oninput="musdQ=this.value;renderMuaUsdScreen()" style="flex:1;font-size:12.5px;padding:7px 10px;border-radius:10px;border:1px solid rgba(140,150,230,0.3);background:rgba(255,255,255,0.75);color:#2a2e3a">'
-    +'</div>'
-    +(canEdit?'<button class="btn btn-sm" style="width:100%;margin-bottom:10px" onclick="exportMUsdExcel()">'+SVG_CLIP+' Xuất Excel</button>':'')
-    +summary+list+'</div>'
-    +(canEdit?'<button class="fab" onclick="openMUsdFormM()">'+icoSvg(ICO_PLUS,24)+'</button>':'');
-}
-
-let _mEditUsdId=null;
-function openMUsdFormM(id){
-  _mEditUsdId=id||null;
-  const r=id?D.muaUsd.find(x=>x.id===id):null;
-  const sel=document.getElementById('musd-nv');
-  sel.innerHTML='<option value="">-- Chọn NV --</option>';
-  CFG_USERS.filter(u=>u.active!==false).forEach(u=>{ sel.innerHTML+='<option value="'+u.name+'">'+u.name+'</option>'; });
-  const websites=[...new Set(D.muaUsd.map(x=>x.website).filter(Boolean))].sort();
-  document.getElementById('musd-website-dl').innerHTML=websites.map(w=>'<option value="'+w+'">').join('');
-  document.getElementById('musd-date').value=r?r.date:today();
-  document.getElementById('musd-website').value=r?(r.website||''):'';
-  document.getElementById('musd-name').value=r?r.name:'';
-  document.getElementById('musd-usd').value=r?r.usdAmount:'';
-  document.getElementById('musd-rate').value=r?r.rate:'';
-  document.getElementById('musd-nv').value=r?(r.nv||''):'';
-  document.getElementById('musd-note').value=r?(r.note||''):'';
-  document.getElementById('musd-form-title').textContent=r?'Sửa giao dịch mua $':'Nhập giao dịch mua $';
-  updateMUsdVnd();
-  document.getElementById('musd-form-overlay').classList.add('open');
-}
-function closeMUsdForm(){document.getElementById('musd-form-overlay').classList.remove('open')}
-function musdNameAC(input){
-  const q=input.value.toLowerCase();
-  const ac=document.getElementById('musd-name-ac');
-  if(!q){ac.style.display='none';return;}
-  const matches=D.partners.filter(p=>p.name.toLowerCase().includes(q)).slice(0,6);
-  if(!matches.length){ac.style.display='none';return;}
-  ac.innerHTML=matches.map(p=>'<div class="autocomplete-item" onclick="selectMUsdName(\\''+p.name.replace(/'/g,"\\\\'")+'\\'  ,this.closest(\\'.autocomplete-list\\'))">'+p.name+' '+typePill(p.type)+'</div>').join('');
-  ac.style.display='block';
-}
-function selectMUsdName(name,ac){document.getElementById('musd-name').value=name;ac.style.display='none'}
-function updateMUsdVnd(){
-  const usd=parseFloat(document.getElementById('musd-usd').value)||0;
-  const rate=parseFloat((document.getElementById('musd-rate').value||'').toString().replace(/\\D/g,''))||0;
-  document.getElementById('musd-vnd-preview').textContent=fmtVND(Math.round(usd*rate));
-}
-function saveMUsdForm(){
-  const date=document.getElementById('musd-date').value||today();
-  const website=document.getElementById('musd-website').value.trim();
-  const name=document.getElementById('musd-name').value.trim();
-  const usdAmount=parseFloat(document.getElementById('musd-usd').value)||0;
-  const rate=parseFloat((document.getElementById('musd-rate').value||'').toString().replace(/\\D/g,''))||0;
-  const nv=document.getElementById('musd-nv').value;
-  const note=document.getElementById('musd-note').value.trim();
-  if(!name||!usdAmount||!rate){ alert('Vui lòng nhập đối tác, số tiền USD và rate'); return; }
-  const vndAmount=Math.round(usdAmount*rate);
-  if(_mEditUsdId){
-    const r=D.muaUsd.find(x=>x.id===_mEditUsdId);
-    if(r) Object.assign(r,{date,website,name,usdAmount,rate,vndAmount,nv,note});
-  } else {
-    D.muaUsd.unshift({id:genMuaUsdId(),date,website,name,usdAmount,rate,vndAmount,nv,status:'Blank',note,ctime:Date.now()});
-  }
-  saveData();
-  closeMUsdForm();
-  renderMuaUsdScreen();
-}
-function changeMUsdStatus(id,status){
-  const r=D.muaUsd.find(x=>x.id===id); if(!r) return;
-  r.status=status;
-  saveData();
-  renderMuaUsdScreen();
-}
-function delMUsdRow(id){
-  const r=D.muaUsd.find(x=>x.id===id); if(!r) return;
-  if(!confirm('Xoá giao dịch mua $ của "'+r.name+'" ngày '+r.date+'?')) return;
-  D.muaUsd=D.muaUsd.filter(x=>x.id!==id);
-  saveData();
-  renderMuaUsdScreen();
-}
-function exportMUsdExcel(){
-  const rows=[...D.muaUsd].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  const data=rows.map(r=>({
-    'Ngày':r.date,'Website':r.website||'','Supplier':r.name,
-    'Tiền USD':r.usdAmount,'Rate':r.rate,'Tiền VNĐ':r.vndAmount,
-    'Người thu':r.nv||'','Trạng thái':r.status,'Ghi chú':r.note||''
-  }));
-  const ws=XLSX.utils.json_to_sheet(data);
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,'So mua USD');
-  XLSX.writeFile(wb,'So_mua_USD_'+today()+'.xlsx');
 }
 
 // ============================================================
@@ -2977,41 +2751,6 @@ function mDelUser(idx){
   CFG_USERS.splice(idx,1);
   saveUsers(); renderSettingsUsers();
 }
-// Tự tạo khoản "Chờ điều phối" mới cho mỗi sup còn công nợ (theo Sổ mua $) tại thời
-// điểm Chốt phiên — port từ desktop generateSupDebtFromLedger().
-function mGenerateSupDebtFromLedger(){
-  const names=[...new Set(D.muaUsd.map(r=>r.name).filter(Boolean))];
-  const date=today();
-  let created=0;
-  names.forEach(name=>{
-    const remaining=supUsdRemaining(name);
-    if(remaining<=0) return;
-    const partner=D.partners.find(p=>p.name===name);
-    const stype=partner?partner.type:'Sup';
-    const d=date.replace(/-/g,'').slice(2);
-    const prefix=stype==='Checker'?'NL':'TD';
-    const idCK=prefix+d+String(D.ctr++).padStart(2,'0');
-    const newSup={
-      id:'s'+Date.now()+Math.random().toString(36).slice(2,5),
-      date, nv:'', type:stype, name, amount:remaining,
-      stk:partner?partner.stk:'', note:'Tự động từ Sổ mua $ lúc Chốt phiên',
-      status:'Chờ điều phối', idCK, ctime:Date.now()
-    };
-    D.sup.unshift(newSup);
-    created++;
-    let autoCount=0;
-    D.kh.forEach(k=>{
-      if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
-      if(getFixedSup(k.name)===newSup.name){
-        k.idCK=newSup.idCK; k.stk=newSup.stk; k.cdAm=k.amount; k.status='Chờ khách CK';
-        autoCount++;
-      }
-    });
-    if(autoCount>0) newSup.status='Đã điều phối';
-  });
-  return created;
-}
-
 function mManualChotPhien(){
   if(!confirm('Chốt phiên: huỷ tất cả khoản "Chờ điều phối"/"Đã điều phối" (Sup/Checker) và "Mới nhập"/"Chờ khách CK" (KH) chưa hoàn tất trước 11:00 hôm nay?')) return;
   const now = new Date();
@@ -3036,12 +2775,8 @@ function mManualChotPhien(){
     }
   });
   D.lastChotPhien = cutoff; // đánh dấu mốc bắt đầu phiên mới
-  const genCount = mGenerateSupDebtFromLedger();
   saveData();
-  const parts=[];
-  if(supCount+khCount>0) parts.push('đã huỷ '+supCount+' khoản Sup/Checker và '+khCount+' khoản KH chưa hoàn thành');
-  if(genCount>0) parts.push('tạo '+genCount+' khoản Chờ điều phối mới từ Sổ mua $');
-  alert(parts.length?parts.join('; '):'Không có thay đổi');
+  alert('Đã huỷ '+supCount+' khoản Sup/Checker và '+khCount+' khoản KH chưa hoàn thành');
 }
 function mDelMapping(kh){
   if(!confirm('Xoá mapping '+kh+'?')) return;
@@ -3511,7 +3246,6 @@ async function pollRefresh(){
     D.kh  = main.kh  || [];
     D.ck  = main.ck  || [];
     D.ctr = main.ctr || 1;
-    D.muaUsd = main.muaUsd || [];
     if(main.partners && main.partners.length) D.partners = main.partners;
     if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
@@ -3690,11 +3424,6 @@ init();
 <!-- ===== TAB 1: CÔNG NỢ SUP/MH ===== -->
 <div id="t1" class="sec">
   <div class="sec-wrap" id="t1-wrap">
-  <div class="seg" style="margin-bottom:14px">
-    <button id="t1v-debt" class="btn on" onclick="setT1View('debt')" style="font-size:13px;padding:6px 16px;border-radius:8px">Công nợ</button>
-    <button id="t1v-usd" class="btn" onclick="setT1View('usd')" style="font-size:13px;padding:6px 16px;border-radius:8px">Sổ mua $</button>
-  </div>
-  <div id="t1-view-debt">
   <div class="toolbar">
     <div class="seg">
       <button id="f1t-all" class="btn on" onclick="setSupTypeFilter('')"       style="font-size:13px;padding:5px 14px;border-radius:8px">Tất cả</button>
@@ -3716,27 +3445,13 @@ init();
     <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="f1q" placeholder="Tìm tên đối tác…" oninput="rt1()" list="dl-partners" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
     <datalist id="dl-partners"></datalist>
     <input type="hidden" id="f1t" value="">
+    <button class="btn btn-p" id="btn-add-sup" onclick="openM('msup')" style="margin-left:auto">+ Nhập công nợ</button>
   </div>
   <div class="tw"><table>
     <thead><tr>
     <th>Ngày</th><th>NV</th><th>Loại</th><th>Tên đối tác</th><th>Đặc điểm đòi tiền</th><th>Công nợ</th><th>STK nhận</th><th>ID CK</th><th>Đã CK</th><th>Tình trạng</th><th></th>
   </tr></thead><tbody id="tb1"></tbody></table></div>
   <div id="pg1" class="pgbar"></div>
-  </div>
-  <div id="t1-view-usd" style="display:none">
-  <div class="toolbar">
-    <input type="month" id="fUsdMonth" onchange="rtUsd()" style="font-size:13px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.8);background:rgba(255,255,255,0.6);color:var(--txt);outline:none">
-    <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg><input id="fUsdQ" placeholder="Tìm tên đối tác…" oninput="rtUsd()" list="dl-partners" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore="true"></div>
-    <button class="btn btn-p" id="btn-add-usd" onclick="openMUsdForm()" style="margin-left:auto">+ Nhập giao dịch</button>
-    <button class="btn" onclick="exportUsdExcel()">⬇ Xuất Excel</button>
-  </div>
-  <div id="usd-summary" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px"></div>
-  <div class="tw"><table>
-    <thead><tr>
-    <th>Ngày</th><th>Website</th><th>Đối tác</th><th class="num">Tiền USD</th><th class="num">Rate</th><th class="num">Tiền VNĐ</th><th>Người thu</th><th>Trạng thái</th><th>Ghi chú</th><th></th>
-  </tr></thead><tbody id="tbUsd"></tbody></table></div>
-  <div id="pgUsd" class="pgbar"></div>
-  </div>
   </div>
 </div>
 
@@ -4161,37 +3876,6 @@ init();
 </div>
 </div>
 
-<!-- ===== MODAL: NHẬP GIAO DỊCH MUA $ (Sổ mua $ — Sup/Checker) ===== -->
-<div class="modbg" id="musd">
-<div class="mod">
-  <button class="xbtn" onclick="closeM('musd')">×</button>
-  <h2 id="musd-title">Nhập giao dịch mua $</h2>
-  <div class="fg">
-    <div class="fr"><label>Ngày</label><input type="date" id="usd-date"/></div>
-    <div class="fr"><label>Website</label><input id="usd-website" placeholder="VD: Macys, Sephora, USDT..." list="dl-usd-website"/><datalist id="dl-usd-website"></datalist></div>
-  </div>
-  <div class="fr"><label>Đối tác (Sup/Checker)</label>
-    <input id="usd-name" placeholder="Chọn tên đối tác..." list="dl-partners"/>
-  </div>
-  <div class="fg">
-    <div class="fr"><label>Tiền USD</label><input type="number" step="0.01" id="usd-usd" placeholder="0.00" oninput="updateUsdVnd()"/></div>
-    <div class="fr"><label>Rate</label><input type="text" id="usd-rate" placeholder="VD: 24000" oninput="updateUsdVnd()"/></div>
-  </div>
-  <div class="fr" style="background:var(--bg2);border-radius:var(--r);padding:10px 12px">
-    <label style="margin-bottom:2px">Tiền VNĐ (tự tính)</label>
-    <div id="usd-vnd-preview" style="font-size:16px;font-weight:700">0</div>
-  </div>
-  <div class="fg">
-    <div class="fr"><label>Người thu</label><input id="usd-nv" placeholder="Tên nhân viên"/></div>
-    <div class="fr"><label>Ghi chú</label><input id="usd-note" placeholder="Ghi chú nếu có"/></div>
-  </div>
-  <div class="mact">
-    <button class="btn" onclick="closeM('musd')">Hủy</button>
-    <button class="btn btn-p" onclick="saveUsdForm()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Lưu</button>
-  </div>
-</div>
-</div>
-
 <!-- ===== MODAL: NHẬP KH ===== -->
 <div class="modbg" id="mkh">
 <div class="mod">
@@ -4517,12 +4201,11 @@ window.D = {
   ck: [],
   partners: [],
   khChars: [],
-  muaUsd: [],
   charOptions: JSON.parse(JSON.stringify(DEFAULT_CHAR_OPTIONS)),
   ctr: 1,
   viewMonth: new Date().getMonth(),
   viewYear: new Date().getFullYear(),
-  pg1: 0, pg2: 0, pg4: 0, pg5a: 0, pg5b: 0, pgUsd: 0  // current page per tab
+  pg1: 0, pg2: 0, pg4: 0, pg5a: 0, pg5b: 0  // current page per tab
 };
 
 function escapeHtml(s){
@@ -4718,7 +4401,6 @@ async function pollRefresh(){
     D.kh  = main.kh  || [];
     D.ck  = main.ck  || [];
     D.ctr = main.ctr || 1;
-    D.muaUsd = main.muaUsd || [];
     if(main.partners && main.partners.length) D.partners = main.partners;
     if(main.khChars  && main.khChars.length)  D.khChars  = main.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, main.charOptions || {});
@@ -4727,7 +4409,7 @@ async function pollRefresh(){
       localStorage.setItem('xuka_cn_v1', JSON.stringify(main));
       localStorage.setItem(LAST_SERVER_SIG_KEY, sig);
     }catch(e){}
-    rd0(); rt1(); rt2(); rt4(); rt5a(); rt5b(); rtUsd(); refreshDataLists();
+    rd0(); rt1(); rt2(); rt4(); rt5a(); rt5b(); refreshDataLists();
   }catch(e){}
 }
 function startPolling(){
@@ -4852,7 +4534,6 @@ function applyRole(preserveUser) {
   const showKH  = ['admin','sale'].includes(currentRole);
   el('locked-ind') && (el('locked-ind').style.display = 'none');
   el('btn-add-sup') && (el('btn-add-sup').disabled = !showSup);
-  el('btn-add-usd') && (el('btn-add-usd').disabled = !showSup);
   el('btn-add-kh')  && (el('btn-add-kh').disabled  = !showKH);
   el('btn-add-ck')  && (el('btn-add-ck').disabled  = !showKH);
   const btnChot = el('btn-chot');
@@ -5387,43 +5068,6 @@ document.addEventListener('click', e=>{
 });
 
 /* ================================================
-   SỔ MUA $ — sổ cái công nợ Sup/Checker (thay thế file Excel theo dõi
-   riêng của Mua hàng). Xem CLAUDE.md phần "Sổ mua $" để hiểu đầy đủ flow:
-   Blank -> Y/C TT (điều phối qua Xuka) hoặc CK trực tiếp (công ty tự
-   chuyển, không qua điều phối) -> Paid (chỉ áp dụng nhánh CK trực tiếp).
-   Số liệu sổ này xuyên suốt, KHÔNG bị Chốt phiên xoá/reset — khác với
-   D.sup vốn là hàng chờ điều phối theo từng phiên.
-   ================================================ */
-const MUA_USD_STATUSES = ['Blank','Y/C TT','CK trực tiếp','Paid'];
-
-// Tổng công nợ USD (quy đổi VNĐ) của 1 sup — mọi dòng đã được xác nhận đúng số
-// (Y/C TT, CK trực tiếp, hoặc đã Paid) — không tính dòng còn Blank (chưa kiểm tra).
-function supUsdGrandTotal(name){
-  return D.muaUsd.filter(r=>r.name===name && ['Y/C TT','CK trực tiếp','Paid'].includes(r.status))
-    .reduce((a,r)=>a+(r.vndAmount||0),0);
-}
-// Phần đã được trả qua điều phối KH — cộng dồn mọi bill Tracking CK đã "Sup/Checker
-// XN" trở lên, khớp bất kỳ idCK nào từng được tạo cho sup này (kể cả đợt cũ đã
-// Cancelled — tiền CK thật đã về thì vẫn phải trừ, không phân biệt phiên).
-function supUsdDispatchedTotal(name){
-  const idcks = new Set(D.sup.filter(s=>s.name===name && s.idCK).map(s=>s.idCK));
-  if(!idcks.size) return 0;
-  return D.ck.filter(c=>idcks.has(c.idCK) &&
-    (c.status==='Đã XN & Nhập file Sup/Checker'||c.status==='Done & Nhập Thu Chi'))
-    .reduce((a,c)=>a+c.amount,0);
-}
-// Phần đã trả thẳng, không qua điều phối (chỉ các dòng CK trực tiếp đã Paid).
-function supUsdDirectPaidTotal(name){
-  return D.muaUsd.filter(r=>r.name===name && r.status==='Paid')
-    .reduce((a,r)=>a+(r.vndAmount||0),0);
-}
-// Công nợ còn lại = Tổng − đã trả qua điều phối − đã trả thẳng.
-function supUsdRemaining(name){
-  return supUsdGrandTotal(name) - supUsdDispatchedTotal(name) - supUsdDirectPaidTotal(name);
-}
-function genMuaUsdId(){ return 'mu'+Date.now()+Math.random().toString(36).slice(2,6); }
-
-/* ================================================
    TAB 1: CÔNG NỢ SUP/MH
    ================================================ */
 function calcSupStatus(sup){
@@ -5499,138 +5143,6 @@ function rt1(){
   }).join('') : '<tr><td colspan="11" class="empty">Chưa có dữ liệu</td></tr>';
 
   renderPg('pg1','pg1',pages,cur,'rt1');
-}
-
-function setT1View(v){
-  el('t1v-debt').classList.toggle('on', v==='debt');
-  el('t1v-usd').classList.toggle('on', v==='usd');
-  el('t1-view-debt').style.display = v==='debt' ? '' : 'none';
-  el('t1-view-usd').style.display  = v==='usd'  ? '' : 'none';
-  if(v==='usd') rtUsd();
-}
-
-const USD_STATUS_BADGE = {
-  'Blank':'b-new', 'Y/C TT':'b-wait', 'CK trực tiếp':'b-part', 'Paid':'b-done'
-};
-
-function rtUsd(){
-  const canEdit = ['admin','mh'].includes(currentRole);
-  const month = el('fUsdMonth').value; // "YYYY-MM" or ""
-  const q = el('fUsdQ').value.toLowerCase();
-  let list = D.muaUsd.filter(r=>
-    (!month || (r.date||'').slice(0,7)===month) &&
-    (!q || (r.name||'').toLowerCase().includes(q))
-  );
-  list = [...list].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.ctime||0)-(a.ctime||0));
-
-  // Tổng hợp theo sup — luôn tính trên TOÀN BỘ sổ (không theo filter tháng/tìm kiếm
-  // đang áp dụng cho bảng), vì công nợ còn lại là số liệu xuyên suốt.
-  const names = [...new Set(D.muaUsd.map(r=>r.name).filter(Boolean))].sort();
-  el('usd-summary').innerHTML = names.length ? names.map(name=>{
-    const total = supUsdGrandTotal(name);
-    const remaining = supUsdRemaining(name);
-    if(total<=0) return '';
-    return `<div style="background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.9);border-radius:14px;padding:10px 14px;min-width:180px">
-      <div style="font-size:12.5px;font-weight:700">${name}</div>
-      <div style="font-size:11px;color:var(--txt2);margin-top:2px">Tổng: ${fmt(total)}</div>
-      <div style="font-size:13px;font-weight:700;color:${remaining>0?'var(--red3)':'var(--grn3)'};margin-top:2px">Còn lại: ${fmt(remaining)}</div>
-    </div>`;
-  }).join('') : '<span style="font-size:12px;color:var(--txt3)">Chưa có dữ liệu</span>';
-
-  const {items, total, pages, cur} = paginate(list, 'pgUsd', 20);
-
-  el('tbUsd').innerHTML = items.length ? items.map(r=>{
-    const canDel = canEdit && r.status === 'Blank';
-    return `<tr>
-      <td class="nowrap">${r.date}</td>
-      <td>${r.website||'—'}</td>
-      <td style="font-weight:600">${r.name}</td>
-      <td class="num">$${(r.usdAmount||0).toLocaleString('en-US')}</td>
-      <td class="num">${fmt(r.rate)}</td>
-      <td class="num" style="font-weight:600">${fmt(r.vndAmount)}</td>
-      <td class="nowrap">${r.nv||'—'}</td>
-      <td>${canEdit ? `<select class="badge ${USD_STATUS_BADGE[r.status]||'b-new'}" style="border:none;cursor:pointer;font:inherit" onchange="changeUsdStatus('${r.id}',this.value)">
-          ${MUA_USD_STATUSES.map(s=>`<option value="${s}" ${r.status===s?'selected':''}>${s}</option>`).join('')}
-        </select>` : `<span class="badge ${USD_STATUS_BADGE[r.status]||'b-new'}">${r.status}</span>`}
-      </td>
-      <td style="max-width:180px">${r.note||''}</td>
-      <td style="white-space:nowrap">
-        <div style="display:flex;gap:4px">
-          ${canEdit ? `<button class="pill pill-edit" onclick="openMUsdForm('${r.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
-          ${canDel ? `<button class="pill pill-del" onclick="delUsdRow('${r.id}')">${SVG_TRASH}</button>` : ''}
-        </div>
-      </td>
-    </tr>`;
-  }).join('') : '<tr><td colspan="10" class="empty">Chưa có giao dịch nào</td></tr>';
-
-  renderPg('pgUsd','pgUsd',pages,cur,'rtUsd');
-}
-
-function changeUsdStatus(id, status){
-  const r = D.muaUsd.find(x=>x.id===id); if(!r) return;
-  r.status = status;
-  autosave(); rtUsd(); rt1();
-}
-
-function delUsdRow(id){
-  const r = D.muaUsd.find(x=>x.id===id); if(!r) return;
-  if(!confirm(`Xoá giao dịch mua $ của "${r.name}" ngày ${r.date}?`)) return;
-  D.muaUsd = D.muaUsd.filter(x=>x.id!==id);
-  autosave(); rtUsd();
-}
-
-let _editUsdId = null;
-function openMUsdForm(id){
-  _editUsdId = id || null;
-  const r = id ? D.muaUsd.find(x=>x.id===id) : null;
-  const websites = [...new Set(D.muaUsd.map(x=>x.website).filter(Boolean))].sort();
-  el('dl-usd-website').innerHTML = websites.map(w=>`<option value="${w}">`).join('');
-  el('usd-date').value = r ? r.date : today();
-  el('usd-website').value = r ? (r.website||'') : '';
-  el('usd-name').value = r ? r.name : '';
-  el('usd-usd').value = r ? r.usdAmount : '';
-  el('usd-rate').value = r ? r.rate : '';
-  el('usd-nv').value = r ? (r.nv||'') : (currentUser?.name||'');
-  el('usd-note').value = r ? (r.note||'') : '';
-  el('musd-title').textContent = r ? 'Sửa giao dịch mua $' : 'Nhập giao dịch mua $';
-  updateUsdVnd();
-  openM('musd');
-}
-function updateUsdVnd(){
-  const usd = parseFloat(el('usd-usd').value)||0;
-  const rate = parseFloat((el('usd-rate').value||'').toString().replace(/\D/g,''))||0;
-  el('usd-vnd-preview').textContent = fmt(Math.round(usd*rate));
-}
-function saveUsdForm(){
-  const date = el('usd-date').value || today();
-  const website = el('usd-website').value.trim();
-  const name = el('usd-name').value.trim();
-  const usdAmount = parseFloat(el('usd-usd').value)||0;
-  const rate = parseFloat((el('usd-rate').value||'').toString().replace(/\D/g,''))||0;
-  const nv = el('usd-nv').value.trim();
-  const note = el('usd-note').value.trim();
-  if(!name || !usdAmount || !rate){ toast('Vui lòng nhập đối tác, số tiền USD và rate', true); return; }
-  const vndAmount = Math.round(usdAmount*rate);
-  if(_editUsdId){
-    const r = D.muaUsd.find(x=>x.id===_editUsdId);
-    if(r) Object.assign(r, {date, website, name, usdAmount, rate, vndAmount, nv, note});
-  } else {
-    D.muaUsd.unshift({id: genMuaUsdId(), date, website, name, usdAmount, rate, vndAmount, nv, status:'Blank', note, ctime: Date.now()});
-  }
-  autosave(); closeM('musd'); rtUsd();
-  toast('✅ Đã lưu giao dịch mua $');
-}
-function exportUsdExcel(){
-  const rows = [...D.muaUsd].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-  const data = rows.map(r=>({
-    'Ngày': r.date, 'Website': r.website||'', 'Supplier': r.name,
-    'Tiền USD': r.usdAmount, 'Rate': r.rate, 'Tiền VNĐ': r.vndAmount,
-    'Người thu': r.nv||'', 'Trạng thái': r.status, 'Ghi chú': r.note||''
-  }));
-  const ws = XLSX.utils.json_to_sheet(data);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'So mua USD');
-  XLSX.writeFile(wb, `So_mua_USD_${today()}.xlsx`);
 }
 
 function rt2(){
@@ -6385,43 +5897,6 @@ function manualChotPhien(){
   runChotPhien(false);
 }
 
-// Tự tạo khoản "Chờ điều phối" mới cho mỗi sup còn công nợ (theo Sổ mua $) tại thời
-// điểm Chốt phiên — đây là đường DUY NHẤT tạo công nợ Sup/Checker để điều phối từ giờ
-// (đã bỏ form nhập tay cũ). Áp dụng lại đúng auto-dispatch theo mapping cố định, giống
-// hệt saveSup() khi nhập công nợ thủ công trước đây.
-function generateSupDebtFromLedger(){
-  const names = [...new Set(D.muaUsd.map(r=>r.name).filter(Boolean))];
-  const date = today();
-  let created = 0;
-  names.forEach(name=>{
-    const remaining = supUsdRemaining(name);
-    if(remaining <= 0) return;
-    const partner = D.partners.find(p=>p.name===name);
-    const stype = partner ? partner.type : 'Sup';
-    const d = date.replace(/-/g,'').slice(2);
-    const prefix = stype === 'Checker' ? 'NL' : 'TD';
-    const idCK = prefix + d + String(D.ctr++).padStart(2,'0');
-    const newSup = {
-      id: 's'+Date.now()+Math.random().toString(36).slice(2,5),
-      date, nv:'', type: stype, name, amount: remaining,
-      stk: partner ? partner.stk : '', note: 'Tự động từ Sổ mua $ lúc Chốt phiên',
-      status: 'Chờ điều phối', idCK, ctime: Date.now()
-    };
-    D.sup.unshift(newSup);
-    created++;
-    let autoCount = 0;
-    D.kh.forEach(k=>{
-      if(['Done','Cancelled','Khách đã CK'].includes(k.status)) return;
-      if(getFixedSup(k.name) === newSup.name){
-        k.idCK = newSup.idCK; k.stk = newSup.stk; k.cdAm = k.amount; k.status = 'Chờ khách CK';
-        autoCount++;
-      }
-    });
-    if(autoCount > 0) newSup.status = 'Đã điều phối';
-  });
-  return created;
-}
-
 function runChotPhien(auto=false){
   const label = auto ? 'Tự động chốt phiên 11:00' : 'Chốt phiên thủ công';
   // Chỉ huỷ các khoản đã tồn tại TRƯỚC mốc 11:00 hôm nay — khoản nhập sau 11:00
@@ -6447,12 +5922,9 @@ function runChotPhien(auto=false){
     }
   });
   D.lastChotPhien = cutoff; // đánh dấu mốc bắt đầu phiên mới
-  const genCount = generateSupDebtFromLedger();
-  autosave(); rd0(); rt1(); rt2(); rtUsd();
-  const parts = [];
-  if(supCount+khCount > 0) parts.push(`đã huỷ ${supCount} khoản Sup/Checker và ${khCount} khoản KH chưa hoàn thành`);
-  if(genCount > 0) parts.push(`tạo ${genCount} khoản Chờ điều phối mới từ Sổ mua $`);
-  if(parts.length) toast(`⏰ ${label}: ${parts.join('; ')}`, false, 6000);
+  autosave(); rd0(); rt1(); rt2();
+  if(supCount+khCount > 0)
+    toast(`⏰ ${label}: đã huỷ ${supCount} khoản Sup/Checker và ${khCount} khoản KH chưa hoàn thành`, false, 6000);
 }
 
 // Run on load and every minute
@@ -7940,7 +7412,7 @@ const LS_VER = '8'; // bump to force-reset all clients
 
 function saveToStorage(){
   try {
-    const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars, charOptions: D.charOptions, lastChotPhien: D.lastChotPhien, muaUsd: D.muaUsd };
+    const payload = { sup: D.sup, kh: D.kh, ck: D.ck, ctr: D.ctr, partners: D.partners, khChars: D.khChars, charOptions: D.charOptions, lastChotPhien: D.lastChotPhien };
     localStorage.setItem(LS_KEY, JSON.stringify(payload));
     postToAPI(payload);
   } catch(e){ /* quota exceeded or private mode */ }
@@ -7955,7 +7427,6 @@ function loadFromStorage(){
     D.kh       = p.kh       || [];
     D.ck       = p.ck       || [];
     D.ctr      = p.ctr      || 1;
-    D.muaUsd   = p.muaUsd   || [];
     if(p.partners && p.partners.length)  D.partners = p.partners;
     if(p.khChars && p.khChars.length)    D.khChars  = p.khChars;
     D.charOptions = Object.assign({}, DEFAULT_CHAR_OPTIONS, p.charOptions || {});
