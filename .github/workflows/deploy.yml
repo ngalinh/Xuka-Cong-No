@@ -39,6 +39,7 @@ jobs:
           SSH_PORT: ${{ secrets.SSH_PORT }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}
+          XUKA_GOOGLE_CREDENTIALS: ${{ secrets.XUKA_GOOGLE_CREDENTIALS }}
         run: |
           set -euo pipefail
           PORT="${SSH_PORT:-22}"
@@ -70,6 +71,17 @@ jobs:
           rsync -vz --inplace --no-perms --no-owner --no-group \
             -e "$SSH" "./api.js" "$SSH_USER@$SSH_HOST:$HOME_API/api.js" \
             || echo "::warning::Skipped api.js"
+
+          # Google key stays beside the data file, never in git. Empty secret skips this step.
+          if [ -n "${XUKA_GOOGLE_CREDENTIALS:-}" ]; then
+            printf '%s' "$XUKA_GOOGLE_CREDENTIALS" > /tmp/xuka-google.json
+            rsync -vz --inplace --no-perms --no-owner --no-group \
+              -e "$SSH" /tmp/xuka-google.json "$SSH_USER@$SSH_HOST:$HOME_DATA/google-credentials.json"
+            rm -f /tmp/xuka-google.json
+            $SSH "$SSH_USER@$SSH_HOST" "chmod 600 '$HOME_DATA/google-credentials.json'"
+          else
+            echo "::warning::XUKA_GOOGLE_CREDENTIALS secret is empty — sheet read will stay off"
+          fi
 
           # Start / restart API with pm2 (script path = home copy)
           $SSH "$SSH_USER@$SSH_HOST" "
