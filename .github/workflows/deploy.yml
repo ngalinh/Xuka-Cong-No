@@ -40,6 +40,7 @@ jobs:
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}
           XUKA_GOOGLE_CREDENTIALS: ${{ secrets.XUKA_GOOGLE_CREDENTIALS }}
+          XUKA_GEMINI_API_KEY: ${{ secrets.XUKA_GEMINI_API_KEY }}
         run: |
           set -euo pipefail
           PORT="${SSH_PORT:-22}"
@@ -83,10 +84,26 @@ jobs:
             echo "::warning::XUKA_GOOGLE_CREDENTIALS secret is empty — sheet read will stay off"
           fi
 
+          # Gemini key for reading bill images. Empty secret does not wipe a key already on the server.
+          if [ -n "${XUKA_GEMINI_API_KEY:-}" ]; then
+            printf '%s' "$XUKA_GEMINI_API_KEY" > /tmp/xuka-gemini-key.txt
+            rsync -vz --inplace --no-perms --no-owner --no-group \
+              -e "$SSH" /tmp/xuka-gemini-key.txt "$SSH_USER@$SSH_HOST:$HOME_DATA/gemini-api-key.txt"
+            rm -f /tmp/xuka-gemini-key.txt
+            $SSH "$SSH_USER@$SSH_HOST" "chmod 600 '$HOME_DATA/gemini-api-key.txt'"
+          else
+            echo "::warning::XUKA_GEMINI_API_KEY secret is empty — bill image read stays off until the secret is set"
+          fi
+
           # Start / restart API with pm2 (script path = home copy)
           $SSH "$SSH_USER@$SSH_HOST" "
+            GEMINI_KEY=''
+            if [ -f '$HOME_DATA/gemini-api-key.txt' ]; then
+              GEMINI_KEY=\$(tr -d '\r\n' < '$HOME_DATA/gemini-api-key.txt')
+            fi
+            export XUKA_GEMINI_API_KEY=\"\$GEMINI_KEY\"
             if pm2 describe xuka-api > /dev/null 2>&1; then
-              pm2 reload xuka-api
+              pm2 reload xuka-api --update-env
             else
               pm2 start '$HOME_API/api.js' --name xuka-api
             fi
